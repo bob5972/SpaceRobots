@@ -3,11 +3,14 @@ package net.banack.spacerobots;
 
 public class SpaceRobots
 {
+	public static final int DEFAULT_WIDTH = 100;
+	public static final int DEFAULT_HEIGHT = 100;
+	
 	public static void main(String[] args)
 	{
 		//SETUP
-		// create display
-		//Display d = new Display();
+		Display d = new ConsoleDisplay();
+
 		// load AI's
 		
 		//setup fleets
@@ -15,7 +18,7 @@ public class SpaceRobots
 		//setup teams
 		
 		// setup initial battle state
-		Battle b = new Battle();
+		Battle b = new Battle(DEFAULT_WIDTH,DEFAULT_HEIGHT);
 		//for a in AI's {b.addAI(a);}
 		//for f in fleets {b.addFleet(f);}
 		//for t in teams {b.addTeam(t);}
@@ -30,8 +33,7 @@ public class SpaceRobots
 		while(!b.isOver())
 		{
 			b.runTick();
-			//update display
-//			d.displayStatus(b);
+			d.updateDisplay(b);
 		}
 		
 		//END GAME LOOP

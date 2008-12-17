@@ -18,9 +18,14 @@ public class Battle
 	
 	private int myWidth;
 	private int myHeight;
+	private int myTick;
 	
-	public Battle()
+	public Battle(int width, int height)
 	{
+		myWidth = width;
+		myHeight = height;
+		myTick=0;
+		
 		aggregate = new ActionList();
 		throw new MethodNotImplementedException();
 	}
@@ -59,7 +64,8 @@ public class Battle
 			Iterator si = myShips.iterator();
 			
 			//Write ships to AI sockets
-			ai.beginFleetStatusUpdate();			
+			//TODO: Track Sensor contacts
+			ai.beginFleetStatusUpdate(myTick,f.getCredits(),null,f.getNumShips());			
 			
 			while(si.hasNext())
 			{
@@ -123,5 +129,15 @@ public class Battle
 	public void doSpawn(ShipAction a)
 	{
 		throw new MethodNotImplementedException();
+	}
+	
+	public int getWidth()
+	{
+		return myWidth;
+	}
+	
+	public int getHeight()
+	{
+		return myHeight;
 	}
 }

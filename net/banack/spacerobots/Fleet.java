@@ -10,6 +10,7 @@ public class Fleet {
 	private int myCreditIncrement;
 	private int myFleetID;
 	private int myTeamID;
+	private int myNumShips;
 	
 	public Fleet(int fleetID,int teamID, FleetAI ai)
 	{
@@ -66,5 +67,10 @@ public class Fleet {
 	public String getName()
 	{
 		throw new MethodNotImplementedException();
+	}
+	
+	public int getNumShips()
+	{
+		return myNumShips;
 	}
 }
