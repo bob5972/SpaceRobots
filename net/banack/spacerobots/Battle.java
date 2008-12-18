@@ -1,5 +1,6 @@
 package net.banack.spacerobots;
 
+import java.io.IOException;
 import java.util.Collection;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.spacerobots.util.ActionList;
@@ -45,7 +46,7 @@ public class Battle
 		throw new MethodNotImplementedException();
 	}
 	
-	public void runTick()
+	public void runTick()throws IOException
 	{
 		Fleet f;
 		Ship s;

@@ -6,9 +6,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.banack.io.Parser;
 import net.banack.spacerobots.util.ActionList;
+import net.banack.spacerobots.util.ShipAction;
 import net.banack.util.MethodNotImplementedException;
 
 public class TextProtocol implements AIProtocol
@@ -16,51 +15,111 @@ public class TextProtocol implements AIProtocol
 	private Parser sIn;
 	private PrintWriter sOut;
 	
+	private int curLevel;
+	
 	public TextProtocol(Reader in, PrintWriter out)
 	{
 		sIn = new Parser(in);
 		sOut = out;
+		curLevel=0;
+	}
+	
+	private void send(String message)
+	{
+		send("message",curLevel);
+	}
+	
+	//send the message at the given indentation level
+	// (really just for debugging purposes, could set a flag to disable)
+	private void send(String message, int indentation)
+	{
+		while(indentation-->0)
+			sOut.print("\t");
+		sOut.println(message);
+	}
+	
+	private String[] read() throws IOException
+	{
+		String[] cur = sIn.readWords();
+		return cur;
+	}
+	
+	private String readLine() throws IOException
+	{
+		return sIn.readLine();
+	}
+	
+	private String readWord() throws IOException
+	{
+		return sIn.readWord();
+	}
+	
+	private ShipAction readAction() throws IOException
+	{
+		return sIn.readAction();
+	}
+	
+	private String[] read(String cmd) throws IOException
+	{
+		String[] cur = sIn.readWords();
+		if(!cur[0].equals(cmd))
+			throw new MethodNotImplementedException("No error handler");
+		return cur;
+	}
+	
+	//check if it has args tokens (including the command)
+	private String[] read(String cmd, int args) throws IOException
+	{
+		String[] cur = read(cmd);
+		if(cur.length-1 != args)
+			throw new MethodNotImplementedException("No error handler");
+		return cur;
 	}
 	
 	//Returns {name, author,version}
-	public String[] loadInfo()
+	public String[] loadInfo() throws IOException
 	{
 		String[] oup = new String[3];
 		String cur[];
 		String temp;
 		
-		//>REQUEST_INFO
-		sOut.println("REQUEST_INFO");
+		
+		send("REQUEST_INFO");
 		
 		try{
-			cur = sIn.readWords();
-			
-			//<BEGIN_INFO
-			if(cur.length != 1 || !cur[0].equals("BEGIN_INFO"))
-				throw new MethodNotImplementedException("No error handler");
+			read("BEGIN_INFO",1);
 		
-			temp = sIn.parseWord();
+			temp = readWord();
 			while(!temp.equals("END_INFO"))
 			{
 				if(temp.equals("NAME"))
-				{//<NAME Der Uber Fleet
-					cur[0] = sIn.readLine();
+				{
+					oup[0] = readLine();
 				}
 				else if(temp.equals("AUTHOR"))
-				{//<AUTHOR Michael Banack
-					cur[1] = sIn.readLine();
+				{
+					oup[1] = readLine();
 				}
 				else if(temp.equals("VERSION"))
-				{//<VERSION 1.0
-					cur[2] = sIn.readLine();
+				{
+					oup[2] = readLine();
 				}
 				else
 					throw new MethodNotImplementedException("No error handler");
 				
-				temp = sIn.parseWord();
+				temp = readWord();
 			}
+			
+			//clean up the hanging endl
+			readLine();
 				
+			//>REQUEST_INFO
+			//<BEGIN_INFO
+			//<NAME Der Uber Fleet
+			//<AUTHOR Michael Banack
+			//<VERSION 1.0
 			//<END_INFO
+			
 			return oup;
 		}
 		catch(IOException e)
@@ -69,8 +128,51 @@ public class TextProtocol implements AIProtocol
 		}
 	}
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f)
+	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f) throws IOException
 	{		
+		curLevel=0;
+		send("BEGIN_BATTLE");
+		curLevel++;
+		send("BEGIN_INIT_BATTLE");
+		curLevel++;
+		send("FLEET_ID "+fleetID);
+		send("TEAM_ID "+teamID);
+		send("STARTING_CREDITS "+startingCredits);
+		
+		send("BEGIN_STARTING_SHIPS");
+		curLevel++;
+		for(int x=0;x<s.length;x++)
+		{
+			writeShip(s[x]);
+		}
+		curLevel--;
+		send("END_STARTING_SHIPS");
+		
+		send("BEGIN_TEAMS");
+		curLevel++;
+		for(int x=0;x<t.length;x++)
+		{
+			writeTeam(t[x]);
+		}
+		curLevel--;
+		send("END_TEAMS");
+		
+		
+		send("BEGIN_FLEETS");
+		curLevel++;
+		for(int x=0;x<f.length;x++)
+		{
+			writeFleet(f[x]);
+		}
+		curLevel--;
+		send("END_FLEETS");
+		
+		send("END_INIT_BATTLE");
+		curLevel--;
+		
+		
+		read("BATTLE_READY_BEGIN",1);
+		
 		//setup teams, starting positions, etc
 		//>BEGIN_BATTLE
 		//>	BEGIN_INIT_BATTLE
@@ -82,16 +184,11 @@ public class TextProtocol implements AIProtocol
 		//>		END_STARTING_SHIPS
 		//
 		//>		BEGIN_TEAMS
-		//>			TEAM teamID friendOrFoe "Name"
+		//>			TEAM teamID "Name"
 		//>		END_TEAMS
 		//
 		//>		BEGIN_FLEETS
-		//>			BEGIN_FLEET fleetID teamID friendOrFoe "Name" "Version"
-		//>				STARTING_CREDITS 1000
-		//>				BEGIN_STARTING_SHIPS
-		//>					SHIP iD? type xPos? yPos?
-		//>				END_STARTING_SHIPS
-		//>			END_FLEET
+		//>			FLEET fleetID teamID "Name" "AIName" "AIVersion" deadOrAlive winOrLose
 		//>		END_FLEETS
 		//>	END_INIT_BATTLE
 		
@@ -104,56 +201,129 @@ public class TextProtocol implements AIProtocol
 		
 		//the END_BATTLE would be after it's all over...
 		//this way we can re-use sockets between matches
-		
-		throw new MethodNotImplementedException();
 	}
 	
-	public void beginFleetStatusUpdate(int tick, int credits, SensorContact[] c, int numShips)
+	public void battleStatusUpdate(int teamID, int fleetID, boolean doa) throws IOException
 	{
-//		we could send these intermittantly to tell fleets when people die...
+		//we could send these intermittantly to tell fleets when people die...
 		//>BATTLE_STATUS_UPDATE teamID deadOrAlive winOrLose
+		send("BATTLE_STATUS_UPDATE "+teamID+" "+fleetID+" "+(doa?1:0));
+	}
+	
+	public void beginFleetStatusUpdate(int tick, int credits, SensorContact[] c, int numShips) throws IOException
+	{
+		send("BEGIN_FLEET_STATUS");
+		curLevel++;
 		
+		send("TICK "+tick);
+		send("CREDITS "+credits);
+		send("BEGIN_CONTACT_LIST "+c.length);
+		curLevel++;
+		for(int x=0;x<c.length;x++)
+			writeContact(c[x]);
+		curLevel--;
+		send("END_CONTACT_LIST");
+			
+		send("BEGIN_SHIPS "+numShips);
+		curLevel++;
 		
 		//>BEGIN_FLEET_STATUS
 		//>	TICK 803
 		//>	CREDITS 100
-		//> NUM_CONTACTS 13
-		//>	BEGIN_CONTACT_LIST
+		//>	BEGIN_CONTACT_LIST 13
 		//>		CONTACT fleetID type xPos yPos heading (refiD refiD )
 		//>	END_CONTACT_LIST
-		//>	NUM_SHIPS 25
-		//> BEGIN_SHIPS
+		//> BEGIN_SHIPS 25
+	}
+	
+	public void writeContact(SensorContact c) throws IOException
+	{
 		throw new MethodNotImplementedException();
 	}
 	
-	public void writeShip(Ship s)
+	public void writeShip(Ship s) throws IOException
 	{
 		//write a single ship
 		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife
-		throw new MethodNotImplementedException();
+		
+		send("SHIP "+s.getID()+" "+s.getType()+" "+s.getXPos()+" "+s.getYPos()+" "+s.getHeading()+" "+s.getScannerHeading()+" "+s.getLife()+" "+s.getDeltaLife());
 	}
 	
 	public void endFleetStatusUpdate()
 	{
+		send("END_SHIPS");
+		curLevel--;
+		send("END_FLEET_STATUS");
+		curLevel--;
 		//>	END_SHIPS
 		//>END_FLEET_STATUS
-		throw new MethodNotImplementedException();
 	}
 	
-	public ActionList readFleetActions()
+	private void writeTeam(Team t)
 	{
+		//>TEAM teamID "Name"
+		send("TEAM "+t.getTeamID()+" \""+t.getName()+"\"");
+	}
+	
+	private void writeFleet(Fleet f) throws IOException
+	{
+		//>FLEET fleetID teamID "Name" "AIName" "AIVersion" isAlive winOrLose
+		send("FLEET "+Parser.toString(f));
+	}
+	
+	public ActionList readFleetActions() throws IOException
+	{
+		ActionList oup = new ActionList();
+		int tick,numA;
+		
+		read("BEGIN_FLEET_ACTIONS",1);
+		tick = Parser.parseInt(read("TICK",2)[1]);
+		oup.setTick(tick);
+		
+		numA = Parser.parseInt(read("BEGIN_SHIP_ACTIONS",2)[1]);
+		
+		for(int x=0;x<numA;x++)
+		{
+			oup.add(readAction());
+		}
+		
+		read("END_SHIP_ACTIONS",1);
+		read("END_FLEET_ACTIONS",1);
+		
+		return oup;
+		
 		//<BEGIN_FLEET_ACTIONS
 		//<	TICK 803
-		//<	BEGIN_SHIPS
-		//<		SHIP id willMove newHeading newScannerHeading launchWhat
-		//< END_SHIPS
+		//<	BEGIN_SHIP_ACTIONS
+		//<		SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
+		//< END_SHIP_ACTIONS
 		//<END_FLEET_ACTIONS
-		throw new MethodNotImplementedException();
 	}
 	
-	public void endBattle(Fleet me, Fleet[] f)
+	public void endBattle(Fleet me, Team[]t, Fleet[] f)  throws IOException
 	{
-		//notify ai's of outcome?
+		send("BEGIN_BATTLE_OUTCOME");
+		curLevel++;
+		send("YOU "+Parser.toString(me));
+		
+		send("BEGIN_TEAMS "+t.length);
+		curLevel++;
+		for(int x=0;x<t.length;x++)
+			writeTeam(t[x]);
+		curLevel--;
+		send("BEGIN_FLEETS "+f.length);
+		curLevel++;
+		for(int x=0;x<f.length;x++)
+			writeFleet(f[x]);
+		curLevel--;
+		send("END_FLEETS");
+		curLevel--;
+		send("END_BATTLE_OUTCOME");
+		curLevel--;
+		send("END_BATTLE");
+		
+		read("BATTLE_READY_END",1);
+		
 		//>BEGIN_BATTLE_OUTCOME
 		//>YOU fleetID teamID deadOrAlive winOrLose
 		//>	BEGIN_TEAMS
@@ -168,8 +338,32 @@ public class TextProtocol implements AIProtocol
 		
 		//<BATTLE_READY_END
 		//now we know the ai is finished fighting (in it's head?)
+	}
+	
+	public static class Parser extends net.banack.io.Parser
+	{
+		public Parser(Reader in)
+		{
+			super(in);
+		}
 		
+		public ShipAction readAction() throws IOException
+		{
+			String cur = readLine();
+			return parseAction(cur);
+		}
 		
-		throw new MethodNotImplementedException();
+		public static String toString(Fleet f)
+		{
+			return f.getFleetID()+" "+f.getTeamID()+" "+" \""+f.getName()+"\" \""+f.getAIName()+"\" \""+f.getAIVersion()+"\" "+f.isAlive()+" "+f.getWinOrLose();
+		}
+		
+		public static ShipAction parseAction(String s)
+		{
+			String[] inp = parseWords(s);
+			if(!inp[0].equals("ACTION"))
+				throw new MethodNotImplementedException("No error handler");
+			throw new MethodNotImplementedException();
+		}			
 	}
 }

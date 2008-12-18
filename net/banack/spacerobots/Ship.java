@@ -67,14 +67,27 @@ public class Ship {
 	}
 	
 	
+	
 	//Status Functions
 	public int getX()
 	{
 		return myXPos;
 	}
+	public final int getXPos()
+	{
+		return getX();
+	}
 	public int getY()
 	{
 		return myYPos;
+	}
+	public final int getYPos()
+	{
+		return getY();
+	}
+	public int getScannerHeading()
+	{
+		throw new MethodNotImplementedException();
 	}
 	public int getHeading()
 	{
@@ -108,6 +121,11 @@ public class Ship {
 		if(!isValidHeading(h))
 			throw new IllegalArgumentException("Invalid Heading!");
 		myHeading = h;
+	}
+	
+	public final int getID()
+	{
+		return getShipID();
 	}
 	
 	public int getShipID()

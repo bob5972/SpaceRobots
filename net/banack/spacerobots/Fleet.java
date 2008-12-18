@@ -11,12 +11,42 @@ public class Fleet {
 	private int myFleetID;
 	private int myTeamID;
 	private int myNumShips;
+	private boolean isAlive;
+	private int winOrLose;
+	
+	public static final int WIN = 1;
+	public static final int LOSE = -1;
+	public static final int IN_PROGRESS=0; 
 	
 	public Fleet(int fleetID,int teamID, FleetAI ai)
 	{
 		myAI = ai;
 		myFleetID = fleetID;
 		myTeamID = teamID;
+		winOrLose=IN_PROGRESS;
+		isAlive=true;
+	}
+	
+	public boolean isAlive()
+	{
+		return isAlive;
+	}
+	
+	public void setAlive(boolean b)
+	{
+		isAlive=b;
+	}
+	
+	public int getWinOrLose()
+	{
+		return winOrLose;
+	}
+	
+	public void setWinOrLose(int x)
+	{
+		winOrLose = x;
+		if(x != WIN && x!= LOSE && x != IN_PROGRESS)
+			throw new IllegalArgumentException("Invalid setting for winOrLose x="+x);
 	}
 	
 	public int getCreditIncrement()
@@ -54,6 +84,11 @@ public class Fleet {
 		return myFleetID;
 	}
 	
+	public final int getID()
+	{
+		return getFleetID();
+	}
+	
 	public int getTeamID()
 	{
 		return myTeamID;
@@ -65,6 +100,16 @@ public class Fleet {
 	}
 	
 	public String getName()
+	{
+		throw new MethodNotImplementedException();
+	}
+	
+	public String getAIName()
+	{
+		throw new MethodNotImplementedException();
+	}
+	
+	public String getAIVersion()
 	{
 		throw new MethodNotImplementedException();
 	}

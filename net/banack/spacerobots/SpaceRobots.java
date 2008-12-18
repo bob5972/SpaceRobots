@@ -1,5 +1,7 @@
 package net.banack.spacerobots;
 
+import net.banack.util.MethodNotImplementedException;
+
 
 public class SpaceRobots
 {
@@ -25,14 +27,20 @@ public class SpaceRobots
 		
 		//setup starting ships/locations
 		/// (or at least give the specs, and let battle determine them randomly)
-		
+
 		// notify AI's about game setup
 		b.initialize();
 		
 		//GAME LOOP
 		while(!b.isOver())
 		{
-			b.runTick();
+			try{
+				b.runTick();
+			}
+			catch(java.io.IOException e)
+			{
+				throw new MethodNotImplementedException("No error handler");
+			}
 			d.updateDisplay(b);
 		}
 		

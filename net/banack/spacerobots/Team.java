@@ -16,6 +16,11 @@ public class Team
 		return myTeamID;
 	}
 	
+	public final int getID()
+	{
+		return getTeamID();
+	}
+	
 	public String getName()
 	{
 		return myName;

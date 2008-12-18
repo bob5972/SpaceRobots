@@ -9,11 +9,23 @@ public class ActionList
 {
 	private HashMap myActions;
 	private HashSet mySpawns;
+	private int myTick;
 	
 	public ActionList()
 	{
 		myActions = new HashMap();
 		mySpawns = new HashSet();
+		myTick = -1;
+	}
+	
+	public int getTick()
+	{
+		return myTick;
+	}
+	
+	public void setTick(int t)
+	{
+		myTick =t;
 	}
 	
 	//returns true if this is a new action
