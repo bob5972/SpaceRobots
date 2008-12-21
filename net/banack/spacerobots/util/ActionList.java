@@ -18,6 +18,7 @@ public class ActionList
 		myTick = -1;
 	}
 	
+	//So the battle can check that the AI knows what tick this is
 	public int getTick()
 	{
 		return myTick;

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.spacerobots.util.ActionList;
+import net.banack.spacerobots.util.ContactList;
 
 public class FleetAI
 {
@@ -39,7 +40,7 @@ public class FleetAI
 		myCom.initBattle(fleetID,teamID,startingCredits,s,t,f);
 	}
 	
-	public void beginFleetStatusUpdate(int tick, int credits, SensorContact[] c, int numShips)throws IOException
+	public void beginFleetStatusUpdate(int tick, int credits, ContactList c, int numShips)throws IOException
 	{
 		myCom.beginFleetStatusUpdate(tick,credits,c,numShips);
 	}

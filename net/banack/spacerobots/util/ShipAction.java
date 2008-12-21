@@ -5,9 +5,18 @@ import net.banack.util.MethodNotImplementedException;
 public class ShipAction
 {
 	private int myShipID;
-	public ShipAction()
+	private boolean willMove;
+	private int newHeading;
+	private int newScannerHeading;
+	private int launchWhat;
+	
+	public ShipAction(int id, boolean move, int heading, int scannerHeading, int launch)
 	{
-		throw new MethodNotImplementedException();
+		myShipID = id;
+		willMove = move;
+		newHeading = heading;
+		newScannerHeading = scannerHeading;
+		launchWhat=launch;
 	}
 	
 	public int getShipID()
@@ -18,6 +27,26 @@ public class ShipAction
 	public boolean isSpawn()
 	{
 		throw new MethodNotImplementedException();
+	}
+	
+	public boolean willMove()
+	{
+		return willMove;
+	}
+	
+	public int getHeading()
+	{
+		return  newHeading;
+	}
+	
+	public int getScannerHeading()
+	{
+		return newScannerHeading;
+	}
+	
+	public int getLaunch()
+	{
+		return launchWhat;
 	}
 	
 	public int hashCode()

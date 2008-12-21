@@ -5,13 +5,6 @@ import net.banack.util.MethodNotImplementedException;
 public class Ship {
 	//Internal Representation of a Ship
 	
-	static final int TYPE_INVALID   = -1;
-	static final int TYPE_CRUISER   = 1;
-	static final int TYPE_DESTROYER = 2;
-	static final int TYPE_FIGHTER   = 3;
-	static final int TYPE_MISSILE	= 4;
-	static final int TYPE_ROCKET	= 5;
-	
 	//the maximum heading is HEADING_MAX
 	//so HEADING_WRAP is really the mod value
 	//(but I wasn't creative enough for a better name)
@@ -24,18 +17,30 @@ public class Ship {
 	private int myLife;
 	private int deltaLife;
 	private int myHeading;
-	private int myType;
+	private int myTypeID;
+	private Fleet myFleet;
 	
-	public Ship(int id, int type,int x, int y, int life)
+	public Ship(Fleet f, int id, int type,int x, int y, int life)
 	{
+		myFleet=f;
 		myID=id;
-		myType = type;
-		if(!isValidShipType(myType))
-			throw new IllegalArgumentException("Invalid Ship Type!");
+		myTypeID = type;
+//		if(!isValidShipType(myTypeID))
+//			throw new IllegalArgumentException("Invalid Ship Type!");
 		myXPos = x;
 		myYPos = y;
 		myLife = life;
 		deltaLife=0;
+	}
+	
+	public Fleet getFleet()
+	{
+		return myFleet;
+	}
+	
+	public int getFleetID()
+	{
+		return myFleet.getFleetID();
 	}
 	
 	public void reset()
@@ -49,18 +54,7 @@ public class Ship {
 		return deltaLife;
 	}
 	
-	//Util Functions
-	public boolean isValidShipType(int t)
-	{
-		switch(t)
-		{
-			case TYPE_CRUISER:
-			case TYPE_DESTROYER:
-			case TYPE_FIGHTER:
-				return true;
-		}
-		return false;
-	}
+	
 	public boolean isValidHeading(int h)
 	{
 		return (0 <= h && h <= HEADING_MAX);
@@ -105,7 +99,7 @@ public class Ship {
 	
 	public int getType()
 	{
-		return myType;
+		return myTypeID;
 	}
 	
 	public void setX(int x)
@@ -140,5 +134,4 @@ public class Ship {
 		oup.println("----Life="+myLife);
 		oup.println("----Heading="+myHeading);
 	}
-	
 }

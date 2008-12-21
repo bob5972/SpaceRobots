@@ -7,8 +7,10 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.banack.spacerobots.util.ActionList;
+import net.banack.spacerobots.util.SensorContact;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.util.MethodNotImplementedException;
+import net.banack.spacerobots.util.ContactList;
 
 public class TextProtocol implements AIProtocol
 {
@@ -36,12 +38,6 @@ public class TextProtocol implements AIProtocol
 		while(indentation-->0)
 			sOut.print("\t");
 		sOut.println(message);
-	}
-	
-	private String[] read() throws IOException
-	{
-		String[] cur = sIn.readWords();
-		return cur;
 	}
 	
 	private String readLine() throws IOException
@@ -210,17 +206,18 @@ public class TextProtocol implements AIProtocol
 		send("BATTLE_STATUS_UPDATE "+teamID+" "+fleetID+" "+(doa?1:0));
 	}
 	
-	public void beginFleetStatusUpdate(int tick, int credits, SensorContact[] c, int numShips) throws IOException
+	public void beginFleetStatusUpdate(int tick, int credits, ContactList c, int numShips) throws IOException
 	{
 		send("BEGIN_FLEET_STATUS");
 		curLevel++;
 		
 		send("TICK "+tick);
 		send("CREDITS "+credits);
-		send("BEGIN_CONTACT_LIST "+c.length);
+		send("BEGIN_CONTACT_LIST "+c.size());
 		curLevel++;
-		for(int x=0;x<c.length;x++)
-			writeContact(c[x]);
+		java.util.Iterator i = c.iterator();
+		for(int x=0;x<c.size();x++)
+			writeContact((SensorContact)i.next());
 		curLevel--;
 		send("END_CONTACT_LIST");
 			
@@ -360,9 +357,11 @@ public class TextProtocol implements AIProtocol
 		
 		public static ShipAction parseAction(String s)
 		{
+
 			String[] inp = parseWords(s);
 			if(!inp[0].equals("ACTION"))
 				throw new MethodNotImplementedException("No error handler");
+			//<		SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
 			throw new MethodNotImplementedException();
 		}			
 	}

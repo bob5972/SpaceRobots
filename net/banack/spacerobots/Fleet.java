@@ -13,18 +13,35 @@ public class Fleet {
 	private int myNumShips;
 	private boolean isAlive;
 	private int winOrLose;
+	private String myName;
 	
-	public static final int WIN = 1;
-	public static final int LOSE = -1;
-	public static final int IN_PROGRESS=0; 
+	public static final int STATUS_WIN = 1;
+	public static final int STATUS_LOSE = -1;
+	public static final int STATUS_IN_PROGRESS=0; 
 	
 	public Fleet(int fleetID,int teamID, FleetAI ai)
 	{
 		myAI = ai;
 		myFleetID = fleetID;
 		myTeamID = teamID;
-		winOrLose=IN_PROGRESS;
+		winOrLose=STATUS_IN_PROGRESS;
 		isAlive=true;
+		myName = "Fleet "+fleetID;
+	}
+	
+	public Fleet(String name, int fleetID, int teamID, FleetAI ai)
+	{
+		myAI = ai;
+		myFleetID = fleetID;
+		myTeamID = teamID;
+		winOrLose=STATUS_IN_PROGRESS;
+		isAlive=true;
+		myName = name;
+	}
+	
+	public String getName()
+	{
+		return myName;
 	}
 	
 	public boolean isAlive()
@@ -45,7 +62,7 @@ public class Fleet {
 	public void setWinOrLose(int x)
 	{
 		winOrLose = x;
-		if(x != WIN && x!= LOSE && x != IN_PROGRESS)
+		if(x != STATUS_WIN && x!= STATUS_LOSE && x != STATUS_IN_PROGRESS)
 			throw new IllegalArgumentException("Invalid setting for winOrLose x="+x);
 	}
 	
@@ -97,11 +114,6 @@ public class Fleet {
 	public FleetAI getAI()
 	{
 		return myAI;
-	}
-	
-	public String getName()
-	{
-		throw new MethodNotImplementedException();
 	}
 	
 	public String getAIName()

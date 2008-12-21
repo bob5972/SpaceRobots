@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import net.banack.spacerobots.util.ActionList;
 import net.banack.util.MethodNotImplementedException;
+import net.banack.spacerobots.util.ContactList;
 
 public interface AIProtocol
 {
@@ -12,7 +13,7 @@ public interface AIProtocol
 	
 	void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f) throws IOException;
 	
-	void beginFleetStatusUpdate(int tick, int credits, SensorContact[] c, int numShips) throws IOException;	
+	void beginFleetStatusUpdate(int tick, int credits, ContactList c, int numShips) throws IOException;	
 
 	void writeShip(Ship s) throws IOException;
 	
