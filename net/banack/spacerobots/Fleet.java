@@ -130,4 +130,9 @@ public class Fleet {
 	{
 		return myNumShips;
 	}
+	
+	public void setNumShips(int n)
+	{
+		myNumShips = n;
+	}
 }

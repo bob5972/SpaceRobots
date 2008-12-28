@@ -3,6 +3,7 @@ package net.banack.spacerobots;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
 
 import net.banack.util.MethodNotImplementedException;
@@ -20,7 +21,7 @@ public class Battle
 {
 	private ShipList myShips;
 	private FleetList myFleets;
-	private Collection myTeams;
+	private TeamList myTeams;
 	
 	
 	//leave some room for stuff (like types?)
@@ -62,7 +63,7 @@ public class Battle
 		
 		aggregate = new ActionList();
 		contacts = new FleetContactList();
-		myTeams = new ArrayList();
+		myTeams = new TeamList();
 		myRandom = new Random();
 	}
 	
@@ -106,7 +107,16 @@ public class Battle
 	
 	public boolean isOver()
 	{
-		throw new MethodNotImplementedException();
+		int alive=0;
+		Iterator i = myTeams.iterator();
+		while(i.hasNext())
+		{
+			Team t = (Team)i.next();
+			if(t.isAlive())
+				alive++;
+		}
+		
+		return alive <= 1;
 	}
 	
 	public void runTick()throws IOException
@@ -214,15 +224,90 @@ public class Battle
 			{
 				//error message
 				if(SpaceRobots.showBadAIWarnings())
+				{
 					System.err.println("Illegal Spawn attempted by: ");
+					throw new MethodNotImplementedException("No error handler");
+				}
 			}
 		}
 
+
 		contacts.makeEmpty();
-//		//generate sensor contacts
-//		//check collisions
-//		//blow stuff up
+		Iterator outer = myShips.iterator();
+		HashSet toDie = new HashSet();
 		
+		while(outer.hasNext())
+		{
+			Ship sho = (Ship)outer.next();
+			if(toDie.contains(sho))
+				continue;
+			
+			int oTeam = sho.getFleet().getTeamID();
+			int oType = sho.getTypeID();
+			Iterator inner = myShips.iterator();
+			while(inner.hasNext())
+			{
+				Ship shi = (Ship)inner.next();
+				if(toDie.contains(shi))
+					continue;
+				
+				int iTeam = shi.getFleet().getTeamID();
+				int iType = shi.getTypeID();
+				
+				//generate sensor contacts
+				if(oTeam != iTeam && canScan(sho,shi))
+				{
+					contacts.addContact(shi,sho);
+					
+					//check collisions
+					if(oType == TYPE_ROCKET || oType == TYPE_MISSILE)
+					{
+						if(iType != TYPE_ROCKET && iType != TYPE_MISSILE)
+						{
+							if(isCollision(sho,shi))
+							{
+								//	do damage
+								toDie.add(sho);//the rocket blows up
+								shi.decrementLife(1);
+								if(!shi.isAlive())
+								{
+									//mark stuff to be blown up
+									toDie.add(shi);
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		//blow stuff up
+		i = toDie.iterator();
+		while(i.hasNext())
+		{
+			s = (Ship)i.next();
+			
+			myShips.remove(s);
+			f = s.getFleet();
+			f.setNumShips(f.getNumShips() -1);
+			if(f.getNumShips() <= 0)
+			{
+				f.setAlive(false);
+				Team t = myTeams.get(f.getTeamID());
+				t.decrementLiveFleets(1);
+			}
+		}				
+			
+	}
+	
+	public boolean canScan(Ship spotter, Ship enemy)
+	{
+		throw new MethodNotImplementedException();
+	}
+	
+	public boolean isCollision(Ship o, Ship i)
+	{
 		throw new MethodNotImplementedException();
 	}
 	

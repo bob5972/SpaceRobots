@@ -6,10 +6,17 @@ public class Team
 	{
 		myTeamID = teamID;
 		myName = name;
+		myLiveFleets=0;
 	}
 	
+	private int myLiveFleets;
 	private int myTeamID;
 	private String myName;
+	
+	public boolean isAlive()
+	{
+		return myLiveFleets >0;
+	}
 	
 	public int getTeamID()
 	{
@@ -25,4 +32,25 @@ public class Team
 	{
 		return myName;
 	}
+	
+	public int getLiveFleets()
+	{
+		return myLiveFleets;
+	}
+	
+	public void setLiveFleets(int n)
+	{
+		myLiveFleets = n;
+	}
+	
+	public void incrementLiveFleets(int n)
+	{
+		myLiveFleets += n;
+	}
+	
+	public void decrementLiveFleets(int n)
+	{
+		myLiveFleets-=n;
+	}
 }
+

@@ -16,6 +16,11 @@ public class ShipList
 		return (myShips.put(new Integer(s.getShipID()),s)==null);
 	}
 	
+	public void remove(Ship s)
+	{
+		myShips.remove(new Integer(s.getID()));
+	}
+	
 	public Ship get(int shipID)
 	{
 		return (Ship)myShips.get(new Integer(shipID));

@@ -1,5 +1,6 @@
 package net.banack.spacerobots;
 
+import net.banack.spacerobots.util.ShipType;
 import net.banack.util.MethodNotImplementedException;
 
 public class Ship {
@@ -13,6 +14,7 @@ public class Ship {
 	private int myHeading;
 	private int myScannerHeading;
 	private int myTypeID;
+	private ShipType myType;
 	private Fleet myFleet;
 	private boolean willMove;
 	
@@ -104,6 +106,12 @@ public class Ship {
 	public int getLife()
 	{
 		return myLife;
+	}
+	
+	public void decrementLife(int d)
+	{
+		deltaLife += d;
+		myLife -= d;
 	}
 	
 	public boolean isAlive()
