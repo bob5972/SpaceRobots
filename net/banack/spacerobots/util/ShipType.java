@@ -6,19 +6,17 @@ public class ShipType
 	private int typeID;
 	private int cost;
 	private int maxLife;
-	private int width;
-	private int height;	
-	private int maxSpeed;
+	private double width;
+	private double height;	
+	private double maxSpeed;
 	private boolean canStop;
 	private boolean hasAI;//does the Ai get to control it?
 	private boolean isShip;//ship or projectile?
-	private int maxTurningRate;
+	private double maxTurningRate;
 	private boolean canMoveScanner;
 	
-	public ShipType(String name, int id, 
-			int cost, int life, int width, int height,
-			boolean canStop, int maxTurningRate, int maxSpeed,boolean canMoveScanner,
-			boolean hasAI, boolean isShip)
+	public ShipType(String name, int id, int cost, int life, double width, double height, boolean canStop,
+			double maxTurningRate, double maxSpeed, boolean canMoveScanner, boolean hasAI, boolean isShip)
 	{
 		this.name = name;
 		typeID = id;
@@ -31,7 +29,7 @@ public class ShipType
 		this.isShip = isShip;
 		this.maxSpeed = maxSpeed;
 		this.maxTurningRate = maxTurningRate;
-		this.canMoveScanner = canMoveScanner; 
+		this.canMoveScanner = canMoveScanner;
 	}
 	
 	public boolean getCanStop()
@@ -44,7 +42,7 @@ public class ShipType
 		return hasAI;
 	}
 	
-	public int getMaxSpeed()
+	public double getMaxSpeed()
 	{
 		return maxSpeed;
 	}
@@ -59,7 +57,7 @@ public class ShipType
 		return name;
 	}
 	
-	public int getHeight()
+	public double getHeight()
 	{
 		return height;
 	}
@@ -71,7 +69,7 @@ public class ShipType
 	{
 		return typeID;
 	}
-	public int getWidth()
+	public double getWidth()
 	{
 		return width;
 	}
@@ -80,7 +78,7 @@ public class ShipType
 		return cost;
 	}
 
-	public int getMaxTurningRate()
+	public double getMaxTurningRate()
 	{
 		return maxTurningRate;
 	}

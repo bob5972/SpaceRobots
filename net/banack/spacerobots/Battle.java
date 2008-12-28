@@ -34,25 +34,19 @@ public class Battle
 	public static final int TYPE_MISSILE   = DefaultShipTypeDefinitions.MISSILE_ID;
 	public static final int TYPE_ROCKET	   = DefaultShipTypeDefinitions.ROCKET_ID;
 	
-	//the maximum heading is HEADING_MAX
-	//so HEADING_WRAP is really the mod value
-	//(but I wasn't creative enough for a better name)
-	public static final int HEADING_WRAP = 64;
-	public static final int HEADING_MAX = HEADING_WRAP-1;
-	
 	//this way we can re-use it
 	//saves on (de)allocation
 	private ActionList aggregate;
 	private FleetContactList contacts;
 	private Random myRandom;
 	
-	private int myWidth;
-	private int myHeight;
+	private double myWidth;
+	private double myHeight;
 	private int myTick;
 	private ShipTypeDefinitions myShipTypes;
 	
 	
-	public Battle(int width, int height)
+	public Battle(double width, double height)
 	{
 		myWidth = width;
 		myHeight = height;
@@ -100,7 +94,7 @@ public class Battle
 		{
 			Fleet f = (Fleet)i.next();
 			int launchType = TYPE_CRUISER;
-			Ship oup = new Ship(f,getNewID(), launchType, myRandom.nextInt(myWidth), myRandom.nextInt(myHeight), getDefaultLife(launchType));
+			Ship oup = new Ship(f,getNewID(), launchType, myRandom.nextDouble()*myWidth, myRandom.nextDouble()*myHeight, getDefaultLife(launchType));
 			myShips.add(oup);
 		}
 	}
@@ -386,12 +380,12 @@ public class Battle
 		return t.getMaxLife();
 	}
 	
-	public int getWidth()
+	public double getWidth()
 	{
 		return myWidth;
 	}
 	
-	public int getHeight()
+	public double getHeight()
 	{
 		return myHeight;
 	}

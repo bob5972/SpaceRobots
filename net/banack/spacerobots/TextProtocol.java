@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.SensorContact;
 import net.banack.spacerobots.util.ShipAction;
+import net.banack.spacerobots.util.SpaceMath;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.spacerobots.util.ContactList;
 
@@ -76,7 +77,6 @@ public class TextProtocol implements AIProtocol
 	public String[] loadInfo() throws IOException
 	{
 		String[] oup = new String[3];
-		String cur[];
 		String temp;
 		
 		
@@ -243,7 +243,7 @@ public class TextProtocol implements AIProtocol
 		//write a single ship
 		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife
 		
-		send("SHIP "+s.getID()+" "+s.getTypeID()+" "+s.getXPos()+" "+s.getYPos()+" "+s.getHeading()+" "+s.getScannerHeading()+" "+s.getLife()+" "+s.getDeltaLife());
+		send("SHIP "+s.getID()+" "+s.getTypeID()+" "+((int)s.getXPos())+" "+((int)s.getYPos())+" "+SpaceMath.radToDeg(s.getHeading())+" "+SpaceMath.radToDeg(s.getScannerHeading())+" "+s.getLife()+" "+s.getDeltaLife());
 	}
 	
 	public void endFleetStatusUpdate()

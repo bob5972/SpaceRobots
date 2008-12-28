@@ -1,30 +1,32 @@
 package net.banack.spacerobots;
 
+import net.banack.geometry.DDimension;
+import net.banack.geometry.DQuad;
+import net.banack.geometry.DPoint;
 import net.banack.spacerobots.util.ShipType;
+import net.banack.spacerobots.util.SpaceMath;
 import net.banack.util.MethodNotImplementedException;
 
 public class Ship {
 	//Internal Representation of a Ship
 	
 	private int myID;
-	private int myXPos;
-	private int myYPos;
+	private double myXPos;
+	private double myYPos;
 	private int myLife;
 	private int deltaLife;
-	private int myHeading;
-	private int myScannerHeading;
+	private double myHeading;
+	private double myScannerHeading;
 	private int myTypeID;
 	private ShipType myType;
 	private Fleet myFleet;
 	private boolean willMove;
 	
-	public Ship(Fleet f, int id, int type,int x, int y, int life)
+	public Ship(Fleet f, int id, int type,double x, double y, int life)
 	{
 		myFleet=f;
 		myID=id;
 		myTypeID = type;
-//		if(!isValidShipType(myTypeID))
-//			throw new IllegalArgumentException("Invalid Ship Type!");
 		myXPos = x;
 		myYPos = y;
 		myLife = life;
@@ -56,7 +58,6 @@ public class Ship {
 	public void reset()
 	{
 		deltaLife=0;
-		throw new MethodNotImplementedException();
 	}
 	
 	public int getDeltaLife()
@@ -65,41 +66,35 @@ public class Ship {
 	}
 	
 	
-	public boolean isValidHeading(int h)
-	{
-		return (0 <= h && h <= Battle.HEADING_MAX);
-	}
-	
-	
 	
 	//Status Functions
-	public int getX()
+	public double getX()
 	{
 		return myXPos;
 	}
-	public final int getXPos()
+	public final double getXPos()
 	{
 		return getX();
 	}
-	public int getY()
+	public double getY()
 	{
 		return myYPos;
 	}
-	public final int getYPos()
+	public final double getYPos()
 	{
 		return getY();
 	}
-	public int getScannerHeading()
+	public double getScannerHeading()
 	{
 		return myScannerHeading;
 	}
 	
-	public void setScannerHeading(int h)
+	public void setScannerHeading(double h)
 	{
 		myScannerHeading = h;
 	}
 	
-	public int getHeading()
+	public double getHeading()
 	{
 		return myHeading;
 	}
@@ -124,19 +119,17 @@ public class Ship {
 		return myTypeID;
 	}
 	
-	public void setX(int x)
+	public void setX(double x)
 	{
 		myXPos = x;
 	}
-	public void setY(int y)
+	public void setY(double y)
 	{
 		myYPos = y;
 	}
-	public void setHeading(int h)
+	public void setHeading(double h)
 	{
-		if(!isValidHeading(h))
-			throw new IllegalArgumentException("Invalid Heading!");
-		myHeading = h;
+		myHeading = SpaceMath.wrapHeading(h);
 	}
 	
 	public final int getID()
@@ -156,4 +149,15 @@ public class Ship {
 		oup.println("----Life="+myLife);
 		oup.println("----Heading="+myHeading);
 	}
+	
+	public DDimension getDimension()
+	{
+		return new DDimension(myType.getWidth(),myType.getHeight());
+	}
+	
+	public DQuad getLocation()
+	{
+		return SpaceMath.getDQuad(new DPoint(myXPos,myYPos),myType.getWidth(),myType.getHeight(),myHeading);
+	}
+	
 }

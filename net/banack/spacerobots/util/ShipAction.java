@@ -6,11 +6,11 @@ public class ShipAction
 {
 	private int myShipID;
 	private boolean willMove;
-	private int newHeading;
-	private int newScannerHeading;
+	private double newHeading;
+	private double newScannerHeading;
 	private int launchWhat;
 	
-	public ShipAction(int id, boolean move, int heading, int scannerHeading, int launch)
+	public ShipAction(int id, boolean move, double heading, double scannerHeading, int launch)
 	{
 		myShipID = id;
 		willMove = move;
@@ -34,12 +34,12 @@ public class ShipAction
 		return willMove;
 	}
 	
-	public int getHeading()
+	public double getHeading()
 	{
 		return  newHeading;
 	}
 	
-	public int getScannerHeading()
+	public double getScannerHeading()
 	{
 		return newScannerHeading;
 	}
