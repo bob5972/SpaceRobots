@@ -5,20 +5,16 @@ import net.banack.util.MethodNotImplementedException;
 public class Ship {
 	//Internal Representation of a Ship
 	
-	//the maximum heading is HEADING_MAX
-	//so HEADING_WRAP is really the mod value
-	//(but I wasn't creative enough for a better name)
-	static final int HEADING_WRAP = 64;
-	static final int HEADING_MAX = HEADING_WRAP-1;
-	
 	private int myID;
 	private int myXPos;
 	private int myYPos;
 	private int myLife;
 	private int deltaLife;
 	private int myHeading;
+	private int myScannerHeading;
 	private int myTypeID;
 	private Fleet myFleet;
+	private boolean willMove;
 	
 	public Ship(Fleet f, int id, int type,int x, int y, int life)
 	{
@@ -31,8 +27,20 @@ public class Ship {
 		myYPos = y;
 		myLife = life;
 		deltaLife=0;
+		willMove=true;
+		myScannerHeading=0;
 	}
 	
+	public boolean willMove()
+	{
+		return willMove;
+	}
+
+	public void setWillMove(boolean willMove)
+	{
+		this.willMove = willMove;
+	}
+
 	public Fleet getFleet()
 	{
 		return myFleet;
@@ -57,7 +65,7 @@ public class Ship {
 	
 	public boolean isValidHeading(int h)
 	{
-		return (0 <= h && h <= HEADING_MAX);
+		return (0 <= h && h <= Battle.HEADING_MAX);
 	}
 	
 	
@@ -81,8 +89,14 @@ public class Ship {
 	}
 	public int getScannerHeading()
 	{
-		throw new MethodNotImplementedException();
+		return myScannerHeading;
 	}
+	
+	public void setScannerHeading(int h)
+	{
+		myScannerHeading = h;
+	}
+	
 	public int getHeading()
 	{
 		return myHeading;
@@ -97,7 +111,7 @@ public class Ship {
 		return getLife()>0;
 	}
 	
-	public int getType()
+	public int getTypeID()
 	{
 		return myTypeID;
 	}

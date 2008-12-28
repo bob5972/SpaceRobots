@@ -3,6 +3,8 @@ package net.banack.spacerobots;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
+
 import net.banack.util.MethodNotImplementedException;
 import net.banack.spacerobots.util.ActionList;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.ShipType;
 import net.banack.spacerobots.util.ShipTypeDefinitions;
+import net.banack.spacerobots.util.SpaceMath;
 
 public class Battle
 {
@@ -20,7 +23,7 @@ public class Battle
 	private Collection myTeams;
 	
 	
-	//leave some room for stuff (like types)
+	//leave some room for stuff (like types?)
 	static private int myIDCount=100;
 	
 	public static final int TYPE_INVALID   = -1;
@@ -30,10 +33,17 @@ public class Battle
 	public static final int TYPE_MISSILE   = DefaultShipTypeDefinitions.MISSILE_ID;
 	public static final int TYPE_ROCKET	   = DefaultShipTypeDefinitions.ROCKET_ID;
 	
+	//the maximum heading is HEADING_MAX
+	//so HEADING_WRAP is really the mod value
+	//(but I wasn't creative enough for a better name)
+	public static final int HEADING_WRAP = 64;
+	public static final int HEADING_MAX = HEADING_WRAP-1;
+	
 	//this way we can re-use it
 	//saves on (de)allocation
 	private ActionList aggregate;
 	private FleetContactList contacts;
+	private Random myRandom;
 	
 	private int myWidth;
 	private int myHeight;
@@ -53,6 +63,7 @@ public class Battle
 		aggregate = new ActionList();
 		contacts = new FleetContactList();
 		myTeams = new ArrayList();
+		myRandom = new Random();
 	}
 	
 	//returns teamID's
@@ -67,24 +78,34 @@ public class Battle
 		return oup;
 	}
 	
-	public int addFleet(String name, FleetAI ai, int teamID)
+	public int addFleet(String name, FleetAI ai, int teamID, int startingCredits,int creditIncrement)
 	{
 		int oup = getNewID();
-		myFleets.add(new Fleet(name, oup,teamID,ai));
+		Fleet f = new Fleet(name, oup,teamID,ai);
+		f.setCredits(startingCredits);
+		f.setCreditIncrement(creditIncrement);
+		myFleets.add(f);
 		return oup;
-	}	
+	}
+	
 	
 	public void initialize()
 	{
 		//setup stuff...
 		//notify the AI's a battle is starting
 		// etc
-		throw new MethodNotImplementedException();
+		Iterator i = myFleets.iterator();
+		while(i.hasNext())
+		{
+			Fleet f = (Fleet)i.next();
+			int launchType = TYPE_CRUISER;
+			Ship oup = new Ship(f,getNewID(), launchType, myRandom.nextInt(myWidth), myRandom.nextInt(myHeight), getDefaultLife(launchType));
+			myShips.add(oup);
+		}
 	}
 	
 	public boolean isOver()
 	{
-		//check if anyone won
 		throw new MethodNotImplementedException();
 	}
 	
@@ -139,15 +160,41 @@ public class Battle
 			s=(Ship)i.next();
 			s.reset();//tick damage counters and the like
 			a = aggregate.get(s.getShipID());
+			ShipType t = myShipTypes.get(s.getTypeID());
 			
 			//apply a to s (if a exists)
 			if(a != null)
 			{
-				throw new MethodNotImplementedException();
+				
+				if(t.getCanStop())
+				{
+					if(!a.willMove())
+						s.setWillMove(false);
+					else
+						s.setWillMove(true);
+				}
+				
+				s.setHeading(SpaceMath.calculateAdjustedHeading(s.getHeading(),a.getHeading(),t.getMaxTurningRate()));
+				if(t.canMoveScanner())
+				{
+					s.setScannerHeading(a.getScannerHeading());
+				}
 			}
 			
 			//move s
-			throw new MethodNotImplementedException();
+			if(s.willMove())
+			{
+				s.setX(s.getX()+SpaceMath.calculateXOffset(s.getHeading(),t.getMaxSpeed()));
+				s.setY(s.getY()+SpaceMath.calculateYOffset(s.getHeading(),t.getMaxSpeed()));
+				while(s.getX() > myWidth)
+					s.setX(s.getX()-myWidth);
+				while(s.getX() < 0)
+					s.setX(s.getX()+myWidth);
+				while(s.getY() > myWidth)
+					s.setY(s.getY()-myWidth);
+				while(s.getY() < 0)
+					s.setX(s.getY()+myWidth);
+			}
 		}
 		
 		//do spawns
@@ -179,6 +226,8 @@ public class Battle
 		throw new MethodNotImplementedException();
 	}
 	
+	
+
 	//canSpawn checks if s.ship is alive, is of the correct type, and s.ship.fleet has the correct credits, etc
 	public boolean canSpawn(ShipAction a)
 	{
@@ -187,7 +236,7 @@ public class Battle
 		Ship s = myShips.get(sID);
 		if(!s.isAlive())
 			return false;
-		switch(s.getType())
+		switch(s.getTypeID())
 		{
 			case TYPE_MISSILE:
 			case TYPE_ROCKET:

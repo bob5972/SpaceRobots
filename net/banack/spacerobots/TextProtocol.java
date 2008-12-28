@@ -243,7 +243,7 @@ public class TextProtocol implements AIProtocol
 		//write a single ship
 		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife
 		
-		send("SHIP "+s.getID()+" "+s.getType()+" "+s.getXPos()+" "+s.getYPos()+" "+s.getHeading()+" "+s.getScannerHeading()+" "+s.getLife()+" "+s.getDeltaLife());
+		send("SHIP "+s.getID()+" "+s.getTypeID()+" "+s.getXPos()+" "+s.getYPos()+" "+s.getHeading()+" "+s.getScannerHeading()+" "+s.getLife()+" "+s.getDeltaLife());
 	}
 	
 	public void endFleetStatusUpdate()
