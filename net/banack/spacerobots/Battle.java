@@ -295,12 +295,12 @@ public class Battle
 			
 	}
 	
-	public boolean canScan(Ship spotter, Ship enemy)
+	private boolean canScan(Ship spotter, Ship enemy)
 	{
 		throw new MethodNotImplementedException();
 	}
 	
-	public boolean isCollision(Ship o, Ship i)
+	private boolean isCollision(Ship o, Ship i)
 	{
 		throw new MethodNotImplementedException();
 	}
@@ -308,7 +308,7 @@ public class Battle
 	
 
 	//canSpawn checks if s.ship is alive, is of the correct type, and s.ship.fleet has the correct credits, etc
-	public boolean canSpawn(ShipAction a)
+	private boolean canSpawn(ShipAction a)
 	{
 		int sID = a.getShipID();
 		int launchType = a.getLaunch();
@@ -340,7 +340,7 @@ public class Battle
 		return hasCreditsToLaunch(s.getFleet(),launchType);
 	}
 	
-	public boolean hasCreditsToLaunch(Fleet f, int launchType)
+	private boolean hasCreditsToLaunch(Fleet f, int launchType)
 	{
 		int credits = f.getCredits();
 		ShipType t = myShipTypes.get(launchType);
@@ -354,7 +354,7 @@ public class Battle
 		
 	}	
 	
-	public void doSpawn(ShipAction a)
+	private void doSpawn(ShipAction a)
 	{
 		if(!canSpawn(a))
 			throw new MethodNotImplementedException("No error handler");
@@ -388,5 +388,20 @@ public class Battle
 	public double getHeight()
 	{
 		return myHeight;
+	}
+	
+	public Iterator shipIterator()
+	{
+		return myShips.iterator();
+	}
+	
+	public Iterator fleetIterator()
+	{
+		return myFleets.iterator();
+	}
+	
+	public Iterator teamIterator()
+	{
+		return myTeams.iterator();
 	}
 }
