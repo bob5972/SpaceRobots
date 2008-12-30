@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Random;
 
 import net.banack.util.MethodNotImplementedException;
+import net.banack.geometry.DArc;
+import net.banack.geometry.DQuad;
 import net.banack.spacerobots.util.ActionList;
 import java.util.Iterator;
 
@@ -304,13 +306,13 @@ public class Battle
 	}
 	
 	private boolean canScan(Ship spotter, Ship enemy)
-	{
-		throw new MethodNotImplementedException();
+	{		
+		return SpaceMath.isCollision(spotter.getScannerArc(),enemy.getLocation());
 	}
 	
 	private boolean isCollision(Ship o, Ship i)
 	{
-		throw new MethodNotImplementedException();
+		return SpaceMath.isCollision(o.getLocation(), i.getLocation());
 	}
 	
 	

@@ -1,5 +1,6 @@
 package net.banack.spacerobots;
 
+import net.banack.geometry.DArc;
 import net.banack.geometry.DDimension;
 import net.banack.geometry.DQuad;
 import net.banack.geometry.DPoint;
@@ -127,6 +128,11 @@ public class Ship {
 		return myTypeID;
 	}
 	
+	public ShipType getType()
+	{
+		return myType;
+	}
+	
 	public void setX(double x)
 	{
 		myXPos = x;
@@ -166,6 +172,13 @@ public class Ship {
 	public DQuad getLocation()
 	{
 		return SpaceMath.getDQuad(new DPoint(myXPos,myYPos),myType.getWidth(),myType.getHeight(),myHeading);
+	}
+	
+	public DArc getScannerArc()
+	{
+		DArc oup = new DArc(new DPoint(myXPos,myYPos), myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
+		oup.rotate(-myType.getScannerAngleSpan()/2);
+		return oup;
 	}
 	
 }

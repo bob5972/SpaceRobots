@@ -10,11 +10,45 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static int DESTROYER_ID = 4;
 	public final static int CRUISER_ID = 5;
 	
-	public final static ShipType ROCKET = new ShipType("Rocket",ROCKET_ID,5,1,5, 5,false, 1, 10, false, false, false,10);
-	public final static ShipType MISSILE = new ShipType("Missile",MISSILE_ID,10,1,5,5,true,1, 10,false,true,false,10);
-	public final static ShipType FIGHTER = new ShipType("Fighter",FIGHTER_ID, 100, 1, 5, 5,false,1, 10,false,true,true,0);
-	public final static ShipType DESTROYER = new ShipType("Destroyer",DESTROYER_ID,400,5,10,10,true,1, 10,true,true,true,0);
-	public final static ShipType CRUISER = new ShipType("Cruiser",CRUISER_ID,1000,10,20,20,true,1, 2,true,true,true,0);
+	public final static ShipType ROCKET = new ShipType(
+			"Rocket",ROCKET_ID,
+			5,1,5, 5,
+			false, 1, 10,
+			false, false, 0,0,
+			false, false,10
+	);
+	
+	public final static ShipType MISSILE = new ShipType(
+			"Missile",MISSILE_ID,
+			10,1,5,5,
+			true,1, 10,
+			false, false,0,0,
+			true, false,10
+	);
+	
+	public final static ShipType FIGHTER = new ShipType(
+			"Fighter",FIGHTER_ID,
+			100, 1, 5, 5,
+			false,1, 10,
+			true, false,10,1,
+			true,true,0
+	);
+	
+	public final static ShipType DESTROYER = new ShipType(
+			"Destroyer",DESTROYER_ID,
+			400,5,10,10,
+			true,1, 10,
+			true, true,10,1,
+			true,true,0
+	);
+	
+	public final static ShipType CRUISER = new ShipType(
+			"Cruiser",CRUISER_ID,
+			1000,10,20,20,
+			true,1, 2,
+			true, true,10,1,
+			true,true,0
+	);
 	
 	private final static ShipType[] myTypes={ROCKET,MISSILE,FIGHTER,DESTROYER,CRUISER};
 	

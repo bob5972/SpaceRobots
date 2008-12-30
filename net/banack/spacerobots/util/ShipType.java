@@ -14,10 +14,16 @@ public class ShipType
 	private boolean isShip;//ship or projectile?
 	private double maxTurningRate;
 	private boolean canMoveScanner;
+	private boolean hasScanner;
+	private double scannerRadius;
+	private double scannerAngleSpan;
 	private int maxTickCount;
 	
-	public ShipType(String name, int id, int cost, int life, double width, double height, boolean canStop,
-			double maxTurningRate, double maxSpeed, boolean canMoveScanner, boolean hasAI, boolean isShip, int maxTickCount)
+	public ShipType(String name, int id, 
+			int cost, int life, double width, double height, 
+			boolean canStop, double maxTurningRate, double maxSpeed, 
+			boolean hasScanner, boolean canMoveScanner, double scannerRadius, double scannerAngleSpan,
+			boolean hasAI, boolean isShip, int maxTickCount)
 	{
 		this.name = name;
 		typeID = id;
@@ -32,6 +38,9 @@ public class ShipType
 		this.maxTurningRate = maxTurningRate;
 		this.canMoveScanner = canMoveScanner;
 		this.maxTickCount = maxTickCount;
+		this.hasScanner = hasScanner;
+		this.scannerAngleSpan = scannerAngleSpan;
+		this.scannerRadius = scannerRadius;
 	}
 	
 	//maxTickCount of 0 means no expiry
@@ -94,5 +103,20 @@ public class ShipType
 	public boolean canMoveScanner()
 	{
 		return canMoveScanner;
+	}
+
+	public boolean hasScanner()
+	{
+		return hasScanner;
+	}
+
+	public double getScannerAngleSpan()
+	{
+		return scannerAngleSpan;
+	}
+
+	public double getScannerRadius()
+	{
+		return scannerRadius;
 	}
 }
