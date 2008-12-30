@@ -94,7 +94,9 @@ public class Battle
 		{
 			Fleet f = (Fleet)i.next();
 			int launchType = TYPE_CRUISER;
-			Ship oup = new Ship(f,getNewID(), launchType, myRandom.nextDouble()*myWidth, myRandom.nextDouble()*myHeight, getDefaultLife(launchType));
+			double x = Math.rint(myRandom.nextDouble()*myWidth);
+			double y = Math.rint(myRandom.nextDouble()*myHeight);
+			Ship oup = new Ship(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, getDefaultLife(launchType),myTick);
 			myShips.add(oup);
 		}
 	}
@@ -158,6 +160,7 @@ public class Battle
 			aggregate.add(AL);
 		}
 		
+		HashSet toDie = new HashSet();
 		i = myShips.iterator();
 		while(i.hasNext())
 		{
@@ -199,6 +202,11 @@ public class Battle
 				while(s.getY() < 0)
 					s.setX(s.getY()+myWidth);
 			}
+			if(t.getMaxTickCount() > 0)
+			{
+				if(myTick - s.getCreationTick() > t.getMaxTickCount())
+					toDie.add(s);//it's flown too long
+			}
 		}
 		
 		//do spawns
@@ -228,7 +236,7 @@ public class Battle
 
 		contacts.makeEmpty();
 		Iterator outer = myShips.iterator();
-		HashSet toDie = new HashSet();
+		
 		
 		while(outer.hasNext())
 		{
@@ -361,7 +369,7 @@ public class Battle
 		Ship cur = myShips.get(a.getShipID());
 		int launchType = a.getLaunch();
 		Fleet f = cur.getFleet();
-		Ship oup = new Ship(f,getNewID(), launchType, cur.getXPos(), cur.getYPos(), getDefaultLife(launchType));
+		Ship oup = new Ship(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), getDefaultLife(launchType),myTick);
 		myShips.add(oup);
 	}
 	

@@ -14,6 +14,7 @@ public class Ship {
 	private double myXPos;
 	private double myYPos;
 	private int myLife;
+	private int myCreationTick;
 	private int deltaLife;
 	private double myHeading;
 	private double myScannerHeading;
@@ -22,7 +23,7 @@ public class Ship {
 	private Fleet myFleet;
 	private boolean willMove;
 	
-	public Ship(Fleet f, int id, int type,double x, double y, int life)
+	public Ship(Fleet f, int id, int type,ShipType t, double x, double y, int life,int tick)
 	{
 		myFleet=f;
 		myID=id;
@@ -33,6 +34,13 @@ public class Ship {
 		deltaLife=0;
 		willMove=true;
 		myScannerHeading=0;
+		myType = t;
+		myCreationTick = tick;
+	}
+	
+	public int getCreationTick()
+	{
+		return myCreationTick;
 	}
 	
 	public boolean willMove()
