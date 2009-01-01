@@ -1,40 +1,73 @@
-package net.banack.spacerobots;
+package net.banack.spacerobots.util;
 
 import net.banack.geometry.DArc;
 import net.banack.geometry.DDimension;
-import net.banack.geometry.DQuad;
 import net.banack.geometry.DPoint;
-import net.banack.spacerobots.util.ShipType;
-import net.banack.spacerobots.util.SpaceMath;
-import net.banack.util.MethodNotImplementedException;
+import net.banack.geometry.DQuad;
+import net.banack.spacerobots.ServerFleet;
 
-public class Ship {
-	//Internal Representation of a Ship
-	
+public class Ship
+{	
 	private int myID;
 	private DPoint myPosition;
 	private int myLife;
 	private int myCreationTick;
-	private int deltaLife;
+	private int myDeltaLife;
 	private double myHeading;
 	private double myScannerHeading;
 	private int myTypeID;
 	private ShipType myType;
-	private Fleet myFleet;
 	private boolean willMove;
 	
-	public Ship(Fleet f, int id, int type,ShipType t, double x, double y, int life,int tick)
+	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick,int deltalife)
 	{
-		myFleet=f;
 		myID=id;
 		myTypeID = type;
 		myPosition = new DPoint(x,y);
 		myLife = life;
-		deltaLife=0;
 		willMove=true;
 		myScannerHeading=0;
 		myType = t;
 		myCreationTick = tick;
+		myDeltaLife = deltalife;
+	}
+	
+	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int life,int tick,int deltalife)
+	{
+		myID=id;
+		myTypeID = type;
+		myPosition = new DPoint(x,y);
+		myLife = life;
+		willMove=true;
+		myScannerHeading=scannerH;
+		myHeading = heading;
+		myType = t;
+		myCreationTick = tick;
+		myDeltaLife = deltalife;
+	}
+	
+	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick)
+	{
+		myID=id;
+		myTypeID = type;
+		myPosition = new DPoint(x,y);
+		myLife = life;
+		willMove=true;
+		myScannerHeading=0;
+		myType = t;
+		myCreationTick = tick;
+		myDeltaLife=0;
+	}
+	
+	public void decrementLife(int d)
+	{
+		myDeltaLife += d;
+		myLife -= d;
+	}
+	
+	public void reset()
+	{
+		myDeltaLife=0;
 	}
 	
 	public int getCreationTick()
@@ -52,24 +85,14 @@ public class Ship {
 		this.willMove = willMove;
 	}
 
-	public Fleet getFleet()
-	{
-		return myFleet;
-	}
-	
 	public int getFleetID()
 	{
-		return myFleet.getFleetID();
-	}
-	
-	public void reset()
-	{
-		deltaLife=0;
+		return getFleetID();
 	}
 	
 	public int getDeltaLife()
 	{
-		return deltaLife;
+		return myDeltaLife;
 	}
 	
 	
@@ -109,13 +132,7 @@ public class Ship {
 	{
 		return myLife;
 	}
-	
-	public void decrementLife(int d)
-	{
-		deltaLife += d;
-		myLife -= d;
-	}
-	
+		
 	public boolean isAlive()
 	{
 		return getLife()>0;
@@ -189,5 +206,4 @@ public class Ship {
 		oup.rotate(-myType.getScannerAngleSpan()/2);
 		return oup;
 	}
-	
 }

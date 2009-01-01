@@ -3,8 +3,8 @@ package net.banack.spacerobots;
 import net.banack.util.MethodNotImplementedException;
 import java.util.HashMap;
 import java.util.HashSet;
-import net.banack.spacerobots.Ship;
-import net.banack.spacerobots.Fleet;
+import net.banack.spacerobots.ServerShip;
+import net.banack.spacerobots.ServerFleet;
 import net.banack.util.IntMap;
 import java.util.Iterator;
 import net.banack.spacerobots.util.SensorContact;
@@ -34,7 +34,7 @@ public class FleetContactList
 		myFleetSize.makeEmpty();
 	}
 	
-	public void addContact(Ship enemy, Ship spotter)
+	public void addContact(ServerShip enemy, ServerShip spotter)
 	{
 		HashMap eMap;
 		
@@ -75,7 +75,7 @@ public class FleetContactList
 	//returns a new contact list that is linked to this one
 	//ie, any additions or deletions will be reflected in the master list
 	//  (but don't add anything from a different fleet...)
-	public ContactList getFleetList(Fleet f)
+	public ContactList getFleetList(ServerFleet f)
 	{
 		int fid = f.getFleetID();
 		Integer ifid = new Integer(fid);

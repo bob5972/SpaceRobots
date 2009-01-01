@@ -35,7 +35,7 @@ public class FleetAI
 		myVersion = s[2];
 	}
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f) throws IOException
+	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f) throws IOException
 	{		
 		myCom.initBattle(fleetID,teamID,startingCredits,s,t,f);
 	}
@@ -45,7 +45,7 @@ public class FleetAI
 		myCom.beginFleetStatusUpdate(tick,credits,c,numShips);
 	}
 	
-	public void writeShip(Ship s) throws IOException
+	public void writeShip(ServerShip s) throws IOException
 	{
 		myCom.writeShip(s);
 	}
@@ -60,7 +60,7 @@ public class FleetAI
 		return myCom.readFleetActions();
 	}
 	
-	public void endBattle(Fleet me, Team[]t, Fleet[] f)throws IOException
+	public void endBattle(ServerFleet me, ServerTeam[]t, ServerFleet[] f)throws IOException
 	{
 		myCom.endBattle(me, t, f);
 	}

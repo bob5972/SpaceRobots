@@ -1,6 +1,5 @@
-package net.banack.spacerobots.ai;
+package net.banack.spacerobots.util;
 
-import net.banack.spacerobots.FleetAI;
 
 public class Fleet
 {
@@ -10,13 +9,14 @@ public class Fleet
 	private int winOrLose;
 	private String myFleetName;
 	private String myAIName;
+	private String myAIAuthor;
 	private String myAIVersion;
 	
 	public static final int STATUS_WIN = 1;
 	public static final int STATUS_LOSE = -1;
 	public static final int STATUS_IN_PROGRESS=0; 
 	
-	public Fleet(int fleetID,int teamID,String fleetName, String aiName, String aiVersion)
+	public Fleet(int fleetID,int teamID,String fleetName, String aiName, String aiAuthor, String aiVersion)
 	{
 		myFleetID = fleetID;
 		myTeamID = teamID;
@@ -24,6 +24,19 @@ public class Fleet
 		isAlive=true;
 		myFleetName = fleetName;
 		myAIName = aiName;
+		myAIVersion = aiVersion;
+		myAIAuthor = aiAuthor;
+	}
+	
+	public Fleet(int fleetID,int teamID,String fleetName, String aiName, String aiAuthor, String aiVersion,boolean alive, boolean won)
+	{
+		myFleetID = fleetID;
+		myTeamID = teamID;
+		winOrLose=(won?STATUS_WIN:STATUS_LOSE);
+		isAlive=alive;
+		myFleetName = fleetName;
+		myAIName = aiName;
+		myAIAuthor = aiAuthor;
 		myAIVersion = aiVersion;
 	}
 	
@@ -80,5 +93,11 @@ public class Fleet
 	public String getAIVersion()
 	{
 		return myAIVersion;
-	}	
+	}
+	
+	public String getAIAuthor()
+	{
+		return myAIAuthor;
+	}
 }
+

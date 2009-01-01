@@ -6,14 +6,19 @@ import java.io.OutputStream;
 
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
+import net.banack.spacerobots.util.Fleet;
+import net.banack.spacerobots.util.Ship;
+import net.banack.spacerobots.util.Team;
 
 public interface FleetAI
 {	
-	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, int[] teams, Fleet[] f);
+	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f);
 	
 	public ActionList runTick(int tick, int credits, ContactList c, Ship[] s);
 	
-	public void endBattle();
+	public void battleStatusUpdate(int teamID, int fleetID, boolean doa, boolean winOrLose);
+	
+	public void endBattle(Fleet me, Team[] t, Fleet[] f);
 
 	public String getAuthor();
 

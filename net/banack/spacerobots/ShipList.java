@@ -11,19 +11,24 @@ public class ShipList
 		myShips = new HashMap();
 	}
 	
-	public boolean add(Ship s)
+	public boolean add(ServerShip s)
 	{
 		return (myShips.put(new Integer(s.getShipID()),s)==null);
 	}
 	
-	public void remove(Ship s)
+	public int size()
+	{
+		return myShips.size();
+	}
+	
+	public void remove(ServerShip s)
 	{
 		myShips.remove(new Integer(s.getID()));
 	}
 	
-	public Ship get(int shipID)
+	public ServerShip get(int shipID)
 	{
-		return (Ship)myShips.get(new Integer(shipID));
+		return (ServerShip)myShips.get(new Integer(shipID));
 	}
 	
 	public java.util.Iterator iterator()

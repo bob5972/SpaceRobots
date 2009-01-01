@@ -65,6 +65,12 @@ public class ActionList
 	public void makeEmpty()
 	{
 		myActions.clear();
+		mySpawns.clear();
+	}
+	
+	public int size()
+	{
+		return myActions.size();
 	}
 	
 	//gets an iterator over the actions
@@ -101,6 +107,12 @@ public class ActionList
 		{
 			i.remove();
 		}
+	}
+
+	public void remove(ShipAction a)
+	{
+		myActions.remove(a);
+		mySpawns.remove(a);		
 	}
 	
 	

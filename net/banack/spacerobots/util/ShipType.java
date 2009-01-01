@@ -2,6 +2,8 @@ package net.banack.spacerobots.util;
 
 public class ShipType
 {
+	public final static int TYPE_INVALID = ShipTypeDefinitions.TYPE_INVALID;
+	
 	private String name;
 	private int typeID;
 	private int cost;

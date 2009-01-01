@@ -16,12 +16,12 @@ public class FleetList
 		return m.values().iterator();
 	}
 	
-	public Fleet get(int fleetID)
+	public ServerFleet get(int fleetID)
 	{
-		return (Fleet) m.get(new Integer(fleetID));
+		return (ServerFleet) m.get(new Integer(fleetID));
 	}
 	
-	public void add(Fleet f)
+	public void add(ServerFleet f)
 	{
 		m.put(new Integer(f.getFleetID()),f);
 	}

@@ -1,6 +1,6 @@
 package net.banack.spacerobots;
 
-public class Debug extends net.banack.debug.Debug
+class Debug extends net.banack.debug.Debug
 {
 	private static boolean aiWarning=false;
 	

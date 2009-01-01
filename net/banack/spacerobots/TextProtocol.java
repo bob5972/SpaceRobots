@@ -14,26 +14,27 @@ import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.SensorContact;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceMath;
+import net.banack.spacerobots.util.SpaceText;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.spacerobots.util.ContactList;
 
 public class TextProtocol implements AIProtocol
 {
-	private Parser sIn;
+	private SpaceText sIn;
 	private PrintWriter sOut;
 	
 	private int curLevel;
 	
 	public TextProtocol(Reader in, PrintWriter out)
 	{
-		sIn = new Parser(in);
+		sIn = new SpaceText(in);
 		sOut = out;
 		curLevel=0;
 	}
 	
 	private void send(String message)
 	{
-		send("message",curLevel);
+		send(message,curLevel);
 	}
 	
 	//send the message at the given indentation level
@@ -122,7 +123,7 @@ public class TextProtocol implements AIProtocol
 		return oup;
 	}
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f) throws IOException
+	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f) throws IOException
 	{		
 		curLevel=0;
 		send("BEGIN_BATTLE");
@@ -223,6 +224,8 @@ public class TextProtocol implements AIProtocol
 			DPoint pos = ghost.getPosition();
 			StringBuffer cmd = new StringBuffer();
 			cmd.append("CONTACT ");
+			cmd.append(ghost.getID());
+			cmd.append(" ");
 			cmd.append(ghost.getFleetID());
 			cmd.append(" ");
 			cmd.append(ghost.getTypeID());
@@ -232,9 +235,11 @@ public class TextProtocol implements AIProtocol
 			cmd.append(pos.getY());
 			cmd.append(" ");
 			cmd.append(ghost.getHeading());
+			cmd.append(" ");
+			HashSet spot = c.getSpotters(eID);
+			cmd.append(spot.size());
 			cmd.append(" (");
 			
-			HashSet spot = c.getSpotters(eID);
 			Iterator spoti = spot.iterator();
 			while(spoti.hasNext())
 			{
@@ -256,17 +261,17 @@ public class TextProtocol implements AIProtocol
 		//>	TICK 803
 		//>	CREDITS 100
 		//>	BEGIN_CONTACT_LIST 13
-		//>		CONTACT fleetID type xPos yPos heading (refiD refiD )
+		//>		CONTACT eID fleetID typeID x y heading numSpotters (sId sID sID)
 		//>	END_CONTACT_LIST
 		//> BEGIN_SHIPS 25
 	}
 	
-	public void writeShip(Ship s) throws IOException
+	public void writeShip(ServerShip s) throws IOException
 	{
 		//write a single ship
 		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife
 		
-		send("SHIP "+s.getID()+" "+s.getTypeID()+" "+((int)s.getXPos())+" "+((int)s.getYPos())+" "+SpaceMath.radToDeg(s.getHeading())+" "+SpaceMath.radToDeg(s.getScannerHeading())+" "+s.getLife()+" "+s.getDeltaLife());
+		send("SHIP "+SpaceText.toString(s));
 	}
 	
 	public void endFleetStatusUpdate()
@@ -279,16 +284,16 @@ public class TextProtocol implements AIProtocol
 		//>END_FLEET_STATUS
 	}
 	
-	private void writeTeam(Team t)
+	private void writeTeam(ServerTeam t)
 	{
 		//>TEAM teamID "Name"
 		send("TEAM "+t.getTeamID()+" \""+t.getName()+"\"");
 	}
 	
-	private void writeFleet(Fleet f) throws IOException
+	private void writeFleet(ServerFleet f) throws IOException
 	{
 		//>FLEET fleetID teamID "Name" "AIName" "AIVersion" isAlive winOrLose
-		send("FLEET "+Parser.toString(f));
+		send("FLEET "+SpaceText.toString(f));
 	}
 	
 	public ActionList readFleetActions() throws IOException
@@ -297,10 +302,10 @@ public class TextProtocol implements AIProtocol
 		int tick,numA;
 		
 		read("BEGIN_FLEET_ACTIONS",1);
-		tick = Parser.parseInt(read("TICK",2)[1]);
+		tick = SpaceText.parseInt(read("TICK",2)[1]);
 		oup.setTick(tick);
 		
-		numA = Parser.parseInt(read("BEGIN_SHIP_ACTIONS",2)[1]);
+		numA = SpaceText.parseInt(read("BEGIN_SHIP_ACTIONS",2)[1]);
 		
 		for(int x=0;x<numA;x++)
 		{
@@ -320,11 +325,11 @@ public class TextProtocol implements AIProtocol
 		//<END_FLEET_ACTIONS
 	}
 	
-	public void endBattle(Fleet me, Team[]t, Fleet[] f)  throws IOException
+	public void endBattle(ServerFleet me, ServerTeam[]t, ServerFleet[] f)  throws IOException
 	{
 		send("BEGIN_BATTLE_OUTCOME");
 		curLevel++;
-		send("YOU "+Parser.toString(me));
+		send("YOU "+SpaceText.toString(me));
 		
 		send("BEGIN_TEAMS "+t.length);
 		curLevel++;
@@ -358,34 +363,5 @@ public class TextProtocol implements AIProtocol
 		
 		//<BATTLE_READY_END
 		//now we know the ai is finished fighting (in it's head?)
-	}
-	
-	public static class Parser extends net.banack.io.Parser
-	{
-		public Parser(Reader in)
-		{
-			super(in);
-		}
-		
-		public ShipAction readAction() throws IOException
-		{
-			String cur = readLine();
-			return parseAction(cur);
-		}
-		
-		public static String toString(Fleet f)
-		{
-			return f.getFleetID()+" "+f.getTeamID()+" "+" \""+f.getName()+"\" \""+f.getAIName()+"\" \""+f.getAIVersion()+"\" "+f.isAlive()+" "+f.getWinOrLose();
-		}
-		
-		public static ShipAction parseAction(String s)
-		{
-
-			String[] inp = parseWords(s);
-			if(!inp[0].equals("ACTION"))
-				Debug.crash("Bad AI Response: Expected ACTION, received "+inp[0]);
-			//<		SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
-			throw new MethodNotImplementedException();
-		}			
 	}
 }

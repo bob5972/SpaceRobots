@@ -1,5 +1,11 @@
 package net.banack.spacerobots;
 
+
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
+import net.banack.spacerobots.ai.ClientProtocolFactory;
+import net.banack.spacerobots.ai.DummyFleet;
 import net.banack.util.MethodNotImplementedException;
 
 
@@ -23,14 +29,39 @@ public class SpaceRobots
 		Battle b = new Battle(DEFAULT_WIDTH,DEFAULT_HEIGHT);
 
 		// load AI's
+		FleetAI[] ai = new FleetAI[2];
+		
+		try{
+			PipedInputStream sIn = new PipedInputStream();
+			PipedOutputStream cOut = new PipedOutputStream(sIn);
+			PipedInputStream cIn = new PipedInputStream();
+			PipedOutputStream sOut = new PipedOutputStream(cIn);
+			
+			Thread background = new AIThread(new DummyFleet(),cIn,cOut);
+			background.start();
+			AIProtocol aip = ProtocolFactory.doHandshake(sIn,sOut);
+			ai[0] = new FleetAI(aip);
+			
+			sIn = new PipedInputStream();
+			cOut = new PipedOutputStream(sIn);
+			cIn = new PipedInputStream();
+			sOut = new PipedOutputStream(cIn);
+			
+			background = new AIThread(new DummyFleet(),cIn,cOut);
+			background.start();
+			ai[1] = new FleetAI(sIn,sOut);
+		}
+		catch(java.io.IOException e)
+		{
+			Debug.error("Error initializing AI!");
+			Debug.crash(e);
+		}
+		   
 		
 		//setup teams
 		int[] tID = b.createTeams(2);
 		
-		//setup fleets
-		FleetAI[] ai = new FleetAI[2];
-		ai[0] = ai[1] = null;
-		
+		//setup fleets		
 		b.addFleet("Fleet 1", ai[0], tID[0],STARTING_CREDITS,CREDIT_INCREMENT);
 		b.addFleet("Fleet 2", ai[1], tID[1],STARTING_CREDITS,CREDIT_INCREMENT);
 		

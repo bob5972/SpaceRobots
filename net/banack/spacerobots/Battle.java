@@ -71,7 +71,7 @@ public class Battle
 		for(int x=0;x<num;x++)
 		{
 			oup[x] = getNewID();
-			myTeams.add(new Team(oup[x],"Team "+(x+1)));
+			myTeams.add(new ServerTeam(oup[x],"Team "+(x+1)));
 		}
 		return oup;
 	}
@@ -79,12 +79,14 @@ public class Battle
 	public int addFleet(String name, FleetAI ai, int teamID, int startingCredits,int creditIncrement)
 	{
 		int oup = getNewID();
-		Fleet f = new Fleet(name, oup,teamID,ai);
+		ServerFleet f = new ServerFleet(name, oup,teamID,ai);
 		f.setCredits(startingCredits);
 		f.setCreditIncrement(creditIncrement);
 		myFleets.add(f);
 		return oup;
 	}
+	
+	
 	
 	
 	public void initialize()
@@ -95,11 +97,11 @@ public class Battle
 		Iterator i = myFleets.iterator();
 		while(i.hasNext())
 		{
-			Fleet f = (Fleet)i.next();
+			ServerFleet f = (ServerFleet)i.next();
 			int launchType = TYPE_CRUISER;
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
-			Ship oup = new Ship(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, getDefaultLife(launchType),myTick);
+			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, getDefaultLife(launchType),myTick);
 			myShips.add(oup);
 		}
 	}
@@ -110,7 +112,7 @@ public class Battle
 		Iterator i = myTeams.iterator();
 		while(i.hasNext())
 		{
-			Team t = (Team)i.next();
+			ServerTeam t = (ServerTeam)i.next();
 			if(t.isAlive())
 				alive++;
 		}
@@ -120,8 +122,8 @@ public class Battle
 	
 	public void runTick()throws IOException
 	{
-		Fleet f;
-		Ship s;
+		ServerFleet f;
+		ServerShip s;
 		ShipAction a;
 		Iterator i;
 		FleetAI ai;
@@ -131,7 +133,7 @@ public class Battle
 		i=myFleets.iterator();
 		while(i.hasNext())
 		{
-			f=(Fleet)i.next();
+			f=(ServerFleet)i.next();
 			ai = f.getAI();
 			
 			//add credits to fleets
@@ -146,7 +148,7 @@ public class Battle
 			
 		while(si.hasNext())
 		{
-			s=(Ship)si.next();
+			s=(ServerShip)si.next();
 			ai = s.getFleet().getAI(); 
 			ai.writeShip(s);
 		}
@@ -154,12 +156,13 @@ public class Battle
 		i=myFleets.iterator();
 		while(i.hasNext())
 		{
-			f=(Fleet)i.next();
+			f=(ServerFleet)i.next();
 			ai = f.getAI();
 			
 			ai.endFleetStatusUpdate();
 			
 			ActionList AL = ai.readFleetActions();
+			validateShipIDs(AL,f);
 			aggregate.add(AL);
 		}
 		
@@ -167,7 +170,7 @@ public class Battle
 		i = myShips.iterator();
 		while(i.hasNext())
 		{
-			s=(Ship)i.next();
+			s=(ServerShip)i.next();
 			s.reset();//tick damage counters and the like
 			a = aggregate.get(s.getShipID());
 			ShipType t = myShipTypes.get(s.getTypeID());
@@ -239,7 +242,7 @@ public class Battle
 		
 		while(outer.hasNext())
 		{
-			Ship sho = (Ship)outer.next();
+			ServerShip sho = (ServerShip)outer.next();
 			if(toDie.contains(sho))
 				continue;
 			
@@ -248,7 +251,7 @@ public class Battle
 			Iterator inner = myShips.iterator();
 			while(inner.hasNext())
 			{
-				Ship shi = (Ship)inner.next();
+				ServerShip shi = (ServerShip)inner.next();
 				if(toDie.contains(shi))
 					continue;
 				
@@ -288,7 +291,7 @@ public class Battle
 		i = toDie.iterator();
 		while(i.hasNext())
 		{
-			s = (Ship)i.next();
+			s = (ServerShip)i.next();
 			
 			myShips.remove(s);
 			f = s.getFleet();
@@ -296,19 +299,34 @@ public class Battle
 			if(f.getNumShips() <= 0)
 			{
 				f.setAlive(false);
-				Team t = myTeams.get(f.getTeamID());
+				ServerTeam t = myTeams.get(f.getTeamID());
 				t.decrementLiveFleets(1);
 			}
 		}				
 			
 	}
 	
-	private boolean canScan(Ship spotter, Ship enemy)
+	private void validateShipIDs(ActionList al, ServerFleet f)
+	{
+		Iterator i = al.iterator();
+		while(i.hasNext())
+		{
+			ShipAction a = (ShipAction)i.next();
+			if(myShips.get(a.getShipID()).getFleet() != f)
+			{
+				al.remove(a);
+				Debug.aiwarn("AI returned an action for an invalid ship id.");
+			}
+		}
+				
+	}
+	
+	private boolean canScan(ServerShip spotter, ServerShip enemy)
 	{		
 		return SpaceMath.isCollision(spotter.getScannerArc(),enemy.getLocation());
 	}
 	
-	private boolean isCollision(Ship o, Ship i)
+	private boolean isCollision(ServerShip o, ServerShip i)
 	{
 		return SpaceMath.isCollision(o.getLocation(), i.getLocation());
 	}
@@ -320,7 +338,7 @@ public class Battle
 	{
 		int sID = a.getShipID();
 		int launchType = a.getLaunch();
-		Ship s = myShips.get(sID);
+		ServerShip s = myShips.get(sID);
 		if(!s.isAlive())
 			return false;
 		switch(s.getTypeID())
@@ -349,7 +367,7 @@ public class Battle
 		return hasCreditsToLaunch(s.getFleet(),launchType);
 	}
 	
-	private boolean hasCreditsToLaunch(Fleet f, int launchType)
+	private boolean hasCreditsToLaunch(ServerFleet f, int launchType)
 	{
 		int credits = f.getCredits();
 		ShipType t = myShipTypes.get(launchType);
@@ -368,10 +386,10 @@ public class Battle
 	{
 		if(!canSpawn(a))
 			Debug.crash("Attempted an invalid spawn!");
-		Ship cur = myShips.get(a.getShipID());
+		ServerShip cur = myShips.get(a.getShipID());
 		int launchType = a.getLaunch();
-		Fleet f = cur.getFleet();
-		Ship oup = new Ship(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), getDefaultLife(launchType),myTick);
+		ServerFleet f = cur.getFleet();
+		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), getDefaultLife(launchType),myTick);
 		myShips.add(oup);
 	}
 	
@@ -413,5 +431,10 @@ public class Battle
 	public Iterator teamIterator()
 	{
 		return myTeams.iterator();
+	}
+	
+	public int getNumShips()
+	{
+		return myShips.size();
 	}
 }

@@ -11,7 +11,7 @@ public class ConsoleDisplay implements Display
 	
 	public void updateDisplay(Battle b)
 	{
-		throw new MethodNotImplementedException();		
+		System.out.println("numShips = "+b.getNumShips());		
 	}
 	
 }

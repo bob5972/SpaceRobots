@@ -16,12 +16,12 @@ public class TeamList
 		return m.values().iterator();
 	}
 	
-	public Team get(int teamID)
+	public ServerTeam get(int teamID)
 	{
-		return (Team) m.get(new Integer(teamID));
+		return (ServerTeam) m.get(new Integer(teamID));
 	}
 	
-	public void add(Team t)
+	public void add(ServerTeam t)
 	{
 		m.put(new Integer(t.getTeamID()),t);
 	}

@@ -52,7 +52,7 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	
 	private final static ShipType[] myTypes={ROCKET,MISSILE,FIGHTER,DESTROYER,CRUISER};
 	
-	public ShipType get(int typeID)
+	public static ShipType getShipType(int typeID)
 	{
 		switch(typeID)
 		{
@@ -68,6 +68,13 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 				return CRUISER;
 		}
 		return null;
+	}
+	
+
+	
+	public ShipType get(int typeID)
+	{
+		return getShipType(typeID);
 	}
 	
 	
