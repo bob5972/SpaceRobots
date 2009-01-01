@@ -64,7 +64,7 @@ public class TextProtocol implements AIProtocol
 	{
 		String[] cur = sIn.readWords();
 		if(!cur[0].equals(cmd))
-			throw new MethodNotImplementedException("No error handler");
+			Debug.crash("Bad AI Response: expected "+cmd+", received "+cur[0]);
 		return cur;
 	}
 	
@@ -73,7 +73,7 @@ public class TextProtocol implements AIProtocol
 	{
 		String[] cur = read(cmd);
 		if(cur.length-1 != args)
-			throw new MethodNotImplementedException("No error handler");
+			Debug.error("Unable to retrieve requested number of tokens: Got "+(cur.length-1)+", requested "+args);
 		return cur;
 	}
 	
@@ -86,46 +86,40 @@ public class TextProtocol implements AIProtocol
 		
 		send("REQUEST_INFO");
 		
-		try{
-			read("BEGIN_INFO",1);
-		
-			temp = readWord();
-			while(!temp.equals("END_INFO"))
-			{
-				if(temp.equals("NAME"))
-				{
-					oup[0] = readLine();
-				}
-				else if(temp.equals("AUTHOR"))
-				{
-					oup[1] = readLine();
-				}
-				else if(temp.equals("VERSION"))
-				{
-					oup[2] = readLine();
-				}
-				else
-					throw new MethodNotImplementedException("No error handler");
-				
-				temp = readWord();
-			}
-			
-			//clean up the hanging endl
-			readLine();
-				
-			//>REQUEST_INFO
-			//<BEGIN_INFO
-			//<NAME Der Uber Fleet
-			//<AUTHOR Michael Banack
-			//<VERSION 1.0
-			//<END_INFO
-			
-			return oup;
-		}
-		catch(IOException e)
+		read("BEGIN_INFO",1);
+	
+		temp = readWord();
+		while(!temp.equals("END_INFO"))
 		{
-			throw new MethodNotImplementedException("No error handler",e);
+			if(temp.equals("NAME"))
+			{
+				oup[0] = readLine();
+			}
+			else if(temp.equals("AUTHOR"))
+			{
+				oup[1] = readLine();
+			}
+			else if(temp.equals("VERSION"))
+			{
+				oup[2] = readLine();
+			}
+			else
+				Debug.aiwarn("Unknown AI Response in BEGIN_INFO: "+temp);
+			
+			temp = readWord();
 		}
+		
+		//clean up the hanging endl
+		readLine();
+			
+		//>REQUEST_INFO
+		//<BEGIN_INFO
+		//<NAME Der Uber Fleet
+		//<AUTHOR Michael Banack
+		//<VERSION 1.0
+		//<END_INFO
+		
+		return oup;
 	}
 	
 	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f) throws IOException
@@ -389,7 +383,7 @@ public class TextProtocol implements AIProtocol
 
 			String[] inp = parseWords(s);
 			if(!inp[0].equals("ACTION"))
-				throw new MethodNotImplementedException("No error handler");
+				Debug.crash("Bad AI Response: Expected ACTION, received "+inp[0]);
 			//<		SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
 			throw new MethodNotImplementedException();
 		}			

@@ -22,10 +22,8 @@ public class SpaceMath
 			return desiredHeading;
 		else if (curHeading > desiredHeading)
 			return curHeading - maxTurningRate;
-		else if (curHeading < desiredHeading)
-			return curHeading+maxTurningRate;
-		
-		throw new MethodNotImplementedException("No error handler");		
+		else //if (curHeading < desiredHeading)
+			return curHeading+maxTurningRate;		
 	}
 	
 	public static double wrapHeading(double h)

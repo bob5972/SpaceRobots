@@ -26,7 +26,7 @@ public class ShipAction
 	
 	public boolean isSpawn()
 	{
-		throw new MethodNotImplementedException();
+		return launchWhat != ShipTypeDefinitions.TYPE_INVALID;
 	}
 	
 	public boolean willMove()
@@ -51,6 +51,13 @@ public class ShipAction
 	
 	public int hashCode()
 	{
-		throw new MethodNotImplementedException();
+		return myShipID;
+	}
+	
+	public boolean equals(Object rhs)
+	{
+		if(!(rhs instanceof ShipAction))
+			return false;
+		return myShipID == ((ShipAction)rhs).myShipID;
 	}
 }

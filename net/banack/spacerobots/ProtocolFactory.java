@@ -34,7 +34,7 @@ public class ProtocolFactory
 			//<CLIENT_HELLO from AI_NAME
 			if(!Pattern.matches("CLIENT_HELLO\\s+.*",temp))
 			{
-				throw new MethodNotImplementedException("No error handler");
+				Debug.crash("Invalid AI Response: Expected CLIENT_HELLO");
 			}
 			
 			temp = sIn.readLine();
@@ -44,7 +44,7 @@ public class ProtocolFactory
 			m = p.matcher(temp);
 			if(!m.matches())
 			{
-				throw new MethodNotImplementedException("No error handler");
+				Debug.crash("Invalid AI Response: Expected USING_PROTOCOL");
 			}
 			
 			temp = m.group(1);
@@ -60,7 +60,7 @@ public class ProtocolFactory
 			m = p.matcher(temp);
 			if(!m.matches())
 			{
-				throw new MethodNotImplementedException("No error handler");
+				Debug.crash("Invalid AI Response: Expected HAVE_PROTOCOLS");
 			}
 			temp = m.group(1);
 			p = Pattern.compile("\\s*(\\w+)\\s*(.*)");
@@ -79,11 +79,13 @@ public class ProtocolFactory
 					return ai;
 			}
 			
-			throw new MethodNotImplementedException("No error handler");
+			Debug.crash("Unable to handshake with AI");
+			return null;//to keep compiler happy
 		}
 		catch(IOException e)
 		{
-			throw new MethodNotImplementedException("No error handler", e);
+			Debug.crash(new Exception("Unable to handshake with AI",e));
+			return null;//to keep compiler happy
 		}
 	}
 		

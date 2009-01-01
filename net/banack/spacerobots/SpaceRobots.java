@@ -12,6 +12,10 @@ public class SpaceRobots
 	
 	public static void main(String[] args)
 	{
+		Debug.enableDebug();
+		Debug.STD_ERR_MESSAGES=true;
+		Debug.setShowAIWarnings(true);
+		
 		//SETUP
 		Display d = new ConsoleDisplay();
 		
@@ -43,7 +47,8 @@ public class SpaceRobots
 			}
 			catch(java.io.IOException e)
 			{
-				throw new MethodNotImplementedException("No error handler");
+				Debug.error("Error running tick!");
+				Debug.crash(e);
 			}
 			d.updateDisplay(b);
 		}
@@ -52,10 +57,4 @@ public class SpaceRobots
 		
 		// cleanup?
 	}
-	
-	public static boolean showBadAIWarnings()
-	{
-		return true;
-	}
-
 }

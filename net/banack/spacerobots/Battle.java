@@ -228,11 +228,7 @@ public class Battle
 			else
 			{
 				//error message
-				if(SpaceRobots.showBadAIWarnings())
-				{
-					System.err.println("Illegal Spawn attempted by: ");
-					throw new MethodNotImplementedException("No error handler");
-				}
+				Debug.aiwarn("AI attempted an illegal spawn: "+myShips.get(a.getShipID()).getFleet().getAIName());
 			}
 		}
 
@@ -346,7 +342,8 @@ public class Battle
 					return false;
 				break;
 			default:
-				throw new MethodNotImplementedException("No error handler");
+				Debug.warn("Invalid shipType: "+s.getTypeID());
+				return false;
 		}
 		
 		return hasCreditsToLaunch(s.getFleet(),launchType);
@@ -359,7 +356,8 @@ public class Battle
 		if(t == null)
 		{
 			//Invalid type
-			throw new MethodNotImplementedException("No error handler");
+			Debug.warn("Invalid shipType: "+launchType);
+			return false;
 		}
 		
 		return credits >= t.getCost();
@@ -369,7 +367,7 @@ public class Battle
 	private void doSpawn(ShipAction a)
 	{
 		if(!canSpawn(a))
-			throw new MethodNotImplementedException("No error handler");
+			Debug.crash("Attempted an invalid spawn!");
 		Ship cur = myShips.get(a.getShipID());
 		int launchType = a.getLaunch();
 		Fleet f = cur.getFleet();
@@ -380,7 +378,7 @@ public class Battle
 	static private int getNewID()
 	{
 		if(myIDCount == Integer.MAX_VALUE)
-			throw new MethodNotImplementedException("No error handler");
+			Debug.crash("Ran out of ID values!");
 		return myIDCount++;
 	}
 	
@@ -388,7 +386,7 @@ public class Battle
 	{
 		ShipType t = myShipTypes.get(type);
 		if(t == null)
-			throw new MethodNotImplementedException("No error handler");
+			Debug.crash("Invalid ship type");
 		return t.getMaxLife();
 	}
 	
