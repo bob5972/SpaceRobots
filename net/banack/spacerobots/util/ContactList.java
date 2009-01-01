@@ -3,29 +3,23 @@ package net.banack.spacerobots.util;
 import net.banack.util.MethodNotImplementedException;
 import java.util.HashMap;
 import java.util.HashSet;
-import net.banack.spacerobots.Ship;
-import net.banack.spacerobots.Fleet;
 import net.banack.util.IntMap;
 import java.util.Iterator;
 
 public class ContactList
 {
-	//HashMaps of eID to HashSets of spotterID's
+	//HashMap of enemyID's to SensorContacts
 	private HashMap myContacts;
+	//HashMap of enemyID's to HashSets of spotterID's
+	private HashMap mySpotters;
+	//number of enemyID's in this list
 	private int mySize;
-	
-	//m MUST BE a HashMap of eID's to HashSets of spotterID's
-	//size MUST BE the total number of spotterID's in all HashSets
-	public ContactList(int size, HashMap m)
-	{
-		mySize=size;
-		myContacts = m;
-	}
 	
 	
 	public ContactList()
 	{
 		myContacts = new HashMap();
+		mySpotters = new HashMap();
 		mySize=0;
 	}
 		
@@ -33,47 +27,73 @@ public class ContactList
 	public void makeEmpty()
 	{
 		myContacts.clear();
+		mySpotters.clear();
 		mySize=0;
 	}
 	
-	public void addContact(Ship enemy, Ship spotter)
+	//if two SensorContacts for the same enemy are added, only the first one will be stored
+	public void addContact(SensorContact e, int spotterID)
 	{
-		addContact(enemy.getShipID(),spotter.getShipID());
-	}
-	
-	public void addContact(int enemyID, int spotterID)
-	{
-		HashMap eMap = myContacts;
-		Integer eID = new Integer(enemyID);
+		Integer eID = new Integer(e.getID());
 		Integer sID = new Integer(spotterID);
 		
 		HashSet sSet;
 
-		if(eMap.containsKey(eID))
+		if(mySpotters.containsKey(eID))
 		{
-			sSet = (HashSet)eMap.get(eID);
+			sSet = (HashSet)mySpotters.get(eID);
 		}
 		else
 		{
 			sSet = new HashSet();
-			eMap.put(eID,sSet);
+			mySpotters.put(eID,sSet);
+			myContacts.put(eID,e);
+			mySize++;
 		}
 		
 		sSet.add(sID);
-		mySize++;
 	}
 	
-	public void addContact(SensorContact c)
+	//spotters MUST BE a HashSet of Integers of spotters
+	// or BAD THINGS will  happen (like ClassCastExceptions)
+	public void addContact(SensorContact e, HashSet spotters)
 	{
-		addContact(c.getEnemyID(), c.getSpotterID());
+		Integer eID = new Integer(e.getID());
+		
+		HashSet sSet;
+		
+		if(mySpotters.containsKey(eID))
+		{
+			sSet = (HashSet)mySpotters.get(eID);
+		}
+		else
+		{
+			sSet = new HashSet();
+			mySpotters.put(eID,sSet);
+			myContacts.put(eID,e);
+			mySize++;
+		}
+		sSet.addAll(spotters);
 	}
 	
-	public Iterator iterator()
+	
+	//Iterator over Integers of enemyID's
+	public Iterator enemyIterator()
 	{
-		throw new MethodNotImplementedException();
+		return myContacts.keySet().iterator();
 	}
 	
+	public SensorContact getContact(int enemyID)
+	{
+		return (SensorContact)myContacts.get(new Integer(enemyID));
+	}
 	
+	public SensorContact getContact(Integer enemyID)
+	{
+		return (SensorContact)myContacts.get(enemyID);
+	}
+	
+	//number of enemies listed
 	public int size()
 	{
 		return mySize;
@@ -82,6 +102,11 @@ public class ContactList
 	public boolean containsEnemy(int eID)
 	{
 		return myContacts.containsKey(new Integer(eID));
+	}
+	
+	public boolean containsEnemy(Integer eID)
+	{
+		return myContacts.containsKey(eID);
 	}
 	
 	public boolean containsSpotter(int sID)
@@ -94,6 +119,11 @@ public class ContactList
 		return (HashSet)myContacts.get(new Integer(eID));
 	}
 	
+	public HashSet getSpotters(Integer eID)
+	{
+		return (HashSet)myContacts.get(eID);
+	}
+	
 	public int[] getEnemies(int sID)
 	{
 		throw new MethodNotImplementedException();
@@ -102,9 +132,9 @@ public class ContactList
 	public boolean contains(int eID, int sID)
 	{
 		Integer e = new Integer(eID);
-		if(myContacts.containsKey(e))
+		if(mySpotters.containsKey(e))
 		{
-			HashSet s = (HashSet)myContacts.get(e);
+			HashSet s = (HashSet)mySpotters.get(e);
 			if(s.contains(new Integer(sID)))
 				return true;
 		}

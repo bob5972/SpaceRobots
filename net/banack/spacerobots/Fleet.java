@@ -118,12 +118,12 @@ public class Fleet {
 	
 	public String getAIName()
 	{
-		throw new MethodNotImplementedException();
+		return myAI.getName();
 	}
 	
 	public String getAIVersion()
 	{
-		throw new MethodNotImplementedException();
+		return myAI.getVersion();
 	}
 	
 	public int getNumShips()

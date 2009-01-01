@@ -12,47 +12,49 @@ import net.banack.spacerobots.util.ContactList;
 
 public class FleetContactList
 {
-	//HashMap of fleetID to HashMaps of eID to HashSets of spotterID's
+	//HashMap of enemyID's to SensorContacts
 	private HashMap myContacts;
+	//HashMap of fleetID's to (HashMap's of enemyID's to (HashSets of spotterID's))	
+	private HashMap mySpotters;
 	private IntMap myFleetSize;
-	private int mySize;
 	
 	
 	public FleetContactList()
 	{
 		myContacts = new HashMap();
+		mySpotters = new HashMap();
 		myFleetSize = new IntMap();
-		mySize=0;
 	}
 	
 
 	public void makeEmpty()
 	{
 		myContacts.clear();
-		mySize=0;
+		mySpotters.clear();
 		myFleetSize.makeEmpty();
 	}
 	
 	public void addContact(Ship enemy, Ship spotter)
 	{
-		addContact(enemy.getShipID(),spotter.getShipID(), spotter.getFleetID());
-	}
-	
-	public void addContact(int enemyID, int spotterID, int fleetID)
-	{
 		HashMap eMap;
-		Integer eID = new Integer(enemyID);
-		Integer sID = new Integer(spotterID);
-		Integer fID = new Integer(fleetID);
 		
-		if(myContacts.containsKey(fID))
+		
+		
+		Integer eID = new Integer(enemy.getID());
+		Integer sID = new Integer(spotter.getID());
+		Integer sFID = new Integer(spotter.getFleetID());
+		
+		if(!myContacts.containsKey(eID))
+			myContacts.put(eID,new SensorContact(enemy));
+		
+		if(mySpotters.containsKey(sFID))
 		{
-			eMap = (HashMap)myContacts.get(fID);
+			eMap = (HashMap)mySpotters.get(sFID);
 		}
 		else
 		{
 			eMap = new HashMap();
-			myContacts.put(fID,eMap);
+			mySpotters.put(sFID,eMap);
 		}
 		
 		HashSet sSet;
@@ -67,31 +69,33 @@ public class FleetContactList
 		}
 		
 		sSet.add(sID);
-		mySize++;
-		myFleetSize.increment(fleetID);
+		myFleetSize.increment(sFID.intValue());
 	}
-	
-	public void addContact(SensorContact c)
-	{
-		addContact(c.getEnemyID(), c.getSpotterID(), c.getFleetID());
-	}
-	
-	public void addContact(int enemyID, int spotterID)
-	{
-		addContact(enemyID, spotterID, -1);
-	}
-	
+		
 	//returns a new contact list that is linked to this one
 	//ie, any additions or deletions will be reflected in the master list
 	//  (but don't add anything from a different fleet...)
 	public ContactList getFleetList(Fleet f)
 	{
-		int id = f.getFleetID();
-		return new ContactList(myFleetSize.get(id),(HashMap)myContacts.get(new Integer(id)));
-	}
-	
-	public int size()
-	{
-		return mySize;
+		int fid = f.getFleetID();
+		Integer ifid = new Integer(fid);
+		ContactList oup = new ContactList();
+		
+		if(!mySpotters.containsKey(ifid))
+			return oup;
+		
+		HashMap eMap = (HashMap)mySpotters.get(ifid);
+		
+		Iterator i = eMap.keySet().iterator();
+		
+		while(i.hasNext())
+		{
+			Integer eid = (Integer)i.next();
+			SensorContact c = (SensorContact)myContacts.get(eid);
+			
+			oup.addContact(c,(HashSet)eMap.get(eid));			
+		}
+		
+		return oup;
 	}
 }

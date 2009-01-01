@@ -4,8 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.banack.geometry.DPoint;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.SensorContact;
 import net.banack.spacerobots.util.ShipAction;
@@ -215,9 +219,39 @@ public class TextProtocol implements AIProtocol
 		send("CREDITS "+credits);
 		send("BEGIN_CONTACT_LIST "+c.size());
 		curLevel++;
-		java.util.Iterator i = c.iterator();
-		for(int x=0;x<c.size();x++)
-			writeContact((SensorContact)i.next());
+		
+		//write contacts
+		Iterator i = c.enemyIterator();
+		while(i.hasNext())
+		{
+			Integer eID = (Integer)i.next();
+			SensorContact ghost = c.getContact(eID);
+			DPoint pos = ghost.getPosition();
+			StringBuffer cmd = new StringBuffer();
+			cmd.append("CONTACT ");
+			cmd.append(ghost.getFleetID());
+			cmd.append(" ");
+			cmd.append(ghost.getTypeID());
+			cmd.append(" ");
+			cmd.append(pos.getX());
+			cmd.append(" ");
+			cmd.append(pos.getY());
+			cmd.append(" ");
+			cmd.append(ghost.getHeading());
+			cmd.append(" (");
+			
+			HashSet spot = c.getSpotters(eID);
+			Iterator spoti = spot.iterator();
+			while(spoti.hasNext())
+			{
+				Integer sID = (Integer)spoti.next();
+				cmd.append(sID);
+				cmd.append(" ");
+			}
+			cmd.append(")");
+			send(cmd.toString());
+		}		
+		
 		curLevel--;
 		send("END_CONTACT_LIST");
 			
@@ -231,11 +265,6 @@ public class TextProtocol implements AIProtocol
 		//>		CONTACT fleetID type xPos yPos heading (refiD refiD )
 		//>	END_CONTACT_LIST
 		//> BEGIN_SHIPS 25
-	}
-	
-	public void writeContact(SensorContact c) throws IOException
-	{
-		throw new MethodNotImplementedException();
 	}
 	
 	public void writeShip(Ship s) throws IOException

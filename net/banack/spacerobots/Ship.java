@@ -12,8 +12,7 @@ public class Ship {
 	//Internal Representation of a Ship
 	
 	private int myID;
-	private double myXPos;
-	private double myYPos;
+	private DPoint myPosition;
 	private int myLife;
 	private int myCreationTick;
 	private int deltaLife;
@@ -29,8 +28,7 @@ public class Ship {
 		myFleet=f;
 		myID=id;
 		myTypeID = type;
-		myXPos = x;
-		myYPos = y;
+		myPosition = new DPoint(x,y);
 		myLife = life;
 		deltaLife=0;
 		willMove=true;
@@ -79,7 +77,7 @@ public class Ship {
 	//Status Functions
 	public double getX()
 	{
-		return myXPos;
+		return myPosition.getX();
 	}
 	public final double getXPos()
 	{
@@ -87,7 +85,7 @@ public class Ship {
 	}
 	public double getY()
 	{
-		return myYPos;
+		return myPosition.getY();
 	}
 	public final double getYPos()
 	{
@@ -135,12 +133,23 @@ public class Ship {
 	
 	public void setX(double x)
 	{
-		myXPos = x;
+		myPosition = new DPoint(x,myPosition.getY());
 	}
 	public void setY(double y)
 	{
-		myYPos = y;
+		myPosition = new DPoint(myPosition.getX(),y);
 	}
+	
+	public void setPosition(DPoint p)
+	{
+		myPosition = p;
+	}
+	
+	public DPoint getPosition()
+	{
+		return myPosition;
+	}
+	
 	public void setHeading(double h)
 	{
 		myHeading = SpaceMath.wrapHeading(h);
@@ -159,7 +168,7 @@ public class Ship {
 	public void printStatus(java.io.PrintStream oup)
 	{
 		oup.println(getClass().getName()+" - ");
-		oup.println("----(x,y)=("+myXPos+","+myYPos+")");
+		oup.println("----(x,y)=("+myPosition.getX()+","+myPosition.getY()+")");
 		oup.println("----Life="+myLife);
 		oup.println("----Heading="+myHeading);
 	}
@@ -171,12 +180,12 @@ public class Ship {
 	
 	public DQuad getLocation()
 	{
-		return SpaceMath.getDQuad(new DPoint(myXPos,myYPos),myType.getWidth(),myType.getHeight(),myHeading);
+		return SpaceMath.getDQuad(myPosition,myType.getWidth(),myType.getHeight(),myHeading);
 	}
 	
 	public DArc getScannerArc()
 	{
-		DArc oup = new DArc(new DPoint(myXPos,myYPos), myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
+		DArc oup = new DArc(myPosition, myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
 		oup.rotate(-myType.getScannerAngleSpan()/2);
 		return oup;
 	}

@@ -29,7 +29,8 @@ public class Battle
 	//leave some room for stuff (like types?)
 	static private int myIDCount=100;
 	
-	public static final int TYPE_INVALID   = -1;
+	public static final int INVALID_ID 	   = -1;
+	public static final int TYPE_INVALID   = INVALID_ID;
 	public static final int TYPE_CRUISER   = DefaultShipTypeDefinitions.CRUISER_ID;
 	public static final int TYPE_DESTROYER = DefaultShipTypeDefinitions.DESTROYER_ID;
 	public static final int TYPE_FIGHTER   = DefaultShipTypeDefinitions.FIGHTER_ID;
@@ -259,9 +260,10 @@ public class Battle
 				int iType = shi.getTypeID();
 				
 				//generate sensor contacts
-				if(oTeam != iTeam && canScan(sho,shi))
+				if(oTeam != iTeam)
 				{
-					contacts.addContact(shi,sho);
+					if(canScan(sho,shi))
+						contacts.addContact(shi,sho);
 					
 					//check collisions
 					if(oType == TYPE_ROCKET || oType == TYPE_MISSILE)

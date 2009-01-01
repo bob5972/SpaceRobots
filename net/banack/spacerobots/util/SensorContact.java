@@ -1,54 +1,70 @@
 package net.banack.spacerobots.util;
 
+import net.banack.geometry.DPoint;
+import net.banack.spacerobots.Ship;
+
 public class SensorContact
 {
 	private int enemyID;
-	private int spotterID;
-	private int fleetID;
+	private int enemyFleetID;
+	private int enemyType;
+	private DPoint enemyPosition;
+	private double enemyHeading;
 	
-	public static final int INVALID_FLEET_ID = -1;
+	public static final int INVALID_FLEET_ID = net.banack.spacerobots.Battle.INVALID_ID;
 	
-	public SensorContact(int enemyID, int spotterID)
+	public SensorContact(Ship enemy)
 	{
-		this.enemyID = enemyID;
-		this.spotterID = spotterID;
-		this.fleetID = INVALID_FLEET_ID;
+		this.enemyID = enemy.getID();
+		this.enemyFleetID = enemy.getFleetID();
+		this.enemyType = enemy.getTypeID();
+		this.enemyPosition = enemy.getPosition();
+		this.enemyHeading = enemy.getHeading();
 	}
 	
-	public SensorContact(int enemyID, int fleetID, int spotterID)
+	public SensorContact(int enemyID, int fleetID, int type, DPoint position, double heading)
 	{
 		this.enemyID = enemyID;
-		this.spotterID = spotterID;
-		this.fleetID = fleetID;
+		this.enemyFleetID = fleetID;
+		this.enemyType = type;
+		this.enemyPosition = position;
+		this.enemyHeading = heading;
 	}
-
-	public int getEnemyID()
+	
+	public final int getID()
 	{
 		return enemyID;
 	}
-
-	public void setEnemyID(int enemyID)
+	
+	public final int getFleetID()
 	{
-		this.enemyID = enemyID;
+		return enemyFleetID;
 	}
-
-	public int getFleetID()
+	
+	public int getTypeID()
 	{
-		return fleetID;
+		return enemyType;
 	}
-
-	public void setFleetID(int fleetID)
+	
+	public DPoint getPosition()
 	{
-		this.fleetID = fleetID;
+		return enemyPosition;
 	}
-
-	public int getSpotterID()
+	
+	public double getHeading()
 	{
-		return spotterID;
+		return enemyHeading;
 	}
-
-	public void setSpotterID(int spotterID)
+	
+	public int hashCode()
 	{
-		this.spotterID = spotterID;
-	} 
+		return enemyID;
+	}
+	
+	public boolean equals(Object rhs)
+	{
+		if(!(rhs instanceof SensorContact))
+			return false;
+		return enemyID == ((SensorContact)rhs).enemyID;
+	}
 }
