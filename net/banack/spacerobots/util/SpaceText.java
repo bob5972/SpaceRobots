@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import net.banack.io.Parser;
+import net.banack.spacerobots.Debug;
 
 public class SpaceText extends Parser
 {
@@ -14,7 +15,7 @@ public class SpaceText extends Parser
 	
 	public static String toString(Fleet f)
 	{
-		return f.getFleetID()+" "+f.getTeamID()+" "+" \""+f.getFleetName()+"\" \""+f.getAIName()+"\" \""+f.getAIAuthor()+"\" \""+f.getAIVersion()+"\" "+f.isAlive()+" "+f.getWinOrLose();
+		return f.getFleetID()+" "+f.getTeamID()+" "+" \""+f.getFleetName()+"\" \""+f.getAIName()+"\" \""+f.getAIAuthor()+"\" \""+f.getAIVersion()+"\" "+(f.isAlive()?1:0)+" "+((f.getWinOrLose()==Fleet.STATUS_WIN)?1:0);
 	}
 	
 	public Fleet parseFleet(String str)
@@ -176,7 +177,7 @@ public class SpaceText extends Parser
 		StringBuffer oup = new StringBuffer();
 		oup.append(a.getShipID());
 		oup.append(" ");
-		oup.append(a.willMove());
+		oup.append(a.willMove()?1:0);
 		oup.append(" ");
 		oup.append(a.getHeading());
 		oup.append(" ");
@@ -213,13 +214,13 @@ public class SpaceText extends Parser
 		oup.append(" ");
 		oup.append(s.getTypeID());
 		oup.append(" ");
-		oup.append((int)s.getX());
+		oup.append(((int)s.getX()));
 		oup.append(" ");
-		oup.append((int)s.getY());
+		oup.append(((int)s.getY()));
 		oup.append(" ");
-		oup.append(SpaceMath.radToDeg(s.getHeading()));
+		oup.append(((int)SpaceMath.radToDeg(s.getHeading())));
 		oup.append(" ");
-		oup.append(SpaceMath.radToDeg(s.getScannerHeading()));
+		oup.append(((int)SpaceMath.radToDeg(s.getScannerHeading())));
 		oup.append(" ");
 		oup.append(s.getCreationTick());
 		oup.append(" ");
@@ -241,7 +242,8 @@ public class SpaceText extends Parser
 		int life = parseInt(words[7]);
 		int deltaLife = parseInt(words[8]);
 		
-		return new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,tick,life,deltaLife);
+		Ship s = new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,tick,life,deltaLife);
+		return s;
 	}
 	
 	public Team readTeam() throws IOException

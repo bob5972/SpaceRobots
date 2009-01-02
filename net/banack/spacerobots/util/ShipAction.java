@@ -1,5 +1,6 @@
 package net.banack.spacerobots.util;
 
+import net.banack.spacerobots.Debug;
 import net.banack.util.MethodNotImplementedException;
 
 public class ShipAction
@@ -10,7 +11,7 @@ public class ShipAction
 	private double newScannerHeading;
 	private int launchWhat;
 	
-	public ShipAction(net.banack.spacerobots.util.Ship s)
+	public ShipAction(Ship s)
 	{
 		myShipID = s.getID();
 		willMove = s.willMove();

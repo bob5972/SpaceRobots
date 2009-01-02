@@ -2,6 +2,7 @@ package net.banack.spacerobots.ai;
 
 import java.util.Random;
 
+import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
@@ -55,28 +56,36 @@ public class DummyFleet extends AbstractFleetAI
 				break;
 			}
 		}
-		
 		return;
 	}
 	
 	public ActionList runTick(int tick, int credits, ContactList c, Ship[] s)
 	{
 		ActionList oup = new ActionList();
+		oup.setTick(tick);
 		ShipAction a;
-		
-		if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost())
-		{
-			a = new ShipAction(myCruiser);
-			a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
-			oup.add(a);
-		}
-		
+
 		for(int x=0;x<s.length;x++)
 		{
-			a = oup.get(s[x].getID());
-			if(a == null)
-				a = new ShipAction(s[x]);
-			a.setHeading(myRandom.nextDouble()*Math.PI*2);			
+			if(Debug.isDebug())
+			{
+				if(s[x] == null)
+					Debug.warn("Null pointer at s["+x+"]");
+			}
+			
+			a = new ShipAction(s[x]);
+			
+			if(myCruiser != null && s[x].getID() == myCruiser.getID())
+			{
+				if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost())
+				{
+					a = new ShipAction(s[x]);
+					a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+				}
+			}
+			a.setHeading(myRandom.nextDouble()*Math.PI*2);
+			oup.add(a);
+			
 		}
 		return oup;
 	}

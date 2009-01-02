@@ -15,11 +15,8 @@ public abstract class AbstractFleetAI implements FleetAI
 		return;
 	}
 	
-	public String getAuthor()
-	{
-		return "Anonymous";
-	}
-	
+	public abstract String getAuthor();
+
 	public String getName()
 	{
 		return this.getClass().getName();
@@ -35,13 +32,10 @@ public abstract class AbstractFleetAI implements FleetAI
 		return;
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, Ship[] s, int[] teams, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, Ship[] s, Team[] teams, Fleet[] f)
 	{
 		return;
 	}
 	
-	public ActionList runTick(int tick, int credits, ContactList c, Ship[] s)
-	{
-		return new ActionList();
-	}
+	public abstract ActionList runTick(int tick, int credits, ContactList c, Ship[] s);
 }

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import net.banack.geometry.DPoint;
-import net.banack.spacerobots.ai.Debug;
+import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Fleet;
@@ -44,9 +44,18 @@ public class TextProtocol implements AIClientProtocol
 	// (really just for debugging purposes, could set a flag to disable)
 	private void send(String message, int indentation)
 	{
+		if(Debug.isDebug())
+		{
+			String msg ="";
+			for(int x=0;x<indentation;x++)
+				msg+="\t";
+			Debug.comLog(">"+msg+message);
+		}
+		
 		while(indentation-->0)
 			sOut.print("\t");
 		sOut.println(message);
+		sOut.flush();
 	}
 	
 	
@@ -54,6 +63,8 @@ public class TextProtocol implements AIClientProtocol
 	private String[] read(String cmd) throws IOException
 	{
 		String[] cur = sIn.readWords();
+		if(cur.length <= 0)
+			Debug.crash("Received bad number of tokens: Received "+cur.length);
 		if(!cur[0].equals(cmd))
 			Debug.crash("Bad Server Response: expected "+cmd+", received "+cur[0]);
 		return cur;
@@ -64,8 +75,13 @@ public class TextProtocol implements AIClientProtocol
 	private String[] read(String cmd, int args) throws IOException
 	{
 		String[] cur = read(cmd);
-		if(cur.length-1 != args)
-			Debug.error("Unable to retrieve requested number of tokens: Got "+(cur.length-1)+", requested "+args);
+		if(cur.length != args)
+		{
+			String msg = "";
+			for(int x=0;x<cur.length;x++)
+				msg += cur[x]+" ";
+			Debug.error("Unable to retrieve requested number of tokens: Got "+(cur.length-1)+", requested "+args+"\nLine="+msg);
+		}
 		return cur;
 	}
 	
@@ -82,23 +98,26 @@ public class TextProtocol implements AIClientProtocol
 		String cmd = sIn.readWord();
 		if(!cmd.equals("CONTACT"))
 			Debug.crash("Bad Server Response: Expected CONTACT, received "+cmd);
-		String[] words = sIn.readWords();
-		
-		int eID = SpaceText.parseInt(words[0]);
-		int fleetID = SpaceText.parseInt(words[1]);
-		int typeID = SpaceText.parseInt(words[2]);
-		double x = SpaceText.parseInt(words[3]);
-		double y = SpaceText.parseInt(words[4]);
-		double heading = SpaceMath.degToRad(SpaceText.parseInt(words[5]));
-		int numSpotters = SpaceText.parseInt(words[6]);
+				
+		int eID = sIn.readInt();
+		int fleetID = sIn.readInt();
+		int typeID = sIn.readInt();
+		double x = sIn.readInt();
+		double y = sIn.readInt();
+		double heading = SpaceMath.degToRad(sIn.readInt());
+		int numSpotters = sIn.readInt();
 		
 		SensorContact ghost = new SensorContact(eID,fleetID,typeID,x,y,heading);
 		
 		HashSet spotters = new HashSet();
 		
-		char dummy = sIn.readChar();
+		char dummy = sIn.readNonWhitespaceChar();
 		if(dummy != '(')
-			Debug.crash("Bad Server Response: Expected (, received "+dummy);
+		{
+			String msg = "";
+			msg+="eid="+eID+" fleetID="+fleetID+" typeID="+typeID+" x="+x+" y="+y+" heading="+heading+" numSpotters="+numSpotters;
+			Debug.crash("Bad Server Response: Expected (, received "+dummy+"\nline="+msg);
+		}
 		
 		for(int i=0;i<numSpotters;i++)
 		{
@@ -106,9 +125,14 @@ public class TextProtocol implements AIClientProtocol
 			spotters.add(new Integer(sID));
 		}
 		
-		dummy = sIn.readChar();
+		dummy = sIn.readNonWhitespaceChar();
 		if(dummy != ')')
+		{
 			Debug.crash("Bad Server Response: Expected ), received "+dummy);
+		}
+		
+		//clean up junk endl
+		sIn.readLine();
 		
 		c.addContact(ghost,spotters);
 	}
@@ -199,6 +223,7 @@ public class TextProtocol implements AIClientProtocol
 				read("END_INIT_BATTLE");
 				curLevel--;
 				
+				Debug.info("Calling initBattle on client AI");
 				myAI.initBattle(fleetID, teamID, startingCredits, s, t, f);
 				
 				send("BATTLE_READY_BEGIN");
@@ -266,7 +291,7 @@ public class TextProtocol implements AIClientProtocol
 				curLevel--;
 				read("END_CONTACT_LIST");
 				
-				words = read("BEGIN_SHIPS",2);
+				words = read("BEGIN_SHIPS",2);;
 				int numShips = SpaceText.parseInt(words[1]);
 				curLevel++;
 				Ship[]s = new Ship[numShips];
@@ -282,7 +307,8 @@ public class TextProtocol implements AIClientProtocol
 				
 				ActionList al = myAI.runTick(tick, credits, c, s);
 	
-				send("BEGIN_FLEET_ACTIONS "+al.getTick());
+				send("BEGIN_FLEET_ACTIONS");
+				send("TICK "+al.getTick());
 				curLevel++;
 				send("BEGIN_SHIP_ACTIONS "+al.size());
 				curLevel++;

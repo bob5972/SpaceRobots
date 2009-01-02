@@ -21,10 +21,12 @@ public class AIThread extends Thread
 		setDaemon(true);
 	}
 	
-	public void start()
+	public void run()
 	{
+		Debug.info("Thread starting...");
 		AIClientProtocol p = ClientProtocolFactory.doHandshake(myAI,myInp,myOup);
 		p.start();
+		Debug.info("Thread ending...");
 	}
 		
 }

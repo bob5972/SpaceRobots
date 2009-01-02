@@ -116,12 +116,12 @@ public class ContactList
 	
 	public HashSet getSpotters(int eID)
 	{
-		return (HashSet)myContacts.get(new Integer(eID));
+		return (HashSet)mySpotters.get(new Integer(eID));
 	}
 	
 	public HashSet getSpotters(Integer eID)
 	{
-		return (HashSet)myContacts.get(eID);
+		return (HashSet)mySpotters.get(eID);
 	}
 	
 	public int[] getEnemies(int sID)

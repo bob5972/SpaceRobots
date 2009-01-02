@@ -28,14 +28,17 @@ public class ProtocolFactory
 		// Greetings
 		try{
 			//>SERVER_HELLO from PROGRAM_NAME
+			Debug.info("Sending SERVER_HELLO");
 			sOut.println("SERVER_HELLO from "+PROGRAM_NAME);
+			sOut.flush();
 			temp = sIn.readLine();
 			
 			//<CLIENT_HELLO from AI_NAME
 			if(!Pattern.matches("CLIENT_HELLO\\s+.*",temp))
 			{
-				Debug.crash("Invalid AI Response: Expected CLIENT_HELLO");
+				Debug.crash("Invalid AI Response: Expected CLIENT_HELLO, Received "+temp);
 			}
+			Debug.info("Received CLIENT_HELLO");
 			
 			temp = sIn.readLine();
 			
@@ -55,6 +58,7 @@ public class ProtocolFactory
 			
 			//>LIST_PROTOCOLS
 			sOut.println("LIST_PROTOCOLS");
+			sOut.flush();
 			temp = sIn.readLine();
 			p = Pattern.compile("HAVE_PROTOCOLS\\s+(.*)");
 			m = p.matcher(temp);

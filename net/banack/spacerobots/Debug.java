@@ -1,12 +1,23 @@
 package net.banack.spacerobots;
 
-class Debug extends net.banack.debug.Debug
+public class Debug extends net.banack.debug.Debug
 {
 	private static boolean aiWarning=false;
+	private static boolean comLog=false;
 	
 	public static void setShowAIWarnings(boolean b)
 	{
 		aiWarning=b;
+	}
+	
+	public static boolean showComLog()
+	{
+		return comLog;
+	}
+	
+	public static void setShowComLog(boolean b)
+	{
+		comLog = b;
 	}
 	
 	public static boolean showAIWarnings()
@@ -18,6 +29,12 @@ class Debug extends net.banack.debug.Debug
 	{
 		if(showAIWarnings())
 			warn("AI Warning: "+msg);
+	}
+	
+	public static void comLog(String msg)
+	{
+		if(showComLog())
+			info(msg);
 	}
 	
 }

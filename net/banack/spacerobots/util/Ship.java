@@ -65,6 +65,11 @@ public class Ship
 		myLife -= d;
 	}
 	
+	public int getCost()
+	{
+		return myType.getCost();
+	}
+	
 	public void reset()
 	{
 		myDeltaLife=0;

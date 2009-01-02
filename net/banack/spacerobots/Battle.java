@@ -13,6 +13,7 @@ import net.banack.spacerobots.util.ActionList;
 import java.util.Iterator;
 
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
+import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.ShipType;
@@ -47,7 +48,11 @@ public class Battle
 	private double myHeight;
 	private int myTick;
 	private ShipTypeDefinitions myShipTypes;
-	
+
+	public int getTick()
+	{
+		return myTick;
+	}
 	
 	public Battle(double width, double height)
 	{
@@ -83,18 +88,22 @@ public class Battle
 		f.setCredits(startingCredits);
 		f.setCreditIncrement(creditIncrement);
 		myFleets.add(f);
+		myTeams.get(teamID).incrementLiveFleets(1);
 		return oup;
 	}
 	
 	
 	
 	
-	public void initialize()
+	public void initialize() throws IOException
 	{
 		//setup stuff...
 		//notify the AI's a battle is starting
 		// etc
 		Iterator i = myFleets.iterator();
+		ServerTeam[] t = myTeams.toArray();
+		ServerFleet[] fa = myFleets.toArray();
+		
 		while(i.hasNext())
 		{
 			ServerFleet f = (ServerFleet)i.next();
@@ -103,7 +112,15 @@ public class Battle
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
 			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, getDefaultLife(launchType),myTick);
 			myShips.add(oup);
+			f.setNumShips(f.getNumShips()+1);
+			f.setCredits(0);
+			
+			ServerShip[] s = new ServerShip[1];
+			s[0] = oup;
+
+			f.getAI().initBattle(f.getFleetID(), f.getTeamID(), f.getCredits(), s, t, fa);
 		}
+		
 	}
 	
 	public boolean isOver()
@@ -127,6 +144,7 @@ public class Battle
 		ShipAction a;
 		Iterator i;
 		FleetAI ai;
+		myTick++;
 		
 		aggregate.makeEmpty();
 
@@ -162,6 +180,11 @@ public class Battle
 			ai.endFleetStatusUpdate();
 			
 			ActionList AL = ai.readFleetActions();
+			if(Debug.showAIWarnings())
+			{
+				if(AL.getTick() != myTick)
+					Debug.aiwarn("AI responded with an invalid tick: Expected="+myTick+", received="+AL.getTick());
+			}
 			validateShipIDs(AL,f);
 			aggregate.add(AL);
 		}
@@ -302,7 +325,7 @@ public class Battle
 				ServerTeam t = myTeams.get(f.getTeamID());
 				t.decrementLiveFleets(1);
 			}
-		}				
+		}
 			
 	}
 	
@@ -312,7 +335,8 @@ public class Battle
 		while(i.hasNext())
 		{
 			ShipAction a = (ShipAction)i.next();
-			if(myShips.get(a.getShipID()).getFleet() != f)
+			ServerShip s = myShips.get(a.getShipID());
+			if(s==null || s.getFleet() != f)
 			{
 				al.remove(a);
 				Debug.aiwarn("AI returned an action for an invalid ship id.");
@@ -391,6 +415,9 @@ public class Battle
 		ServerFleet f = cur.getFleet();
 		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), getDefaultLife(launchType),myTick);
 		myShips.add(oup);
+		
+		f.setNumShips(f.getNumShips()+1);
+		f.decrementCredits(oup.getCost());
 	}
 	
 	static private int getNewID()

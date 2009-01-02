@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.banack.geometry.DPoint;
+import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.SensorContact;
 import net.banack.spacerobots.util.ShipAction;
@@ -41,9 +42,19 @@ public class TextProtocol implements AIProtocol
 	// (really just for debugging purposes, could set a flag to disable)
 	private void send(String message, int indentation)
 	{
+		if(Debug.isDebug())
+		{
+			String msg ="";
+			for(int x=0;x<indentation;x++)
+				msg+="\t";
+			Debug.comLog(">"+msg+message);
+		}
+		
 		while(indentation-->0)
 			sOut.print("\t");
 		sOut.println(message);
+		sOut.flush();
+		
 	}
 	
 	private String readLine() throws IOException
@@ -73,8 +84,13 @@ public class TextProtocol implements AIProtocol
 	private String[] read(String cmd, int args) throws IOException
 	{
 		String[] cur = read(cmd);
-		if(cur.length-1 != args)
-			Debug.error("Unable to retrieve requested number of tokens: Got "+(cur.length-1)+", requested "+args);
+		if(cur.length != args)
+		{
+			String msg="";
+			for(int x=0;x<cur.length;x++)
+				msg+=cur[x]+" ";
+			Debug.error("Unable to retrieve requested number of tokens: Got "+(cur.length)+", requested "+args+"\nCmd="+msg);
+		}
 		return cur;
 	}
 	
@@ -105,7 +121,7 @@ public class TextProtocol implements AIProtocol
 				oup[2] = readLine();
 			}
 			else
-				Debug.aiwarn("Unknown AI Response in BEGIN_INFO: "+temp);
+				net.banack.spacerobots.Debug.aiwarn("Unknown AI Response in BEGIN_INFO: "+temp);
 			
 			temp = readWord();
 		}
@@ -134,7 +150,7 @@ public class TextProtocol implements AIProtocol
 		send("TEAM_ID "+teamID);
 		send("STARTING_CREDITS "+startingCredits);
 		
-		send("BEGIN_STARTING_SHIPS");
+		send("BEGIN_STARTING_SHIPS "+s.length);
 		curLevel++;
 		for(int x=0;x<s.length;x++)
 		{
@@ -143,7 +159,7 @@ public class TextProtocol implements AIProtocol
 		curLevel--;
 		send("END_STARTING_SHIPS");
 		
-		send("BEGIN_TEAMS");
+		send("BEGIN_TEAMS "+t.length);
 		curLevel++;
 		for(int x=0;x<t.length;x++)
 		{
@@ -153,7 +169,7 @@ public class TextProtocol implements AIProtocol
 		send("END_TEAMS");
 		
 		
-		send("BEGIN_FLEETS");
+		send("BEGIN_FLEETS "+f.length);
 		curLevel++;
 		for(int x=0;x<f.length;x++)
 		{
@@ -230,15 +246,15 @@ public class TextProtocol implements AIProtocol
 			cmd.append(" ");
 			cmd.append(ghost.getTypeID());
 			cmd.append(" ");
-			cmd.append(pos.getX());
+			cmd.append(((int)pos.getX()));
 			cmd.append(" ");
-			cmd.append(pos.getY());
+			cmd.append(((int)pos.getY()));
 			cmd.append(" ");
-			cmd.append(ghost.getHeading());
+			cmd.append(((int)ghost.getHeading()));
 			cmd.append(" ");
 			HashSet spot = c.getSpotters(eID);
 			cmd.append(spot.size());
-			cmd.append(" (");
+			cmd.append(" ( ");
 			
 			Iterator spoti = spot.iterator();
 			while(spoti.hasNext())

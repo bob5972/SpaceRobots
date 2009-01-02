@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import net.banack.spacerobots.Debug;
 import net.banack.util.Stack;
 
 public class ClientProtocolFactory
@@ -24,15 +24,20 @@ public class ClientProtocolFactory
 		// Greetings
 		try{
 			//>SERVER_HELLO from PROGRAM_NAME
+			Debug.info("Waiting for SERVER_HELLO");
 			temp = sIn.readLine();
+			Debug.info("Got something...");
 			if(!Pattern.matches("SERVER_HELLO\\s+.*",temp))
 				Debug.crash("Invalid Server Response: Expected SERVER_HELLO");
+			Debug.info("Found SERVER_HELLO");
 			
 			//<CLIENT_HELLO from AI_NAME
-			sOut.println("CLIENT HELLO "+PROGRAM_NAME);
+			sOut.println("CLIENT_HELLO "+PROGRAM_NAME);
+			sOut.flush();
 			
 			//<USING_PROTOCOL TEXT_1
 			sOut.println("USING_PROTOCOL TEXT_1");
+			sOut.flush();
 
 			
 			temp = sIn.readLine();
