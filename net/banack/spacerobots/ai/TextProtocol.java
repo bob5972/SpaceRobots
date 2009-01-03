@@ -144,7 +144,7 @@ public class TextProtocol implements AIClientProtocol
 		}
 		catch(IOException e)
 		{
-			Debug.crash(e,"Error with TextProtocol");
+		    //			Debug.crash(e,"Error with TextProtocol");
 		}
 	}
 	
