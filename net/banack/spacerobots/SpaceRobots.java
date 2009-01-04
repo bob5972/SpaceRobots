@@ -29,7 +29,7 @@ public class SpaceRobots
 		
 		//SETUP
 		Debug.info("Initializing Display...");
-		Display d = new ConsoleDisplay();
+		Display d = new GLDisplay();
 		
 		//setup initial battle state
 		Debug.info("Initializing Battle...");
@@ -60,7 +60,7 @@ public class SpaceRobots
 			cIn = new PipedInputStream();
 			sOut = new PipedOutputStream(cIn);
 			
-			background = new AIThread(new DummyFleet(),cIn,cOut);
+			background = new AIThread(new SimpleFleet(),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}
