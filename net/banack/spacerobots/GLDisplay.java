@@ -24,6 +24,7 @@ public class GLDisplay implements GLEventListener, Display
     private JFrame frame;
     private GLCanvas canvas;
     private TextRenderer renderer;
+    private DisplayFrame lastFrame;
 
     private AbstractQueue<DisplayFrame> frameQueue;
 
@@ -101,7 +102,6 @@ public class GLDisplay implements GLEventListener, Display
 	if (b.isOver()) {
 	    simulationFinished = true;
 	}
-	System.out.println("UpdateDisplay");
 	ArrayList<DisplayShip> ships = new ArrayList<DisplayShip>();
 
 	Iterator iter = b.shipIterator();
@@ -169,19 +169,24 @@ public class GLDisplay implements GLEventListener, Display
     }
 
     public void display(GLAutoDrawable drawable) {
+	DisplayFrame displayFrame;
 	GL gl = drawable.getGL();
-	System.out.println("display");
+
 	if (simulationFinished && frameQueue.isEmpty()) {
 	    System.exit(0);
 	}
 
+	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 	if (frameQueue.isEmpty()) {
+	    displayFrame = lastFrame;
+	} else {
+	    displayFrame = frameQueue.poll();
+	}
+	lastFrame = displayFrame;
+
+	if (displayFrame == null) {
 	    return;
 	}
-
-	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-
-	DisplayFrame displayFrame = frameQueue.poll();
 
 	gl.glBegin(GL.GL_QUADS);
 	for (int i = 0; i < displayFrame.ships.size(); i++) {
@@ -205,6 +210,8 @@ public class GLDisplay implements GLEventListener, Display
 		      0, drawable.getHeight()-24);
 	renderer.draw("Ticks in Queue: " + frameQueue.size(),
 		      0, drawable.getHeight()-48);
+	renderer.draw("Ship Count: " + displayFrame.ships.size(),
+		      0, drawable.getHeight()-72);
 	renderer.endRendering();
     }
 
