@@ -21,6 +21,12 @@ public class ServerShip extends Ship
 		myFleet=f;
 	}
 	
+	public ServerShip(ServerFleet f, int id, int type,ShipType t, double x, double y, double heading, int life,int tick)
+	{
+		super(id,type,t,x,y,life,tick);
+		myFleet=f;
+	}
+	
 	public ServerFleet getFleet()
 	{
 		return myFleet;

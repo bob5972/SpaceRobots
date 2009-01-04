@@ -186,14 +186,6 @@ public class Ship
 	{
 		return myID;
 	}
-		
-	public void printStatus(java.io.PrintStream oup)
-	{
-		oup.println(getClass().getName()+" - ");
-		oup.println("----(x,y)=("+myPosition.getX()+","+myPosition.getY()+")");
-		oup.println("----Life="+myLife);
-		oup.println("----Heading="+myHeading);
-	}
 	
 	public DDimension getDimension()
 	{

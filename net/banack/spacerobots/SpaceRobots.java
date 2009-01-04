@@ -15,7 +15,7 @@ public class SpaceRobots
 	public static final int DEFAULT_WIDTH = 100;
 	public static final int DEFAULT_HEIGHT = 100;
 	public static final int STARTING_CREDITS=0;
-	public static final int CREDIT_INCREMENT=1;
+	public static final int CREDIT_INCREMENT=20;
 	
 	public static void main(String[] args)
 	{
@@ -47,7 +47,7 @@ public class SpaceRobots
 			PipedOutputStream sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #1");
-			Thread background = new AIThread(new SimpleFleet(),cIn,cOut);
+			Thread background = new AIThread(new DummyFleet(),cIn,cOut);
 			Debug.info("Starting background thread #1");
 			background.start();
 			Debug.info("Handshaking...");
@@ -60,7 +60,7 @@ public class SpaceRobots
 			cIn = new PipedInputStream();
 			sOut = new PipedOutputStream(cIn);
 			
-			background = new AIThread(new SimpleFleet(),cIn,cOut);
+			background = new AIThread(new DummyFleet(),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}
@@ -107,7 +107,18 @@ public class SpaceRobots
 			{
 				Debug.crash(e,"Error running tick!");
 			}
-			d.updateDisplay(b);
+			if(b.getTick() % 10 == 0)
+			{
+				try{ 
+					Thread.sleep(1000);
+				}
+				catch(InterruptedException e)
+				{
+					Debug.crash("interrupted!");
+				}
+				d.updateDisplay(b);
+				System.out.println("Frame!");
+			}
 		}
 		
 		Debug.info("Battle over!");

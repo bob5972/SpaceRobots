@@ -10,6 +10,7 @@ import net.banack.geometry.Point;
 import net.banack.geometry.Rectangle;
 import net.banack.geometry.SkewRectangle;
 import net.banack.spacerobots.Battle;
+import net.banack.spacerobots.Debug;
 import net.banack.util.MethodNotImplementedException;
 
 public class SpaceMath
@@ -57,6 +58,11 @@ public class SpaceMath
 	
 	public static DPoint rotate(DPoint p, DPoint center, double r)
 	{
+		
+		
+		if(r == 0 || p.equals(center))
+			return p;
+		
 		double xl = p.getX()-center.getX();
 		double yl = p.getY()-center.getY();
 		double length = Math.sqrt(xl*xl+yl*yl);
@@ -65,17 +71,20 @@ public class SpaceMath
 		
 		DPoint oup = new DPoint(Math.cos(angle)*length,Math.sin(angle)*length);
 		oup = oup.add(center);
+		
 		return oup;	
 	}
 	
 	//rotates a DQuad around it's center point
 	public static DQuad rotate(DQuad q, double r)
 	{
+		if(r==0)
+			return q;
 		DPoint ul = q.getP1();
 		DPoint ur = q.getP2();
 		DPoint bl = q.getP3();
 		DPoint br = q.getP4();
-		DPoint c = findCenter(ul,ur,bl,br);
+		DPoint c = findCenter(ul,ur,bl,br);		
 		
 		ul = rotate(ul, c, r);
 		ur = rotate(ur, c, r);
@@ -87,6 +96,8 @@ public class SpaceMath
 	
 	public static DQuad rotate(DQuad q, DPoint c, double r)
 	{
+		if(r==0)
+			return q;
 		DPoint ul = q.getP1();
 		DPoint ur = q.getP2();
 		DPoint bl = q.getP3();
@@ -116,7 +127,7 @@ public class SpaceMath
 		
 		
 		DQuad r = new DQuad(ul,ur,br,bl);
-		return rotate(r,heading);		
+		return rotate(r,c,heading);
 	}
 	
 	//returns the normal bounding rectangle for the given quad

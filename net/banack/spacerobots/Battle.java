@@ -110,7 +110,8 @@ public class Battle
 			int launchType = TYPE_CRUISER;
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
-			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, getDefaultLife(launchType),myTick);
+			double heading = myRandom.nextDouble()*Math.PI*2;
+			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, heading,getDefaultLife(launchType),myTick);
 			myShips.add(oup);
 			f.setNumShips(f.getNumShips()+1);
 			f.setCredits(0);
@@ -189,7 +190,7 @@ public class Battle
 			aggregate.add(AL);
 		}
 		
-		HashSet toDie = new HashSet();
+		HashSet<ServerShip> toDie = new HashSet<ServerShip>();
 		i = myShips.iterator();
 		while(i.hasNext())
 		{

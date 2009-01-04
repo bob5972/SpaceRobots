@@ -81,7 +81,7 @@ public class GLDisplay implements GLEventListener, Display
 
 
        	frame.setResizable(false);
-	frame.show();
+	frame.setVisible(true);
 	animator.start();
     }
 	
