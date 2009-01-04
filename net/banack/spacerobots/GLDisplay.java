@@ -16,21 +16,24 @@ import java.util.concurrent.*;
 
 import javax.media.opengl.*;
 import com.sun.opengl.util.*;
+import com.sun.opengl.util.j2d.*;
 
 public class GLDisplay implements GLEventListener, Display
 {
     private boolean simulationFinished = false;
-
     private JFrame frame;
     private GLCanvas canvas;
+    private TextRenderer renderer;
 
     private AbstractQueue<DisplayFrame> frameQueue;
 
     private class DisplayFrame {
 	public ArrayList<DisplayShip> ships;
+	public int tick;
 
-	public DisplayFrame(ArrayList<DisplayShip> ships) {
+	public DisplayFrame(ArrayList<DisplayShip> ships, int tick) {
 	    this.ships = ships;
+	    this.tick = tick;
 	}
     }
     
@@ -60,7 +63,7 @@ public class GLDisplay implements GLEventListener, Display
 
 	canvas.addGLEventListener(this);
 	frame.add(canvas);
-	final Animator animator = new Animator(canvas);
+	final FPSAnimator animator = new FPSAnimator(canvas, 60);
 
 	canvas.setSize(width, height);
 	frame.pack();
@@ -98,7 +101,7 @@ public class GLDisplay implements GLEventListener, Display
 	if (b.isOver()) {
 	    simulationFinished = true;
 	}
-
+	System.out.println("UpdateDisplay");
 	ArrayList<DisplayShip> ships = new ArrayList<DisplayShip>();
 
 	Iterator iter = b.shipIterator();
@@ -133,7 +136,7 @@ public class GLDisplay implements GLEventListener, Display
 	    ships.add(displayShip);
 	}
 
-	frameQueue.add(new DisplayFrame(ships));
+	frameQueue.add(new DisplayFrame(ships, b.getTick()));
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
@@ -167,7 +170,7 @@ public class GLDisplay implements GLEventListener, Display
 
     public void display(GLAutoDrawable drawable) {
 	GL gl = drawable.getGL();
-
+	System.out.println("display");
 	if (simulationFinished && frameQueue.isEmpty()) {
 	    System.exit(0);
 	}
@@ -195,6 +198,14 @@ public class GLDisplay implements GLEventListener, Display
 			  (float) ship.location.getP4().getY());
 	}
 	gl.glEnd();
+
+	renderer.beginRendering(drawable.getWidth(), drawable.getHeight());
+	renderer.setColor(0.0f, 0.8f, 0.0f, 0.8f);
+	renderer.draw("Tick: " + displayFrame.tick,
+		      0, drawable.getHeight()-24);
+	renderer.draw("Ticks in Queue: " + frameQueue.size(),
+		      0, drawable.getHeight()-48);
+	renderer.endRendering();
     }
 
     public void init(GLAutoDrawable drawable) {
@@ -204,6 +215,8 @@ public class GLDisplay implements GLEventListener, Display
 
 	System.err.println("Chosen GLCapabilities: " +
 			   drawable.getChosenGLCapabilities());
+
+	renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));
 
 	gl.setSwapInterval(1);
     }
