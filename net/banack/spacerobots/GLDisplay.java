@@ -34,12 +34,12 @@ public class GLDisplay implements GLEventListener, Display
 	}
     }
     
-     private class DisplayShip {
-	 public DQuad location;
-	 public float red;
-	 public float green;
-	 public float blue;
-     }
+    private class DisplayShip {
+	public DQuad location;
+	public float red;
+	public float green;
+	public float blue;
+    }
 
 
     private int frameWidth;
@@ -139,70 +139,73 @@ public class GLDisplay implements GLEventListener, Display
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
 			       boolean deviceChanged) {}
     
-  public void reshape(GLAutoDrawable drawable, int x, int y,
-		      int width, int height) {
-      GL gl = drawable.getGL();
+    public void reshape(GLAutoDrawable drawable, int x, int y,
+			int width, int height) {
+	GL gl = drawable.getGL();
 
-      float h = (float)height / (float)width;
+	float h = (float)height / (float)width;
 
-      gl.glMatrixMode(GL.GL_PROJECTION);
+	gl.glMatrixMode(GL.GL_PROJECTION);
 
-      System.err.println("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
-      System.err.println("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
-      System.err.println("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
+	System.err.println("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
+	System.err.println("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
+	System.err.println("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
 
 
-      gl.glMatrixMode(GL.GL_PROJECTION);
-      gl.glLoadIdentity();
+	gl.glMatrixMode(GL.GL_PROJECTION);
+	gl.glLoadIdentity();
 
-      gl.glMatrixMode(GL.GL_MODELVIEW);
-      gl.glLoadIdentity();
+	gl.glMatrixMode(GL.GL_MODELVIEW);
+	gl.glLoadIdentity();
 
-      gl.glViewport(0, 0, frameWidth, frameHeight);
-      gl.glOrtho(0, battleWidth, battleHeight, 0, 1, -1);
-  }
+	gl.glViewport(0, 0, frameWidth, frameHeight);
+	gl.glOrtho(0, battleWidth, battleHeight, 0, 1, -1);
 
-  public void display(GLAutoDrawable drawable) {
-      GL gl = drawable.getGL();
+	gl.glEnable(GL.GL_BLEND);
+	gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+    }
 
-      if (simulationFinished && frameQueue.isEmpty()) {
-	  System.exit(0);
-      }
+    public void display(GLAutoDrawable drawable) {
+	GL gl = drawable.getGL();
 
-      if (frameQueue.isEmpty()) {
-	  return;
-      }
+	if (simulationFinished && frameQueue.isEmpty()) {
+	    System.exit(0);
+	}
 
-      gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+	if (frameQueue.isEmpty()) {
+	    return;
+	}
 
-      DisplayFrame displayFrame = frameQueue.poll();
+	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-      gl.glBegin(GL.GL_QUADS);
-      for (int i = 0; i < displayFrame.ships.size(); i++) {
-	  DisplayShip ship = displayFrame.ships.get(i);
+	DisplayFrame displayFrame = frameQueue.poll();
 
-	  gl.glColor3f(ship.red, ship.green, ship.blue);
-	  gl.glVertex2f((float) ship.location.getP1().getX()-1, 
-			(float) ship.location.getP1().getY()-1);
-	  gl.glVertex2f((float) ship.location.getP2().getX()+1, 
-			(float) ship.location.getP2().getY()-1);
-	  gl.glVertex2f((float) ship.location.getP3().getX()+1, 
-			(float) ship.location.getP3().getY()+1);
-	  gl.glVertex2f((float) ship.location.getP4().getX()-1, 
-			(float) ship.location.getP4().getY()+1);
-      }
-      gl.glEnd();
-  }
+	gl.glBegin(GL.GL_QUADS);
+	for (int i = 0; i < displayFrame.ships.size(); i++) {
+	    DisplayShip ship = displayFrame.ships.get(i);
 
-  public void init(GLAutoDrawable drawable) {
-      GL gl = drawable.getGL();
+	    gl.glColor4f(ship.red, ship.green, ship.blue, .1f);
+	    gl.glVertex2f((float) ship.location.getP1().getX(), 
+			  (float) ship.location.getP1().getY());
+	    gl.glVertex2f((float) ship.location.getP2().getX(), 
+			  (float) ship.location.getP2().getY());
+	    gl.glVertex2f((float) ship.location.getP3().getX(), 
+			  (float) ship.location.getP3().getY());
+	    gl.glVertex2f((float) ship.location.getP4().getX(), 
+			  (float) ship.location.getP4().getY());
+	}
+	gl.glEnd();
+    }
 
-      System.err.println("INIT GL IS: " + gl.getClass().getName());
+    public void init(GLAutoDrawable drawable) {
+	GL gl = drawable.getGL();
 
-      System.err.println("Chosen GLCapabilities: " +
-			 drawable.getChosenGLCapabilities());
+	System.err.println("INIT GL IS: " + gl.getClass().getName());
 
-      gl.setSwapInterval(1);
-  }
+	System.err.println("Chosen GLCapabilities: " +
+			   drawable.getChosenGLCapabilities());
+
+	gl.setSwapInterval(1);
+    }
 	
 }

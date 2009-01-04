@@ -107,18 +107,7 @@ public class SpaceRobots
 			{
 				Debug.crash(e,"Error running tick!");
 			}
-			if(b.getTick() % 10 == 0)
-			{
-				try{ 
-					Thread.sleep(1000);
-				}
-				catch(InterruptedException e)
-				{
-					Debug.crash("interrupted!");
-				}
-				d.updateDisplay(b);
-				System.out.println("Frame!");
-			}
+			d.updateDisplay(b);
 		}
 		
 		Debug.info("Battle over!");
