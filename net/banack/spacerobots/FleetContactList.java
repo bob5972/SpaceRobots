@@ -3,6 +3,9 @@ package net.banack.spacerobots;
 import net.banack.util.MethodNotImplementedException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import net.banack.spacerobots.ServerShip;
 import net.banack.spacerobots.ServerFleet;
 import net.banack.util.IntMap;
@@ -13,16 +16,16 @@ import net.banack.spacerobots.util.ContactList;
 public class FleetContactList
 {
 	//HashMap of enemyID's to SensorContacts
-	private HashMap myContacts;
+	private HashMap<Integer,SensorContact> myContacts;
 	//HashMap of fleetID's to (HashMap's of enemyID's to (HashSets of spotterID's))	
-	private HashMap mySpotters;
+	private HashMap<Integer, Map<Integer, Set<Integer> > > mySpotters;
 	private IntMap myFleetSize;
 	
 	
 	public FleetContactList()
 	{
-		myContacts = new HashMap();
-		mySpotters = new HashMap();
+		myContacts = new HashMap<Integer,SensorContact>();
+		mySpotters = new HashMap<Integer, Map<Integer, Set<Integer> > >();
 		myFleetSize = new IntMap();
 	}
 	
@@ -36,7 +39,7 @@ public class FleetContactList
 	
 	public void addContact(ServerShip enemy, ServerShip spotter)
 	{
-		HashMap eMap;
+		Map<Integer, Set<Integer> > eMap;
 		
 		
 		
@@ -49,22 +52,22 @@ public class FleetContactList
 		
 		if(mySpotters.containsKey(sFID))
 		{
-			eMap = (HashMap)mySpotters.get(sFID);
+			eMap = mySpotters.get(sFID);
 		}
 		else
 		{
-			eMap = new HashMap();
+			eMap = new HashMap<Integer, Set<Integer> >();
 			mySpotters.put(sFID,eMap);
 		}
 		
-		HashSet sSet;
+		Set<Integer> sSet;
 		if(eMap.containsKey(eID))
 		{
-			sSet = (HashSet)eMap.get(eID);
+			sSet = eMap.get(eID);
 		}
 		else
 		{
-			sSet = new HashSet();
+			sSet = new HashSet<Integer>();
 			eMap.put(eID,sSet);
 		}
 		
@@ -84,16 +87,16 @@ public class FleetContactList
 		if(!mySpotters.containsKey(ifid))
 			return oup;
 		
-		HashMap eMap = (HashMap)mySpotters.get(ifid);
+		Map<Integer, Set<Integer> > eMap = mySpotters.get(ifid);
 		
-		Iterator i = eMap.keySet().iterator();
+		Iterator<Integer> i = eMap.keySet().iterator();
 		
 		while(i.hasNext())
 		{
 			Integer eid = (Integer)i.next();
 			SensorContact c = (SensorContact)myContacts.get(eid);
 			
-			oup.addContact(c,(HashSet)eMap.get(eid));			
+			oup.addContact(c,eMap.get(eid));			
 		}
 		
 		return oup;

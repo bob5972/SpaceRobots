@@ -5,14 +5,14 @@ import java.util.Iterator;
 
 public class FleetList
 {
-	private HashMap m;
+	private HashMap<Integer,ServerFleet> m;
 	
 	public FleetList()
 	{
-		m = new HashMap();
+		m = new HashMap<Integer,ServerFleet>();
 	}
 	
-	public java.util.Iterator iterator()
+	public java.util.Iterator<ServerFleet> iterator()
 	{
 		return m.values().iterator();
 	}
@@ -31,7 +31,7 @@ public class FleetList
 	{
 		ServerFleet[] oup = new ServerFleet[m.size()];
 		
-		Iterator i = m.keySet().iterator(); 
+		Iterator<Integer> i = m.keySet().iterator(); 
 		for(int x=0;x<oup.length;x++)
 		{
 			oup[x] = ((ServerFleet)m.get(i.next()));

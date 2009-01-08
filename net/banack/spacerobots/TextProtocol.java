@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -232,7 +233,7 @@ public class TextProtocol implements AIProtocol
 		curLevel++;
 		
 		//write contacts
-		Iterator i = c.enemyIterator();
+		Iterator<Integer> i = c.enemyIterator();
 		while(i.hasNext())
 		{
 			Integer eID = (Integer)i.next();
@@ -252,11 +253,11 @@ public class TextProtocol implements AIProtocol
 			cmd.append(" ");
 			cmd.append(((int)ghost.getHeading()));
 			cmd.append(" ");
-			HashSet spot = c.getSpotters(eID);
+			Set<Integer> spot = c.getSpotters(eID);
 			cmd.append(spot.size());
 			cmd.append(" ( ");
 			
-			Iterator spoti = spot.iterator();
+			Iterator<Integer> spoti = spot.iterator();
 			while(spoti.hasNext())
 			{
 				Integer sID = (Integer)spoti.next();

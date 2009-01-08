@@ -4,11 +4,11 @@ import java.util.HashMap;
 
 public class ShipList
 {
-	private HashMap myShips;
+	private HashMap<Integer,ServerShip> myShips;
 	
 	public ShipList()
 	{
-		myShips = new HashMap();
+		myShips = new HashMap<Integer,ServerShip>();
 	}
 	
 	public boolean add(ServerShip s)
@@ -31,7 +31,7 @@ public class ShipList
 		return (ServerShip)myShips.get(new Integer(shipID));
 	}
 	
-	public java.util.Iterator iterator()
+	public java.util.Iterator<ServerShip> iterator()
 	{
 		return myShips.values().iterator();
 	}

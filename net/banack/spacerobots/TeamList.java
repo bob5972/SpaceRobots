@@ -5,14 +5,14 @@ import java.util.Iterator;
 
 public class TeamList
 {
-	private HashMap m;
+	private HashMap<Integer,ServerTeam> m;
 	
 	public TeamList()
 	{
-		m = new HashMap();
+		m = new HashMap<Integer,ServerTeam>();
 	}
 	
-	public java.util.Iterator iterator()
+	public java.util.Iterator<ServerTeam> iterator()
 	{
 		return m.values().iterator();
 	}
@@ -31,7 +31,7 @@ public class TeamList
 	{
 		ServerTeam[] oup = new ServerTeam[m.size()];
 		
-		Iterator i = m.keySet().iterator(); 
+		Iterator<Integer> i = m.keySet().iterator(); 
 		for(int x=0;x<oup.length;x++)
 		{
 			oup[x] = ((ServerTeam)m.get(i.next()));

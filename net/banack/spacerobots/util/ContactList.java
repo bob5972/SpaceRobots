@@ -3,23 +3,25 @@ package net.banack.spacerobots.util;
 import net.banack.util.MethodNotImplementedException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
+
 import net.banack.util.IntMap;
 import java.util.Iterator;
 
 public class ContactList
 {
 	//HashMap of enemyID's to SensorContacts
-	private HashMap myContacts;
+	private HashMap<Integer,SensorContact> myContacts;
 	//HashMap of enemyID's to HashSets of spotterID's
-	private HashMap mySpotters;
+	private HashMap<Integer, Set<Integer> > mySpotters;
 	//number of enemyID's in this list
 	private int mySize;
 	
 	
 	public ContactList()
 	{
-		myContacts = new HashMap();
-		mySpotters = new HashMap();
+		myContacts = new HashMap<Integer,SensorContact>();
+		mySpotters = new HashMap<Integer, Set<Integer> >();
 		mySize=0;
 	}
 		
@@ -37,15 +39,15 @@ public class ContactList
 		Integer eID = new Integer(e.getID());
 		Integer sID = new Integer(spotterID);
 		
-		HashSet sSet;
+		Set<Integer> sSet;
 
 		if(mySpotters.containsKey(eID))
 		{
-			sSet = (HashSet)mySpotters.get(eID);
+			sSet = mySpotters.get(eID);
 		}
 		else
 		{
-			sSet = new HashSet();
+			sSet = new HashSet<Integer>();
 			mySpotters.put(eID,sSet);
 			myContacts.put(eID,e);
 			mySize++;
@@ -56,19 +58,19 @@ public class ContactList
 	
 	//spotters MUST BE a HashSet of Integers of spotters
 	// or BAD THINGS will  happen (like ClassCastExceptions)
-	public void addContact(SensorContact e, HashSet spotters)
+	public void addContact(SensorContact e, Set<Integer> spotters)
 	{
 		Integer eID = new Integer(e.getID());
 		
-		HashSet sSet;
+		Set<Integer> sSet;
 		
 		if(mySpotters.containsKey(eID))
 		{
-			sSet = (HashSet)mySpotters.get(eID);
+			sSet = mySpotters.get(eID);
 		}
 		else
 		{
-			sSet = new HashSet();
+			sSet = new HashSet<Integer>();
 			mySpotters.put(eID,sSet);
 			myContacts.put(eID,e);
 			mySize++;
@@ -78,19 +80,19 @@ public class ContactList
 	
 	
 	//Iterator over Integers of enemyID's
-	public Iterator enemyIterator()
+	public Iterator<Integer> enemyIterator()
 	{
 		return myContacts.keySet().iterator();
 	}
 	
 	public SensorContact getContact(int enemyID)
 	{
-		return (SensorContact)myContacts.get(new Integer(enemyID));
+		return myContacts.get(new Integer(enemyID));
 	}
 	
 	public SensorContact getContact(Integer enemyID)
 	{
-		return (SensorContact)myContacts.get(enemyID);
+		return myContacts.get(enemyID);
 	}
 	
 	//number of enemies listed
@@ -114,14 +116,14 @@ public class ContactList
 		throw new MethodNotImplementedException();
 	}
 	
-	public HashSet getSpotters(int eID)
+	public Set<Integer> getSpotters(int eID)
 	{
-		return (HashSet)mySpotters.get(new Integer(eID));
+		return mySpotters.get(new Integer(eID));
 	}
 	
-	public HashSet getSpotters(Integer eID)
+	public Set<Integer> getSpotters(Integer eID)
 	{
-		return (HashSet)mySpotters.get(eID);
+		return mySpotters.get(eID);
 	}
 	
 	public int[] getEnemies(int sID)
@@ -134,7 +136,7 @@ public class ContactList
 		Integer e = new Integer(eID);
 		if(mySpotters.containsKey(e))
 		{
-			HashSet s = (HashSet)mySpotters.get(e);
+			Set<Integer> s = mySpotters.get(e);
 			if(s.contains(new Integer(sID)))
 				return true;
 		}

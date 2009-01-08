@@ -69,7 +69,7 @@ public class ProtocolFactory
 			temp = m.group(1);
 			p = Pattern.compile("\\s*(\\w+)\\s*(.*)");
 			m=p.matcher(temp);
-			Stack protList = new Stack();
+			Stack<String> protList = new Stack<String>();
 			while(m.matches())
 			{
 				protList.push(m.group(1));

@@ -19,7 +19,7 @@ public class ConsoleDisplay implements Display
 		int cruiser,fighter,destroyer,total;
 		cruiser = fighter = destroyer = total = 0;
 		
-		Iterator i = b.shipIterator();
+		Iterator<ServerShip> i = b.shipIterator();
 		while(i.hasNext())
 		{
 			Ship s = (Ship)i.next();
@@ -38,14 +38,16 @@ public class ConsoleDisplay implements Display
 			total++;
 		}
 		
+		Iterator<ServerFleet> fi;
+		
 		if(b.getTick()%100==0)
 		{
 			System.out.println("Tick "+b.getTick());
 			System.out.println("Ships total="+total+", cruiser="+cruiser+", destroyer="+destroyer+", fighter="+fighter);
-			i = b.fleetIterator();
+			fi = b.fleetIterator();
 			while(i.hasNext())
 			{
-				ServerFleet f = (ServerFleet)i.next();
+				ServerFleet f = fi.next();
 				System.out.println("Fleet "+f.getFleetName()+" ships="+f.getNumShips()+" credits="+f.getCredits());
 			}
 		}

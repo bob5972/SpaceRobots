@@ -136,7 +136,7 @@ public class SpaceMath
 	{
 		DPoint ul,ur,bl,br,p;
 		double minX,minY,maxX,maxY;
-		Iterator i = r.iterator();
+		Iterator<DPoint> i = r.iterator();
 		p = ((DPoint)i.next());
 		maxX=minX = p.getX();
 		maxY=minY = p.getY();

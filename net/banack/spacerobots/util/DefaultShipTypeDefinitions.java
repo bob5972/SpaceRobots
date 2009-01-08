@@ -78,14 +78,14 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	}
 	
 	
-	public Iterator getShipTypeIterator()
+	public Iterator<ShipType> getShipTypeIterator()
 	{
-		return new Iterator(){
+		return new Iterator<ShipType>(){
 			private int x=0;
 			public boolean hasNext(){
 				return x < myTypes.length;
 			}
-			public Object next(){
+			public ShipType next(){
 				return myTypes[x++];
 			}
 			

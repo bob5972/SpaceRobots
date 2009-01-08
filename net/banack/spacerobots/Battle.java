@@ -100,13 +100,13 @@ public class Battle
 		//setup stuff...
 		//notify the AI's a battle is starting
 		// etc
-		Iterator i = myFleets.iterator();
+		Iterator<ServerFleet> i = myFleets.iterator();
 		ServerTeam[] t = myTeams.toArray();
 		ServerFleet[] fa = myFleets.toArray();
 		
 		while(i.hasNext())
 		{
-			ServerFleet f = (ServerFleet)i.next();
+			ServerFleet f = i.next();
 			int launchType = TYPE_CRUISER;
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
@@ -127,7 +127,7 @@ public class Battle
 	public boolean isOver()
 	{
 		int alive=0;
-		Iterator i = myTeams.iterator();
+		Iterator<ServerTeam> i = myTeams.iterator();
 		while(i.hasNext())
 		{
 			ServerTeam t = (ServerTeam)i.next();
@@ -143,7 +143,7 @@ public class Battle
 		ServerFleet f;
 		ServerShip s;
 		ShipAction a;
-		Iterator i;
+		Iterator<ServerFleet> i;
 		FleetAI ai;
 		myTick++;
 		
@@ -152,7 +152,7 @@ public class Battle
 		i=myFleets.iterator();
 		while(i.hasNext())
 		{
-			f=(ServerFleet)i.next();
+			f=i.next();
 			ai = f.getAI();
 			
 			//add credits to fleets
@@ -163,11 +163,11 @@ public class Battle
 			ai.beginFleetStatusUpdate(myTick,f.getCredits(),contacts.getFleetList(f),f.getNumShips());
 		}
 		
-		Iterator si = myShips.iterator();
+		Iterator<ServerShip> si = myShips.iterator();
 			
 		while(si.hasNext())
 		{
-			s=(ServerShip)si.next();
+			s=si.next();
 			ai = s.getFleet().getAI(); 
 			ai.writeShip(s);
 		}
@@ -191,10 +191,10 @@ public class Battle
 		}
 		
 		HashSet<ServerShip> toDie = new HashSet<ServerShip>();
-		i = myShips.iterator();
+		si = myShips.iterator();
 		while(i.hasNext())
 		{
-			s=(ServerShip)i.next();
+			s=(ServerShip)si.next();
 			s.reset();//tick damage counters and the like
 			a = aggregate.get(s.getShipID());
 			ShipType t = myShipTypes.get(s.getTypeID());
@@ -243,10 +243,10 @@ public class Battle
 		//	No guarantee made as to order of spawns
 		//	ie if you try to spawn more than you can, some get through, some don't
 		
-		i = aggregate.spawnIterator();
+		Iterator<ShipAction> ait = aggregate.spawnIterator();
 		while(i.hasNext())
 		{
-			a=(ShipAction)i.next();
+			a=(ShipAction)ait.next();
 			
 			if (canSpawn(a))
 			{
@@ -261,7 +261,7 @@ public class Battle
 
 
 		contacts.makeEmpty();
-		Iterator outer = myShips.iterator();
+		Iterator<ServerShip> outer = myShips.iterator();
 		
 		
 		while(outer.hasNext())
@@ -272,7 +272,7 @@ public class Battle
 			
 			int oTeam = sho.getFleet().getTeamID();
 			int oType = sho.getTypeID();
-			Iterator inner = myShips.iterator();
+			Iterator<ServerShip> inner = myShips.iterator();
 			while(inner.hasNext())
 			{
 				ServerShip shi = (ServerShip)inner.next();
@@ -312,10 +312,10 @@ public class Battle
 		}
 		
 		//blow stuff up
-		i = toDie.iterator();
+		si = toDie.iterator();
 		while(i.hasNext())
 		{
-			s = (ServerShip)i.next();
+			s = (ServerShip)si.next();
 			
 			myShips.remove(s);
 			f = s.getFleet();
@@ -332,7 +332,7 @@ public class Battle
 	
 	private void validateShipIDs(ActionList al, ServerFleet f)
 	{
-		Iterator i = al.iterator();
+		Iterator<ShipAction> i = al.iterator();
 		while(i.hasNext())
 		{
 			ShipAction a = (ShipAction)i.next();
@@ -446,17 +446,17 @@ public class Battle
 		return myHeight;
 	}
 	
-	public Iterator shipIterator()
+	public Iterator<ServerShip> shipIterator()
 	{
 		return myShips.iterator();
 	}
 	
-	public Iterator fleetIterator()
+	public Iterator<ServerFleet> fleetIterator()
 	{
 		return myFleets.iterator();
 	}
 	
-	public Iterator teamIterator()
+	public Iterator<ServerTeam> teamIterator()
 	{
 		return myTeams.iterator();
 	}

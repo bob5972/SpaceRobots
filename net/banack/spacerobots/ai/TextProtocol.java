@@ -109,7 +109,7 @@ public class TextProtocol implements AIClientProtocol
 		
 		SensorContact ghost = new SensorContact(eID,fleetID,typeID,x,y,heading);
 		
-		HashSet spotters = new HashSet();
+		HashSet<Integer> spotters = new HashSet<Integer>();
 		
 		char dummy = sIn.readNonWhitespaceChar();
 		if(dummy != '(')
@@ -313,7 +313,7 @@ public class TextProtocol implements AIClientProtocol
 				send("BEGIN_SHIP_ACTIONS "+al.size());
 				curLevel++;
 				
-				Iterator i = al.iterator();
+				Iterator<ShipAction> i = al.iterator();
 				while(i.hasNext())					
 				{
 					writeAction((ShipAction)i.next());

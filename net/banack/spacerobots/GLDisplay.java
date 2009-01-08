@@ -104,7 +104,7 @@ public class GLDisplay implements GLEventListener, Display
 	}
 	ArrayList<DisplayShip> ships = new ArrayList<DisplayShip>();
 
-	Iterator iter = b.shipIterator();
+	Iterator<ServerShip> iter = b.shipIterator();
 	while(iter.hasNext()) {
 	    ServerShip ship = (ServerShip) iter.next();
 	    DisplayShip displayShip = new DisplayShip();

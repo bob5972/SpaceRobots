@@ -7,14 +7,14 @@ import java.util.Set;
 
 public class ActionList
 {
-	private HashMap myActions;
-	private HashSet mySpawns;
+	private HashMap<Integer,ShipAction> myActions;
+	private HashSet<ShipAction> mySpawns;
 	private int myTick;
 	
 	public ActionList()
 	{
-		myActions = new HashMap();
-		mySpawns = new HashSet();
+		myActions = new HashMap<Integer,ShipAction>();
+		mySpawns = new HashSet<ShipAction>();
 		myTick = -1;
 	}
 	
@@ -45,12 +45,13 @@ public class ActionList
 	}
 	
 	//clones the spawn set
-	public Set getSpawns()
+	@SuppressWarnings("unchecked")
+	public Set<ShipAction> getSpawns()
 	{
-		return (Set)mySpawns.clone();
+		return (Set<ShipAction>)mySpawns.clone();
 	}
 	
-	public Iterator spawnIterator()
+	public Iterator<ShipAction> spawnIterator()
 	{
 		return mySpawns.iterator();
 	}
@@ -74,7 +75,7 @@ public class ActionList
 	}
 	
 	//gets an iterator over the actions
-	public Iterator iterator()
+	public Iterator<ShipAction> iterator()
 	{
 		return new ActionListIterator();
 	}
@@ -85,9 +86,9 @@ public class ActionList
 		return (ShipAction)myActions.get(new Integer(shipID));
 	}
 	
-	private class ActionListIterator implements Iterator
+	private class ActionListIterator implements Iterator<ShipAction>
 	{
-		private Iterator i;
+		private Iterator<ShipAction> i;
 		public ActionListIterator()
 		{
 			i=myActions.values().iterator();
@@ -98,7 +99,7 @@ public class ActionList
 			return i.hasNext();
 		}
 		
-		public Object next()
+		public ShipAction next()
 		{
 			return i.next();
 		}
