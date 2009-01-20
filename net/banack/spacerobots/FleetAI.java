@@ -27,12 +27,14 @@ public class FleetAI
 		myCom = ProtocolFactory.doHandshake(inp,oup);	
 	}
 	
-	public void loadInfo()  throws IOException
+	//returns an array of the form {name, author, version}
+	public String[] loadInfo()  throws IOException
 	{
 		String[] s = myCom.loadInfo();
 		myName = s[0];
 		myAuthor = s[1];
 		myVersion = s[2];
+		return s;
 	}
 	
 	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f) throws IOException

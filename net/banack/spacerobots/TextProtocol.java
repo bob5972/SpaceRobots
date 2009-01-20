@@ -99,6 +99,9 @@ public class TextProtocol implements AIProtocol
 	public String[] loadInfo() throws IOException
 	{
 		String[] oup = new String[3];
+		StringBuffer name = new StringBuffer();
+		StringBuffer author = new StringBuffer();
+		StringBuffer version = new StringBuffer();
 		String temp;
 		
 		
@@ -111,15 +114,24 @@ public class TextProtocol implements AIProtocol
 		{
 			if(temp.equals("NAME"))
 			{
-				oup[0] = readLine();
+				temp = readLine();
+				name.append(temp);
+				while(Character.isWhitespace(name.charAt(0)))
+					name.deleteCharAt(0);
 			}
 			else if(temp.equals("AUTHOR"))
 			{
-				oup[1] = readLine();
+				temp = readLine();
+				author.append(temp);
+				while(Character.isWhitespace(author.charAt(0)))
+					author.deleteCharAt(0);
 			}
 			else if(temp.equals("VERSION"))
 			{
-				oup[2] = readLine();
+				temp = readLine();
+				version.append(temp);
+				while(Character.isWhitespace(version.charAt(0)))
+					version.deleteCharAt(0);
 			}
 			else
 				net.banack.spacerobots.Debug.aiwarn("Unknown AI Response in BEGIN_INFO: "+temp);
@@ -136,6 +148,10 @@ public class TextProtocol implements AIProtocol
 		//<AUTHOR Michael Banack
 		//<VERSION 1.0
 		//<END_INFO
+		
+		oup[0] = name.toString();
+		oup[1] = author.toString();
+		oup[2] = version.toString();
 		
 		return oup;
 	}

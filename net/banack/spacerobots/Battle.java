@@ -109,6 +109,8 @@ public class Battle
 		while(i.hasNext())
 		{
 			ServerFleet f = i.next();
+			f.getAI().loadInfo();
+			
 			int launchType = TYPE_CRUISER;
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
@@ -235,6 +237,7 @@ public class Battle
 			if(s.willMove())
 			{
 				s.addPosition(SpaceMath.calculateOffset(s.getHeading(),s.getMaxSpeed()));
+				
 				while(s.getX() > myWidth)
 					s.setX(s.getX()-myWidth);
 				while(s.getX() < 0)

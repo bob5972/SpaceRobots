@@ -83,16 +83,9 @@ public class DummyFleet extends AbstractFleetAI
 					a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
 				}
 			}
-			if(tick % 100 == 0)
+			if(tick % 50 == 0)
 			{
-				if(myRandom.nextBoolean())
-				{
-					a.setHeading(myRandom.nextDouble()*Math.PI/4);
-				}
-				else
-				{
-					a.setHeading((myRandom.nextDouble())*Math.PI/4+7*Math.PI/4);
-				}
+				a.setHeading(myRandom.nextDouble()*Math.PI/2);
 			}
 			oup.add(a);
 			

@@ -173,11 +173,26 @@ public class GLDisplay implements GLEventListener, Display
 	    ServerShip ship = iter.next();
 	    DisplayShip disShip = new DisplayShip();
 
-	    disShip.location = ship.getLocation();
+	    disShip.location = convertToScreenCoordinates(ship.getLocation());
 	    ships.add(disShip);
 	}
 
 	frameQueue.add(new DisplayFrame(teams, fleets, ships, b.getTick()));
+    }
+    
+    public DQuad convertToScreenCoordinates(DQuad q)
+    {
+    	DPoint p1,p2,p3,p4;
+    	p1 = convertToScreenCoordinates(q.getP1());
+    	p2 = convertToScreenCoordinates(q.getP2());
+    	p3 = convertToScreenCoordinates(q.getP3());
+    	p4 = convertToScreenCoordinates(q.getP4());
+    	return new DQuad(p1,p2,p3,p4);
+    }
+    
+    public DPoint convertToScreenCoordinates(DPoint p)
+    {
+    	return new DPoint(p.getX(),battleHeight-p.getY());
     }
 
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
