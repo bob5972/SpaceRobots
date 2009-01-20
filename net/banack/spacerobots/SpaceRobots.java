@@ -60,6 +60,7 @@ public class SpaceRobots
 			cIn = new PipedInputStream();
 			sOut = new PipedOutputStream(cIn);
 			
+			Debug.info("Initializing background thread #2");
 			background = new AIThread(new DummyFleet(),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
