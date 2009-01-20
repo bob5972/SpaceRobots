@@ -146,13 +146,14 @@ public class GLDisplay implements GLEventListener, Display
 			int width, int height) {
 	GL gl = drawable.getGL();
 
-	float h = (float)height / (float)width;
+	//This kept giving me warnings...
+	//float h = (float)height / (float)width;
 
 	gl.glMatrixMode(GL.GL_PROJECTION);
 
-	System.err.println("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
-	System.err.println("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
-	System.err.println("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
+	Debug.info("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
+	Debug.info("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
+	Debug.info("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
 
 
 	gl.glMatrixMode(GL.GL_PROJECTION);
@@ -218,9 +219,9 @@ public class GLDisplay implements GLEventListener, Display
     public void init(GLAutoDrawable drawable) {
 	GL gl = drawable.getGL();
 
-	System.err.println("INIT GL IS: " + gl.getClass().getName());
+	Debug.info("INIT GL IS: " + gl.getClass().getName());
 
-	System.err.println("Chosen GLCapabilities: " +
+	Debug.info("Chosen GLCapabilities: " +
 			   drawable.getChosenGLCapabilities());
 
 	renderer = new TextRenderer(new Font("SansSerif", Font.BOLD, 24));

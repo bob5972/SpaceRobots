@@ -360,6 +360,8 @@ public class TextProtocol implements AIClientProtocol
 				
 				send("BATTLE_READY_END");
 				
+				return;//its all over..
+				
 				//>BEGIN_BATTLE_OUTCOME
 				//>YOU fleetID teamID deadOrAlive winOrLose
 				//>	BEGIN_TEAMS

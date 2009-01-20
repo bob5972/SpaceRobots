@@ -126,6 +126,18 @@ public class Battle
 		
 	}
 	
+	public void cleanup() throws IOException
+	{
+		ServerFleet[] f = myFleets.toArray();
+		ServerTeam[] t = myTeams.toArray();
+		
+		for(int x=0;x<f.length;x++)
+		{
+			FleetAI ai = f[x].getAI();
+			ai.endBattle(f[x], t, f);
+		}
+	}
+	
 	public boolean isOver()
 	{
 		int alive=0;

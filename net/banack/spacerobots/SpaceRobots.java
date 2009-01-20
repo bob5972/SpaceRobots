@@ -114,6 +114,13 @@ public class SpaceRobots
 		Debug.info("Battle over!");
 		//END GAME LOOP
 		
-		// cleanup?
+		// cleanup
+		try {
+			b.cleanup();
+		}
+		catch(java.io.IOException e)
+		{
+			Debug.crash(e,"Error during cleanup!");
+		}
 	}
 }
