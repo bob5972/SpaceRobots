@@ -76,7 +76,8 @@ public class Battle
 		for(int x=0;x<num;x++)
 		{
 			oup[x] = getNewID();
-			myTeams.add(new ServerTeam(oup[x],myTeams.size(),"Team "+(x+1)));
+			int nextIndex = myTeams.size();
+			myTeams.add(new ServerTeam(oup[x],nextIndex,"Team "+(nextIndex+1)));
 		}
 		return oup;
 	}
