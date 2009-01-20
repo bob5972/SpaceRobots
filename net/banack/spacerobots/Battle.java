@@ -86,7 +86,7 @@ public class Battle
 	{
 		int oup = getNewID();
 		ServerTeam t = myTeams.get(teamID);
-		ServerFleet f = new ServerFleet(name, oup, t.getNewFleetIndex(),teamID,ai);
+		ServerFleet f = new ServerFleet(name, oup, t.getNewFleetIndex(),teamID,t,ai);
 		f.setCredits(startingCredits);
 		f.setCreditIncrement(creditIncrement);
 		myFleets.add(f);
