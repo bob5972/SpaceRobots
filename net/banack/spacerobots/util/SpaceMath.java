@@ -5,10 +5,6 @@ import java.util.Iterator;
 import net.banack.geometry.DArc;
 import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
-import net.banack.geometry.NormalRectangle;
-import net.banack.geometry.Point;
-import net.banack.geometry.Rectangle;
-import net.banack.geometry.SkewRectangle;
 import net.banack.spacerobots.Battle;
 import net.banack.spacerobots.Debug;
 import net.banack.util.MethodNotImplementedException;
@@ -16,7 +12,9 @@ import net.banack.util.MethodNotImplementedException;
 public class SpaceMath
 {
 	public static final double HEADING_WRAP = 2*Math.PI;
+	public static final DPoint ORIGIN = new DPoint(0,0);
 	
+	//figures out the new heading for a ship, taking into account how far a ship can turn
 	public static double calculateAdjustedHeading(double curHeading, double desiredHeading, double maxTurningRate)
 	{
 		if(Math.abs(curHeading-desiredHeading) <= maxTurningRate)
@@ -31,14 +29,24 @@ public class SpaceMath
 	{
 		while(h<0)
 			h+=HEADING_WRAP;
-		while(h>HEADING_WRAP)
+		while(h>=HEADING_WRAP)
 			h-=HEADING_WRAP;
 		return h;
+	}
+	
+	public static DPoint calculateOffset(double heading, double speed)
+	{
+		return new DPoint(calculateXOffset(heading,speed), calculateYOffset(heading,speed));
 	}
 	
 	public static double calculateXOffset(double heading, double speed)
 	{
 		return (Math.cos(heading)*speed);
+	}
+	
+	public static double calculateYOffset(double heading,double speed)
+	{
+		return (Math.sin(heading)*speed);
 	}
 	
 	public static double degToRad(double d)
@@ -51,28 +59,28 @@ public class SpaceMath
 		return (r/(2*Math.PI))*360;
 	}
 	
-	public static double calculateYOffset(double heading,double speed)
-	{
-		return (Math.sin(heading)*speed);
-	}
+	
 	
 	public static DPoint rotate(DPoint p, DPoint center, double r)
 	{
-		
-		
 		if(r == 0 || p.equals(center))
 			return p;
 		
-		double xl = p.getX()-center.getX();
-		double yl = p.getY()-center.getY();
-		double length = Math.sqrt(xl*xl+yl*yl);
-		double angle = Math.atan(yl/xl);
+		DPoint diff = p.subtract(center);
+		double length = diff.getRadius();
+		double angle = diff.getTheta();
 		angle+=r;
 		
-		DPoint oup = new DPoint(Math.cos(angle)*length,Math.sin(angle)*length);
+		DPoint oup = DPoint.newPolar(length,angle);
 		oup = oup.add(center);
 		
 		return oup;	
+	}
+	
+	public static DPoint findCenter(DPoint a, DPoint b, DPoint c, DPoint d)
+	{
+		DPoint oup = new DPoint((a.getX()+b.getX()+c.getX()+d.getX())/4 , (a.getY()+b.getY()+c.getY()+d.getY())/4);
+		return oup;
 	}
 	
 	//rotates a DQuad around it's center point
@@ -82,8 +90,8 @@ public class SpaceMath
 			return q;
 		DPoint ul = q.getP1();
 		DPoint ur = q.getP2();
-		DPoint bl = q.getP3();
-		DPoint br = q.getP4();
+		DPoint br = q.getP3();
+		DPoint bl = q.getP4();
 		DPoint c = findCenter(ul,ur,bl,br);		
 		
 		ul = rotate(ul, c, r);
@@ -100,8 +108,8 @@ public class SpaceMath
 			return q;
 		DPoint ul = q.getP1();
 		DPoint ur = q.getP2();
-		DPoint bl = q.getP3();
-		DPoint br = q.getP4();
+		DPoint br = q.getP3();
+		DPoint bl = q.getP4();
 		
 		ul = rotate(ul, c, r);
 		ur = rotate(ur, c, r);
@@ -111,11 +119,7 @@ public class SpaceMath
 		return new DQuad(ul,ur,br,bl);
 	}
 	
-	public static DPoint findCenter(DPoint a, DPoint b, DPoint c, DPoint d)
-	{
-		DPoint oup = new DPoint((a.getX()+b.getX()+c.getX()+d.getX())/4 , (a.getY()+b.getY()+c.getY()+d.getY())/4);
-		return oup;
-	}
+	
 	
 	public static DQuad getDQuad(DPoint center, double width, double height, double heading)
 	{
@@ -164,15 +168,20 @@ public class SpaceMath
 	//reorders the points so that P1 is the upper-left, and proceeding clockwise
 	public static DQuad reorderToNormal(DQuad r)
 	{
+		//Write a unit test whenever this gets done.
 		throw new MethodNotImplementedException();
 	}
 	
-	//test if the line segements Seg[a1,a2] intersects Seg[b1,b2]
+	//test if the interval [a1,a2] intersects the interval [b1,b2]
 	public static boolean isIntersection(double a1, double a2, double b1, double b2)
 	{
 		if(a1 <= b1 && b1 <= a2)
 			return true;
 		if(a1 <= b2 && b2 <= a2)
+			return true;
+		if(b1 <= a1 && a1 <= b2)
+			return true;
+		if(b1 <= a2 && a2 <= b2)
 			return true;
 		return false;
 	}
@@ -185,13 +194,14 @@ public class SpaceMath
 		return false;
 	}
 	
-	//test if the line segements Seg[a1,a2] intersects Seg[b1,b2]
+	//test if the line segments Seg[a1,a2] intersects Seg[b1,b2]
 	public static boolean isIntersection(DPoint a1, DPoint a2, DPoint b1, DPoint b2)
 	{
-		double r = Math.atan(a1.getY()/a1.getX());
-		a2 = rotate(a2,a1,r);
-		b1 = rotate(b1,a1,r);
-		b2 = rotate(b2,a1,r);
+		DPoint offset = a2.subtract(a1);
+		double t = -offset.getTheta();
+		a2 = rotate(a2,a1,t);
+		b1 = rotate(b1,a1,t);
+		b2 = rotate(b2,a1,t);
 		
 		double bYMin,bYMax;
 				
@@ -223,9 +233,29 @@ public class SpaceMath
 				aXMax = temp;
 			}
 			
-			double u = (yAvg - b2.getY())/(b1.getY()-b2.getY());
-			double Bx = (b1.getX()-b2.getX())*u+b2.getX();
-			if(containsPoint(Bx,aXMin,aXMax))
+			double xVal;
+			
+			double bSlope = (b2.getY()-b1.getY())/(b2.getX()-b1.getX());
+			
+			if(bSlope == Double.POSITIVE_INFINITY || bSlope==Double.NEGATIVE_INFINITY)
+			{
+				xVal = (b1.getX()+b2.getX())/2;
+			}
+			else
+			{
+				if(bSlope == 0)
+				{
+					double bXMin = min(b1.getX(),b2.getX());
+					double bXMax = max(b1.getX(),b2.getX());
+					return isIntersection(bXMin,bXMax,aXMin,aXMax);
+				}
+				
+				double bIntercept = (b1.getY())/(bSlope*b1.getX());				
+				
+				xVal = (yAvg-bIntercept)/bSlope;
+			}
+			
+			if(containsPoint(xVal,aXMin,aXMax))
 				return true;
 			return false;
 		}
@@ -269,13 +299,10 @@ public class SpaceMath
 	}	
 	
 	public static boolean isCollision(DQuad r, DQuad s)
-	{
-		//either all of r is inside s
-		// or at least 1 corner of r is outside s
-		
-		
+	{		
 		DPoint center = s.getP4();
-		double a = Math.atan((s.getP3().getY()-center.getY())/(s.getP3().getX()-center.getX()));
+		DPoint offset = s.getP3().subtract(center);
+		double a = -offset.getTheta();
 		r = rotate(r,center,a);
 		s = rotate(s,center,a);
 		
@@ -292,22 +319,32 @@ public class SpaceMath
 			DPoint p = r.getVertex(x);
 			p = rotate(p,center,a);
 			
-			if(p.getX() > br.getX())
-				return false;
-			if(p.getY() > ul.getY())
-				return false;
-			if(p.getX() < bl.getX())
-				return false;
-			if(p.getY() < bl.getY())
-				return false;
+			if(p.getX() > br.getX()  ||
+			  (p.getY() > ul.getY()) ||
+			  (p.getX() < bl.getX()) ||
+			  (p.getY() < bl.getY())  )
+			{
+				continue;
+			}
 			return true;
 		}
+		
+		for(int x=1;x<=4;x++)
+		{
+			DPoint p = s.getVertex(x);
+			p = rotate(p,center,a);
+			
+			if(containsPoint(p,r))
+				return true;
+		}
+		
+		
 		
 		//all corners are outside
 		//  so let's check if edges cross
 		
 		
-		//If both endpoints of an r-edge are outside the rectangle
+		//If both end points of an r-edge are outside the rectangle
 		//  then it has to cross 2 s-edges (but it could be any 2)
 		//  So, we only need to check 3 s-edges for each r-edge
 		for(int ri=1;ri<=4;ri++)
@@ -399,7 +436,8 @@ public class SpaceMath
 		//This needs to be verified!
 		
 		DPoint center = r.getP4();
-		double angle = Math.atan((r.getP3().getY()-center.getY())/(r.getP3().getX()-center.getX()));
+		DPoint offset  = r.getP3().subtract(center);
+		double angle = -offset.getTheta();
 		r = rotate(r,center,angle);
 		right = rotate(right,center,angle);
 		a = new DArc(rotate(a.getCenter(),center,angle),a.getRadius(),Math.atan((right.getY()-a.getCenter().getY())/(right.getX()-a.getCenter().getX())),a.getAngleSpan());
@@ -415,10 +453,9 @@ public class SpaceMath
 	
 	public static boolean containsPoint(DPoint p, DArc a)
 	{
-		double angle = Math.atan((p.getY()-a.getCenter().getY())/(p.getX()-a.getCenter().getX()));
-		double x = p.getX()-a.getCenter().getX();
-		double y = p.getY()-a.getCenter().getY();
-		double radius = Math.sqrt(x*x+y*y);
+		DPoint offset = p.subtract(a.getCenter());
+		double angle = offset.getTheta();
+		double radius = offset.getRadius();
 		
 		return (radius <= a.getRadius() && (a.getAngleStart() <= angle && angle <= a.getAngleEnd()));		
 	}

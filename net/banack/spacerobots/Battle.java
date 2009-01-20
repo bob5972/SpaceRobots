@@ -143,16 +143,16 @@ public class Battle
 		ServerFleet f;
 		ServerShip s;
 		ShipAction a;
-		Iterator<ServerFleet> i;
+		Iterator<ServerFleet> fi;
 		FleetAI ai;
 		myTick++;
 		
 		aggregate.makeEmpty();
 
-		i=myFleets.iterator();
-		while(i.hasNext())
+		fi=myFleets.iterator();
+		while(fi.hasNext())
 		{
-			f=i.next();
+			f=fi.next();
 			ai = f.getAI();
 			
 			//add credits to fleets
@@ -172,10 +172,10 @@ public class Battle
 			ai.writeShip(s);
 		}
 		
-		i=myFleets.iterator();
-		while(i.hasNext())
+		fi=myFleets.iterator();
+		while(fi.hasNext())
 		{
-			f=(ServerFleet)i.next();
+			f=(ServerFleet)fi.next();
 			ai = f.getAI();
 			
 			ai.endFleetStatusUpdate();
@@ -192,18 +192,17 @@ public class Battle
 		
 		HashSet<ServerShip> toDie = new HashSet<ServerShip>();
 		si = myShips.iterator();
-		while(i.hasNext())
+		while(si.hasNext())
 		{
 			s=(ServerShip)si.next();
 			s.reset();//tick damage counters and the like
 			a = aggregate.get(s.getShipID());
-			ShipType t = myShipTypes.get(s.getTypeID());
 			
 			//apply a to s (if a exists)
 			if(a != null)
 			{
 				
-				if(t.getCanStop())
+				if(s.getCanStop())
 				{
 					if(!a.willMove())
 						s.setWillMove(false);
@@ -211,8 +210,8 @@ public class Battle
 						s.setWillMove(true);
 				}
 				
-				s.setHeading(SpaceMath.calculateAdjustedHeading(s.getHeading(),a.getHeading(),t.getMaxTurningRate()));
-				if(t.canMoveScanner())
+				s.setHeading(SpaceMath.calculateAdjustedHeading(s.getHeading(),a.getHeading(),s.getMaxTurningRate()));
+				if(s.getCanMoveScanner())
 				{
 					s.setScannerHeading(a.getScannerHeading());
 				}
@@ -221,8 +220,7 @@ public class Battle
 			//move s
 			if(s.willMove())
 			{
-				s.setX(s.getX()+SpaceMath.calculateXOffset(s.getHeading(),t.getMaxSpeed()));
-				s.setY(s.getY()+SpaceMath.calculateYOffset(s.getHeading(),t.getMaxSpeed()));
+				s.addPosition(SpaceMath.calculateOffset(s.getHeading(),s.getMaxSpeed()));
 				while(s.getX() > myWidth)
 					s.setX(s.getX()-myWidth);
 				while(s.getX() < 0)
@@ -232,9 +230,9 @@ public class Battle
 				while(s.getY() < 0)
 					s.setX(s.getY()+myWidth);
 			}
-			if(t.getMaxTickCount() > 0)
+			if(s.getMaxTickCount() > 0)
 			{
-				if(myTick - s.getCreationTick() > t.getMaxTickCount())
+				if(myTick - s.getCreationTick() > s.getMaxTickCount())
 					toDie.add(s);//it's flown too long
 			}
 		}
@@ -244,7 +242,7 @@ public class Battle
 		//	ie if you try to spawn more than you can, some get through, some don't
 		
 		Iterator<ShipAction> ait = aggregate.spawnIterator();
-		while(i.hasNext())
+		while(ait.hasNext())
 		{
 			a=(ShipAction)ait.next();
 			
@@ -313,7 +311,7 @@ public class Battle
 		
 		//blow stuff up
 		si = toDie.iterator();
-		while(i.hasNext())
+		while(si.hasNext())
 		{
 			s = (ServerShip)si.next();
 			
@@ -322,10 +320,13 @@ public class Battle
 			f.setNumShips(f.getNumShips() -1);
 			if(f.getNumShips() <= 0)
 			{
+				if(Debug.isDebug() && f.getNumShips() < 0)
+					Debug.warn("Fleet "+f.getName()+" has a negative number of ships!");
 				f.setAlive(false);
 				ServerTeam t = myTeams.get(f.getTeamID());
 				t.decrementLiveFleets(1);
 			}
+			
 		}
 			
 	}

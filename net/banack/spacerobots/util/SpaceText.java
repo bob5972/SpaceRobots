@@ -179,9 +179,9 @@ public class SpaceText extends Parser
 		oup.append(" ");
 		oup.append(a.willMove()?1:0);
 		oup.append(" ");
-		oup.append(a.getHeading());
+		oup.append(SpaceMath.radToDeg(a.getHeading()));
 		oup.append(" ");
-		oup.append(a.getScannerHeading());
+		oup.append(SpaceMath.radToDeg(a.getScannerHeading()));
 		oup.append(" ");
 		oup.append(a.getLaunch());
 		return oup.toString();		

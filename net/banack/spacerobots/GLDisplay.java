@@ -192,7 +192,7 @@ public class GLDisplay implements GLEventListener, Display
 	for (int i = 0; i < displayFrame.ships.size(); i++) {
 	    DisplayShip ship = displayFrame.ships.get(i);
 
-	    gl.glColor4f(ship.red, ship.green, ship.blue, .1f);
+	    gl.glColor4f(ship.red, ship.green, ship.blue, .2f);
 	    gl.glVertex2f((float) ship.location.getP1().getX(), 
 			  (float) ship.location.getP1().getY());
 	    gl.glVertex2f((float) ship.location.getP2().getX(), 

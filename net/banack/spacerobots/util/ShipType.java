@@ -102,9 +102,14 @@ public class ShipType
 		return maxTurningRate;
 	}
 
-	public boolean canMoveScanner()
+	public boolean getCanMoveScanner()
 	{
 		return canMoveScanner;
+	}
+	
+	public final boolean canMoveScanner()
+	{
+		return getCanMoveScanner();
 	}
 
 	public boolean hasScanner()

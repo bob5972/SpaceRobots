@@ -153,6 +153,31 @@ public class Ship
 		return myType;
 	}
 	
+	public double getMaxSpeed()
+	{
+		return myType.getMaxSpeed();
+	}
+	
+	public boolean getCanStop()
+	{
+		return myType.getCanStop();
+	}
+	
+	public double getMaxTurningRate()
+	{
+		return myType.getMaxTurningRate();
+	}
+	
+	public int getMaxTickCount()
+	{
+		return myType.getMaxTickCount();
+	}
+	
+	public boolean getCanMoveScanner()
+	{
+		return myType.getCanMoveScanner();
+	}
+	
 	public void setX(double x)
 	{
 		myPosition = new DPoint(x,myPosition.getY());
@@ -165,6 +190,11 @@ public class Ship
 	public void setPosition(DPoint p)
 	{
 		myPosition = p;
+	}
+	
+	public void addPosition(DPoint offset)
+	{
+		myPosition = myPosition.add(offset);
 	}
 	
 	public DPoint getPosition()
@@ -202,5 +232,10 @@ public class Ship
 		DArc oup = new DArc(myPosition, myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
 		oup.rotate(-myType.getScannerAngleSpan()/2);
 		return oup;
+	}
+	
+	public String toString()
+	{
+		return SpaceText.toString(this);
 	}
 }
