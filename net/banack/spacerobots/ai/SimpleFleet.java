@@ -42,7 +42,7 @@ public class SimpleFleet extends AbstractFleetAI
 			{
 				//nothing to see here, move along
 			}
-			else //CRUISER_ID
+			else if(s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
 				if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
 				{
