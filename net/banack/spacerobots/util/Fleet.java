@@ -3,7 +3,7 @@ package net.banack.spacerobots.util;
 
 public class Fleet
 {
-	private int myFleetID;
+	private int myFleetID;//internal battle ID
 	private int myTeamID;
 	private boolean isAlive;
 	private int winOrLose;
@@ -39,7 +39,6 @@ public class Fleet
 		myAIAuthor = aiAuthor;
 		myAIVersion = aiVersion;
 	}
-	
 	
 	public String getFleetName()
 	{

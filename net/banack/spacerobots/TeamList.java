@@ -12,6 +12,11 @@ public class TeamList
 		m = new HashMap<Integer,ServerTeam>();
 	}
 	
+	public int size()
+	{
+		return m.size();
+	}
+	
 	public java.util.Iterator<ServerTeam> iterator()
 	{
 		return m.values().iterator();

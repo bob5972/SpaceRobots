@@ -2,14 +2,15 @@ package net.banack.spacerobots.util;
 
 public class Team
 {
+	private int myTeamID;
+	private String myName;
+	
 	public Team(int teamID, String name)
 	{
 		myTeamID = teamID;
 		myName = name;
 	}
 	
-	private int myTeamID;
-	private String myName;
 	
 	public int getTeamID()
 	{

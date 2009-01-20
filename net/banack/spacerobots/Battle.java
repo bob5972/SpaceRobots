@@ -76,7 +76,7 @@ public class Battle
 		for(int x=0;x<num;x++)
 		{
 			oup[x] = getNewID();
-			myTeams.add(new ServerTeam(oup[x],"Team "+(x+1)));
+			myTeams.add(new ServerTeam(oup[x],myTeams.size(),"Team "+(x+1)));
 		}
 		return oup;
 	}
@@ -84,11 +84,12 @@ public class Battle
 	public int addFleet(String name, FleetAI ai, int teamID, int startingCredits,int creditIncrement)
 	{
 		int oup = getNewID();
-		ServerFleet f = new ServerFleet(name, oup,teamID,ai);
+		ServerTeam t = myTeams.get(teamID);
+		ServerFleet f = new ServerFleet(name, t.getNewFleetIndex(),oup,teamID,ai);
 		f.setCredits(startingCredits);
 		f.setCreditIncrement(creditIncrement);
 		myFleets.add(f);
-		myTeams.get(teamID).incrementLiveFleets(1);
+		t.incrementLiveFleets(1);
 		return oup;
 	}
 	

@@ -3,9 +3,9 @@ package net.banack.spacerobots;
 import java.util.Iterator;
 
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
-import net.banack.spacerobots.util.Ship;
+import net.banack.spacerobots.ServerShip;
 import net.banack.util.MethodNotImplementedException;
-import net.banack.spacerobots.util.Fleet;
+import net.banack.spacerobots.ServerFleet;
 import net.banack.geometry.*;
 
 import java.awt.*;

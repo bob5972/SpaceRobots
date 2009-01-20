@@ -11,22 +11,35 @@ public class ServerFleet extends Fleet
 	private int myCredits;
 	private int myCreditIncrement;
 	private int myNumShips;
+	private int myFleetIndex;
 
 	
-	public ServerFleet(int fleetID,int teamID, FleetAI ai)
+	public ServerFleet(int fleetID,int fleetIndex,int teamID, FleetAI ai)
 	{
 		super(fleetID,teamID,"Fleet "+fleetID,ai.getName(),ai.getAuthor(),ai.getVersion());
+		myFleetIndex=fleetIndex;
 		myAI = ai;
 		setWinOrLose(STATUS_IN_PROGRESS);
 		setAlive(true);
 	}
 	
-	public ServerFleet(String name, int fleetID, int teamID, FleetAI ai)
+	public ServerFleet(String name, int fleetID, int fleetIndex, int teamID, FleetAI ai)
 	{
 		super(fleetID,teamID,name,ai.getName(),ai.getAuthor(),ai.getVersion());
+		myFleetIndex=fleetIndex;
 		myAI = ai;
 		setWinOrLose(STATUS_IN_PROGRESS);
 		setAlive(true);
+	}
+	
+	public final int getIndex()
+	{
+		return getFleetIndex();
+	}
+	
+	public int getFleetIndex()
+	{
+		return myFleetIndex;
 	}
 	
 	public final String getName()
