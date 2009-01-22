@@ -4,4 +4,5 @@
 bin/
 ref/
 runSpaceRobots.sh
+killSpaceRobots.sh
 *.class

@@ -3,6 +3,7 @@ package net.banack.spacerobots;
 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.Random;
 
 import net.banack.spacerobots.ai.ClientProtocolFactory;
 import net.banack.spacerobots.ai.DummyFleet;
@@ -16,16 +17,26 @@ public class SpaceRobots
 	public static final int DEFAULT_HEIGHT = 100;
 	public static final int STARTING_CREDITS=0;
 	public static final int CREDIT_INCREMENT=1;
+	public static long RANDOM_SEED=0;//0 for random
 	
 	public static void main(String[] args)
 	{
+		//Debug INIT
 		Debug.enableDebug();
+		Debug.enableMessages();
 		Debug.STD_ERR_MESSAGES=true;
+		Debug.STD_ERR_MESSAGES_VERBOSE=false;
 		Debug.STD_ERR_MESSAGES_INFO=true;
 		Debug.STD_ERR_MESSAGES_WARN=true;
-		Debug.STD_ERR_MESSAGES_ERROR=true;
+		Debug.STD_ERR_MESSAGES_ERROR=true;		
 		Debug.setShowAIWarnings(true);
 		Debug.setShowComLog(false);
+		if(RANDOM_SEED ==0)
+		{
+			Random r = new Random();
+			RANDOM_SEED=r.nextLong();
+		}
+		Debug.info("Random Seed = "+RANDOM_SEED);
 		
 		//SETUP
 		Debug.info("Initializing Display...");
@@ -34,6 +45,7 @@ public class SpaceRobots
 		//setup initial battle state
 		Debug.info("Initializing Battle...");
 		Battle b = new Battle(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+		b.seedRandom(RANDOM_SEED);
 
 		// load AI's
 		Debug.info("Initializing AI's...");
@@ -61,7 +73,7 @@ public class SpaceRobots
 			sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #2");
-			background = new AIThread(new DummyFleet(),cIn,cOut);
+			background = new AIThread(new DummyFleet(RANDOM_SEED),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}
@@ -109,6 +121,7 @@ public class SpaceRobots
 				Debug.crash(e,"Error running tick!");
 			}
 			d.updateDisplay(b);
+			Debug.verbose("tick #"+b.getTick());
 		}
 		
 		Debug.info("Battle over!");
@@ -122,5 +135,7 @@ public class SpaceRobots
 		{
 			Debug.crash(e,"Error during cleanup!");
 		}
+		
+		Debug.info("Main Exiting");
 	}
 }

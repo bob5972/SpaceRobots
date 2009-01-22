@@ -21,6 +21,16 @@ public class DummyFleet extends AbstractFleetAI
 		myRandom = new Random();
 	}
 	
+	public DummyFleet(long seed)
+	{
+		myRandom = new Random(seed);
+	}
+	
+	public void seedRandom(long seed)
+	{
+		myRandom=new Random(seed);
+	}
+	
 	public String getAuthor()
 	{
 		return "Michael Banack";
@@ -87,7 +97,9 @@ public class DummyFleet extends AbstractFleetAI
 			{
 				a.setHeading(myRandom.nextDouble()*Math.PI/2);
 			}
-			oup.add(a);
+			
+			if(s[x].isAlive())
+				oup.add(a);
 			
 		}
 		return oup;

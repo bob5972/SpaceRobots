@@ -40,7 +40,7 @@ public class Ship
 		this(id,type,t,x,y,0,0,life,tick,deltalife,0);
 	}
 	
-	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int life,int tick,int deltalife)
+	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife)
 	{
 		this(id,type,t,x,y,heading,scannerH,life,tick,deltalife,0);
 	}
@@ -71,6 +71,12 @@ public class Ship
 	{
 		myDeltaLife += d;
 		myLife -= d;
+	}
+	
+	public void setLife(int L)
+	{
+		myDeltaLife += myLife-L;
+		myLife=L;
 	}
 	
 	public int getCost()

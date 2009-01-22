@@ -189,7 +189,7 @@ public class SpaceText extends Parser
 	
 	public Ship readShip() throws IOException
 	{
-		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife launchDelay
+		//>		SHIP iD type xPos yPos heading scannerHeading creationTick life deltaLife launchDelay
 		String temp = readWord();
 		String[] words = readWords();
 		if(!temp.equals("SHIP"))
@@ -232,20 +232,66 @@ public class SpaceText extends Parser
 		return oup.toString();
 	}
 	
+	public static String prettyPrint(Ship s)
+	{
+		StringBuffer oup = new StringBuffer();
+		
+		oup.append("SHIP id=");
+		oup.append(s.getID());
+		oup.append(" type=");
+		oup.append(prettyPrintType(s.getTypeID()));
+		oup.append(" pos=(");
+		oup.append(((int)s.getX()));
+		oup.append(",");
+		oup.append(((int)s.getY()));
+		oup.append(") h=");
+		oup.append(((int)SpaceMath.radToDeg(s.getHeading())));
+		oup.append(" sh=");
+		oup.append(((int)SpaceMath.radToDeg(s.getScannerHeading())));
+		oup.append(" tick=");
+		oup.append(s.getCreationTick());
+		oup.append(" life=");
+		oup.append(s.getLife());
+		oup.append(" dl=");
+		oup.append(s.getDeltaLife());
+		oup.append(" delay=");
+		oup.append(s.getLaunchDelay());
+		return oup.toString();		
+	}
+	
+	public static String prettyPrintType(int t)
+	{
+		switch(t)
+		{
+			case DefaultShipTypeDefinitions.CRUISER_ID:
+				return "Cruiser";
+			case DefaultShipTypeDefinitions.FIGHTER_ID:
+				return "Fighter";
+			case DefaultShipTypeDefinitions.DESTROYER_ID:
+				return "Destroyer";
+			case DefaultShipTypeDefinitions.ROCKET_ID:
+				return "Rocket";
+			case DefaultShipTypeDefinitions.MISSILE_ID:
+				return "Missile";
+		}
+		return Integer.toString(t);
+	}
+	
 	public static Ship parseShip(String[] words)
 	{
+		//>		SHIP iD type xPos yPos heading scannerHeading creationTick life deltaLife launchDelay
 		int id = parseInt(words[0]);
 		int type = parseInt(words[1]);
 		double x = parseInt(words[2]);
 		double y = parseInt(words[3]);
 		double heading = SpaceMath.degToRad(parseInt(words[4]));
 		double scannerHeading = SpaceMath.degToRad(parseInt(words[5]));
-		int tick = parseInt(words[6]);
+		int creationTick = parseInt(words[6]);
 		int life = parseInt(words[7]);
 		int deltaLife = parseInt(words[8]);
 		int firingDelay = parseInt(words[9]);
 		
-		Ship s = new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,tick,life,deltaLife);
+		Ship s = new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,creationTick,life,deltaLife);
 		s.setLaunchDelay(firingDelay);
 		return s;
 	}

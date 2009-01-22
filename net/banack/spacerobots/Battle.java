@@ -19,6 +19,7 @@ import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.ShipType;
 import net.banack.spacerobots.util.ShipTypeDefinitions;
 import net.banack.spacerobots.util.SpaceMath;
+import net.banack.spacerobots.util.SpaceText;
 
 public class Battle
 {
@@ -42,6 +43,9 @@ public class Battle
 	//saves on (de)allocation
 	private ActionList aggregate;
 	private FleetContactList contacts;
+	
+	//this is actually used between ticks
+	private HashSet<ServerShip> toDie;	
 	private Random myRandom;
 	
 	private double myWidth;
@@ -67,6 +71,12 @@ public class Battle
 		contacts = new FleetContactList();
 		myTeams = new TeamList();
 		myRandom = new Random();
+		toDie = new HashSet<ServerShip>();
+	}
+	
+	public void seedRandom(long x)
+	{
+		myRandom= new Random(x);
 	}
 	
 	//returns teamID's
@@ -206,7 +216,29 @@ public class Battle
 			aggregate.add(AL);
 		}
 		
-		HashSet<ServerShip> toDie = new HashSet<ServerShip>();
+		//blow stuff up (from last round)
+		//this way the AI's get to see the ship as "dead," but it doesn't actually get to interact with anything
+		si = toDie.iterator();
+		while(si.hasNext())
+		{
+			s = (ServerShip)si.next();
+			
+			myShips.remove(s);
+			Debug.verbose("Blowing up ship="+s.toString());
+			f = s.getFleet();
+			f.setNumShips(f.getNumShips() -1);
+			if(f.getNumShips() <= 0)
+			{
+				if(Debug.isDebug() && f.getNumShips() < 0)
+					Debug.warn("Fleet "+f.getName()+" has a negative number of ships!");
+				f.setAlive(false);
+				ServerTeam t = myTeams.get(f.getTeamID());
+				t.decrementLiveFleets(1);
+			}			
+		}
+		
+		//reset the kill list
+		toDie.clear();
 		si = myShips.iterator();
 		while(si.hasNext())
 		{
@@ -250,7 +282,10 @@ public class Battle
 			if(s.getMaxTickCount() > 0)
 			{
 				if(myTick - s.getCreationTick() > s.getMaxTickCount())
-					toDie.add(s);//it's flown too long
+				{
+					Debug.verbose("Expiring ship="+s.toString());
+					markForDeath(s);//it's flown too long					
+				}
 			}
 		}
 		
@@ -263,6 +298,14 @@ public class Battle
 		{
 			a=(ShipAction)ait.next();
 			
+			if(Debug.isDebug() && Debug.showWarnings())
+			{
+				if(myShips.get(a.getShipID()) == null)
+				{
+					Debug.warn("ShipAction for an invalid ship!  shipID="+a.getShipID());
+				}
+			}
+			
 			if (canSpawn(a))
 			{
 				doSpawn(a);
@@ -270,7 +313,8 @@ public class Battle
 			else
 			{
 				//error message
-				Debug.aiwarn("AI attempted an illegal spawn: "+myShips.get(a.getShipID()).getFleet().getAIName());
+				ServerShip ship = myShips.get(a.getShipID());
+				Debug.aiwarn("AI attempted an illegal spawn: "+myShips.get(a.getShipID()).getFleet().getAIName()+", "+SpaceText.prettyPrint(ship));
 			}
 		}
 
@@ -311,12 +355,13 @@ public class Battle
 							if(isCollision(sho,shi))
 							{
 								//	do damage
+								markForDeath(sho);
 								toDie.add(sho);//the rocket blows up
 								shi.decrementLife(1);
 								if(!shi.isAlive())
 								{
 									//mark stuff to be blown up
-									toDie.add(shi);
+									markForDeath(shi);
 								}
 								
 							}
@@ -325,27 +370,13 @@ public class Battle
 				}
 			}
 		}
-		
-		//blow stuff up
-		si = toDie.iterator();
-		while(si.hasNext())
-		{
-			s = (ServerShip)si.next();
-			
-			myShips.remove(s);
-			f = s.getFleet();
-			f.setNumShips(f.getNumShips() -1);
-			if(f.getNumShips() <= 0)
-			{
-				if(Debug.isDebug() && f.getNumShips() < 0)
-					Debug.warn("Fleet "+f.getName()+" has a negative number of ships!");
-				f.setAlive(false);
-				ServerTeam t = myTeams.get(f.getTeamID());
-				t.decrementLiveFleets(1);
-			}
-			
-		}
-			
+	}
+	
+	private void markForDeath(ServerShip s)
+	{
+		s.setLife(0);
+		toDie.add(s);
+		Debug.verbose("Marked for death ship="+s.toString());
 	}
 	
 	private void validateShipIDs(ActionList al, ServerFleet f)
@@ -355,11 +386,23 @@ public class Battle
 		{
 			ShipAction a = (ShipAction)i.next();
 			ServerShip s = myShips.get(a.getShipID());
-			if(s==null || s.getFleet() != f)
+			
+			if(Debug.showWarnings() && !s.isAlive() && !toDie.contains(s))
+			{
+				Debug.warn("A dead ship is not contained in toDie!  shipID="+s.getID());
+			}
+			
+			if(s==null || s.getFleet() != f || !s.isAlive())
 			{
 				al.remove(a);
 				Debug.aiwarn("AI returned an action for an invalid ship id.");
+				Debug.verbose("UnValidated ship="+s.toString());
 			}
+			else
+			{
+				Debug.verbose("Validated ship="+s.toString());
+			}
+			
 		}
 				
 	}

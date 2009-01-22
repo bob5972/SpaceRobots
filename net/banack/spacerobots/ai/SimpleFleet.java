@@ -1,5 +1,6 @@
 package net.banack.spacerobots.ai;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ public class SimpleFleet extends AbstractFleetAI
 	{
 		ActionList oup = new ActionList();
 		oup.setTick(tick);
+		HashSet<Integer> cantSpawn = new HashSet<Integer>();
 		
 	
 		for(int x=0;x<s.length;x++)
@@ -42,7 +44,7 @@ public class SimpleFleet extends AbstractFleetAI
 			{
 				//nothing to see here, move along
 			}
-			else if(s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
+			else if(s[x].isAlive() && s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
 				if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
 				{
@@ -50,7 +52,16 @@ public class SimpleFleet extends AbstractFleetAI
 					a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
 				}
 			}
-			oup.add(a);
+			else if(s[x].getTypeID() == DefaultShipTypeDefinitions.ROCKET_ID)
+			{
+				cantSpawn.add(s[x].getID());
+			}
+			
+			
+			if(s[x].isAlive())
+				oup.add(a);
+			else
+				cantSpawn.add(s[x].getID());
 		}
 		
 		Iterator<Integer> ci = c.enemyIterator();
@@ -64,12 +75,12 @@ public class SimpleFleet extends AbstractFleetAI
 			while(spotI.hasNext())
 			{			
 				ShipAction a = oup.get(spotI.next());
-				if(credits > DefaultShipTypeDefinitions.ROCKET.getCost())
+				if(a != null && !cantSpawn.contains(a.getShipID()) && credits > DefaultShipTypeDefinitions.ROCKET.getCost())
 				{
 					credits-=DefaultShipTypeDefinitions.ROCKET.getCost();
 					a.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
 				}
-			}			
+			}
 		}
 		
 		return oup;		

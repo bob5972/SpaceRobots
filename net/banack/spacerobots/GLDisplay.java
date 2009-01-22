@@ -101,6 +101,7 @@ public class GLDisplay implements GLEventListener, Display
 		    new Thread(new Runnable() {
 			    public void run() {
 				animator.stop();
+				Debug.info("Exiting from GLDisplay");
 				System.exit(0);
 			    }
 			}).start();
@@ -230,7 +231,17 @@ public class GLDisplay implements GLEventListener, Display
 	GL gl = drawable.getGL();
 
 	if (simulationFinished && frameQueue.isEmpty()) {
-	    System.exit(0);
+		try {
+			Debug.info("Pausing for 3 seconds...");
+			Thread.sleep(3000);
+		}
+		catch (InterruptedException e)
+		{
+			
+		}
+		//This probably isn't the right way to do this, but it works...
+		frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
+	    //exit called by "WINDOW CLOSING" event
 	}
 
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);

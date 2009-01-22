@@ -59,6 +59,8 @@ public class ActionList
 	//adds all the actions in ActionList
 	public void add(ActionList a)
 	{
+		if(a == null)
+			throw new NullPointerException();
 		myActions.putAll(a.myActions);
 		mySpawns.addAll(a.mySpawns);
 	}
