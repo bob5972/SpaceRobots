@@ -407,7 +407,7 @@ public class Battle
 				return false;
 		}
 		
-		return hasCreditsToLaunch(s.getFleet(),launchType);
+		return s.isReadyToLaunch() &&  hasCreditsToLaunch(s.getFleet(),launchType);
 	}
 	
 	private boolean hasCreditsToLaunch(ServerFleet f, int launchType)
@@ -430,13 +430,28 @@ public class Battle
 		if(!canSpawn(a))
 			Debug.crash("Attempted an invalid spawn!");
 		ServerShip cur = myShips.get(a.getShipID());
+		
+		
 		int launchType = a.getLaunch();
+		ShipType newType = myShipTypes.get(launchType);
 		ServerFleet f = cur.getFleet();
+		cur.setLaunchDelay(getLaunchDelay(cur,newType));
+		
 		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), getDefaultLife(launchType),myTick);
 		myShips.add(oup);
 		
 		f.setNumShips(f.getNumShips()+1);
 		f.decrementCredits(oup.getCost());
+	}
+	
+	//this needs to be communicated to AI's some how (either statically in documentation, or dynamically)
+	private static int getLaunchDelay(ServerShip s, ShipType t)
+	{
+		if(t.getCost() <= 5)
+			return 1;
+		else if(t.getCost() <= 20)
+			return 2;
+		else return (int)(t.getCost()/20.0);		
 	}
 	
 	static private int getNewID()

@@ -18,21 +18,9 @@ public class Ship
 	private int myTypeID;
 	private ShipType myType;
 	private boolean willMove;
+	private int myLaunchDelay;//number of ticks until the ship can fire again
 	
-	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick,int deltalife)
-	{
-		myID=id;
-		myTypeID = type;
-		myPosition = new DPoint(x,y);
-		myLife = life;
-		willMove=true;
-		myScannerHeading=0;
-		myType = t;
-		myCreationTick = tick;
-		myDeltaLife = deltalife;
-	}
-	
-	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int life,int tick,int deltalife)
+	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int life,int tick,int deltalife,int firingDelay)
 	{
 		myID=id;
 		myTypeID = type;
@@ -44,19 +32,39 @@ public class Ship
 		myType = t;
 		myCreationTick = tick;
 		myDeltaLife = deltalife;
+		myLaunchDelay = firingDelay;
 	}
+	
+	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick,int deltalife)
+	{
+		this(id,type,t,x,y,0,0,life,tick,deltalife,0);
+	}
+	
+	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int life,int tick,int deltalife)
+	{
+		this(id,type,t,x,y,heading,scannerH,life,tick,deltalife,0);
+	}
+	
+
 	
 	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick)
 	{
-		myID=id;
-		myTypeID = type;
-		myPosition = new DPoint(x,y);
-		myLife = life;
-		willMove=true;
-		myScannerHeading=0;
-		myType = t;
-		myCreationTick = tick;
-		myDeltaLife=0;
+		this(id,type,t,x,y,0,0,life,tick,0,0);
+	}
+	
+	public int getLaunchDelay()
+	{
+		return myLaunchDelay;
+	}
+	
+	public void setLaunchDelay(int d)
+	{
+		myLaunchDelay = d;
+	}
+	
+	public boolean isReadyToLaunch()
+	{
+		return myLaunchDelay <= 0;
 	}
 	
 	public void decrementLife(int d)
@@ -72,6 +80,8 @@ public class Ship
 	
 	public void reset()
 	{
+		if(myLaunchDelay>0)
+			myLaunchDelay--;
 		myDeltaLife=0;
 	}
 	

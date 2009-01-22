@@ -189,7 +189,7 @@ public class SpaceText extends Parser
 	
 	public Ship readShip() throws IOException
 	{
-		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife
+		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife launchDelay
 		String temp = readWord();
 		String[] words = readWords();
 		if(!temp.equals("SHIP"))
@@ -227,6 +227,8 @@ public class SpaceText extends Parser
 		oup.append(s.getLife());
 		oup.append(" ");
 		oup.append(s.getDeltaLife());
+		oup.append(" ");
+		oup.append(s.getLaunchDelay());
 		return oup.toString();
 	}
 	
@@ -241,8 +243,10 @@ public class SpaceText extends Parser
 		int tick = parseInt(words[6]);
 		int life = parseInt(words[7]);
 		int deltaLife = parseInt(words[8]);
+		int firingDelay = parseInt(words[9]);
 		
 		Ship s = new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,tick,life,deltaLife);
+		s.setLaunchDelay(firingDelay);
 		return s;
 	}
 	
