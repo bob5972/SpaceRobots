@@ -59,7 +59,7 @@ public class SpaceRobots
 			PipedOutputStream sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #1");
-			Thread background = new AIThread(new SimpleFleet(),cIn,cOut);
+			Thread background = new AIThread(new SimpleFleet(RANDOM_SEED),cIn,cOut);
 			Debug.info("Starting background thread #1");
 			background.start();
 			Debug.info("Handshaking...");

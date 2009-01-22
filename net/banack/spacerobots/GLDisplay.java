@@ -78,6 +78,25 @@ public class GLDisplay implements GLEventListener, Display
 	DQuad location;
     }
     
+    private FPSAnimator animator;
+    
+    private static class ClosingThread extends Thread
+	{
+    	private FPSAnimator myAnimator;
+    	
+    	public ClosingThread(FPSAnimator a)
+    	{
+    		myAnimator=a;
+    	}
+    	
+		public void run()
+		{
+			myAnimator.stop();
+			Debug.info("Exiting from GLDisplay");
+			System.exit(0);
+		} 	
+    }
+    
     public GLDisplay() {
 	frameQueue = new ConcurrentLinkedQueue<DisplayFrame>();
     }
@@ -88,31 +107,29 @@ public class GLDisplay implements GLEventListener, Display
 
 	canvas.addGLEventListener(this);
 	frame.add(canvas);
-	final FPSAnimator animator = new FPSAnimator(canvas, 60);
+	animator = new FPSAnimator(canvas, 60);
 
 	canvas.setSize(width, height);
 	frame.pack();
 
 	frame.addWindowListener(new WindowAdapter() {
 		public void windowClosing(WindowEvent e) {
-		    // Run this on another thread than the AWT event
-		    // queue to make sure the call to Animator.stop()
-		    // completes before exiting
-		    new Thread(new Runnable() {
-			    public void run() {
-				animator.stop();
-				Debug.info("Exiting from GLDisplay");
-				System.exit(0);
-			    }
-			}).start();
+		    closeAndExit();
 		}
-	    });
+	 });
 
 
 	frame.setVisible(true);
 	animator.start();
     }
 	
+    public void closeAndExit()
+    {
+    	// Run this on another thread than the AWT event
+	    // queue to make sure the call to Animator.stop()
+	    // completes before exiting
+	    (new ClosingThread(animator)).start();
+    }
 
     static int fleetID1 = 0;
     static int fleetID2 = 0;
@@ -239,9 +256,7 @@ public class GLDisplay implements GLEventListener, Display
 		{
 			
 		}
-		//This probably isn't the right way to do this, but it works...
-		frame.dispatchEvent(new WindowEvent(frame,WindowEvent.WINDOW_CLOSING));
-	    //exit called by "WINDOW CLOSING" event
+		closeAndExit();
 	}
 
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);

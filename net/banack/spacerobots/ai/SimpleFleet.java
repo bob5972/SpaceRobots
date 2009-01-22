@@ -2,6 +2,7 @@ package net.banack.spacerobots.ai;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 import net.banack.spacerobots.util.ActionList;
@@ -15,6 +16,19 @@ import net.banack.spacerobots.util.Team;
 
 public class SimpleFleet extends AbstractFleetAI
 {	
+	private Random myRandom;
+	
+	public SimpleFleet()
+	{
+		myRandom = new Random();
+	}
+	
+	public SimpleFleet(long seed)
+	{
+		myRandom = new Random(seed);		
+	}
+	
+	
 	public String getAuthor()
 	{
 		return "Michael Banack";
@@ -40,28 +54,33 @@ public class SimpleFleet extends AbstractFleetAI
 		for(int x=0;x<s.length;x++)
 		{
 			ShipAction a = new ShipAction(s[x]);
-			if(s[x].getTypeID() == DefaultShipTypeDefinitions.FIGHTER_ID)
-			{
-				//nothing to see here, move along
-			}
-			else if(s[x].isAlive() && s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
-			{
-				if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
-				{
-					credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
-					a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
-				}
-			}
-			else if(s[x].getTypeID() == DefaultShipTypeDefinitions.ROCKET_ID)
-			{
-				cantSpawn.add(s[x].getID());
-			}
-			
 			
 			if(s[x].isAlive())
+			{
+				if(!s[x].readyToLaunch())
+					cantSpawn.add(s[x].getID());
+				if(s[x].getTypeID() == DefaultShipTypeDefinitions.FIGHTER_ID)
+				{
+					//nothing to see here, move along...
+				}
+				else if(s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
+				{
+					if(s[x].readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
+					{
+						credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
+						a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+					}
+				}
+				else if(s[x].getTypeID() == DefaultShipTypeDefinitions.ROCKET_ID)
+				{
+					cantSpawn.add(s[x].getID());
+				}
 				oup.add(a);
+			}		
 			else
+			{
 				cantSpawn.add(s[x].getID());
+			}
 		}
 		
 		Iterator<Integer> ci = c.enemyIterator();

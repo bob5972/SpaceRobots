@@ -67,6 +67,11 @@ public class Ship
 		return myLaunchDelay <= 0;
 	}
 	
+	public final boolean readyToLaunch()
+	{
+		return isReadyToLaunch();
+	}
+	
 	public void decrementLife(int d)
 	{
 		myDeltaLife += d;

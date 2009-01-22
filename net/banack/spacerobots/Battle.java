@@ -314,7 +314,8 @@ public class Battle
 			{
 				//error message
 				ServerShip ship = myShips.get(a.getShipID());
-				Debug.aiwarn("AI attempted an illegal spawn: "+myShips.get(a.getShipID()).getFleet().getAIName()+", "+SpaceText.prettyPrint(ship));
+				int credits = ship.getFleet().getCredits();
+				Debug.aiwarn("AI attempted an illegal spawn: ai="+myShips.get(a.getShipID()).getFleet().getAIName()+", credits="+credits+" ship="+SpaceText.prettyPrint(ship));
 			}
 		}
 
@@ -490,11 +491,8 @@ public class Battle
 	//this needs to be communicated to AI's some how (either statically in documentation, or dynamically)
 	private static int getLaunchDelay(ServerShip s, ShipType t)
 	{
-		if(t.getCost() <= 5)
-			return 1;
-		else if(t.getCost() <= 20)
-			return 2;
-		else return (int)(t.getCost()/20.0);		
+		//These numbers are just made up and need to be balanced.
+		return 5+(int)(t.getCost()/20.0);		
 	}
 	
 	static private int getNewID()
