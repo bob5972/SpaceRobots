@@ -8,18 +8,11 @@ public class ServerTeam extends Team
 	{
 		super(teamID,name);
 		myLiveFleets=0;
-		myNextFleetIndex=0;
 		myTeamIndex = teamIndex;
 	}
 	
 	private int myLiveFleets;
-	private int myNextFleetIndex;
 	private int myTeamIndex;
-	
-	public int getNewFleetIndex()
-	{
-		return myNextFleetIndex++;
-	}
 	
 	public final int getIndex()
 	{

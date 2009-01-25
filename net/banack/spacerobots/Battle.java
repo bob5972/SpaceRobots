@@ -52,6 +52,7 @@ public class Battle
 	private double myHeight;
 	private int myTick;
 	private ShipTypeDefinitions myShipTypes;
+	private int myNextFleetIndex;
 
 	public int getTick()
 	{
@@ -72,6 +73,7 @@ public class Battle
 		myTeams = new TeamList();
 		myRandom = new Random();
 		toDie = new HashSet<ServerShip>();
+		myNextFleetIndex=0;
 	}
 	
 	public void seedRandom(long x)
@@ -96,7 +98,7 @@ public class Battle
 	{
 		int oup = getNewID();
 		ServerTeam t = myTeams.get(teamID);
-		ServerFleet f = new ServerFleet(name, oup, t.getNewFleetIndex(),teamID,t,ai);
+		ServerFleet f = new ServerFleet(name, oup, myNextFleetIndex++,teamID,t,ai);
 		f.setCredits(startingCredits);
 		f.setCreditIncrement(creditIncrement);
 		myFleets.add(f);
