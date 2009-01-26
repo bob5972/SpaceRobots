@@ -21,6 +21,8 @@ import com.sun.opengl.util.j2d.*;
 
 public class GLDisplay implements GLEventListener, Display
 {
+	private static final float SHIP_TRANSPARENCY = .1f;
+	
     private boolean simulationFinished = false;
     private JFrame frame;
     private GLCanvas canvas;
@@ -282,7 +284,7 @@ public class GLDisplay implements GLEventListener, Display
 
 	for (int i = 0; i < displayFrame.ships.size(); i++) {
 	    DisplayShip ship = displayFrame.ships.get(i);
-	    gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, .2f);
+	    gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, SHIP_TRANSPARENCY);
 	    double xOffset;
 	    double yOffset;
 	    if (ship.location.getP1().getX() > battleWidth / 2) {

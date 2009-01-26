@@ -6,8 +6,9 @@ import java.io.PipedOutputStream;
 import java.util.Random;
 
 import net.banack.spacerobots.ai.ClientProtocolFactory;
-import net.banack.spacerobots.ai.DummyFleet;
-import net.banack.spacerobots.ai.SimpleFleet;
+import net.banack.spacerobots.fleets.DummyFleet;
+import net.banack.spacerobots.fleets.SchoolOfFish;
+import net.banack.spacerobots.fleets.SimpleFleet;
 import net.banack.util.MethodNotImplementedException;
 
 
@@ -73,7 +74,7 @@ public class SpaceRobots
 			sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #2");
-			background = new AIThread(new DummyFleet(RANDOM_SEED),cIn,cOut);
+			background = new AIThread(new SchoolOfFish(RANDOM_SEED+1),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}

@@ -79,6 +79,11 @@ public class AIShip extends Ship
 		return super.getHeading();
 	}
 	
+	public double projHeading()
+	{
+		return SpaceMath.calculateAdjustedHeading(curHeading(), getHeading(), getMaxTurningRate());
+	}
+	
 	public double getScannerHeading()
 	{
 		return myAction.getScannerHeading();
@@ -112,6 +117,12 @@ public class AIShip extends Ship
 	public void setHeading(double h)
 	{
 		myAction.setHeading(h);
+	}
+	
+	public void setHeading(DPoint pos)
+	{
+		//note this won't wrap right
+		setHeading(SpaceMath.getAngle(getPosition(), pos));
 	}
 	
 	public void setScannerHeading(double h)

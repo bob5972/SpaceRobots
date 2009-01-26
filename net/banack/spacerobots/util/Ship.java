@@ -272,7 +272,8 @@ public class Ship
 	
 	public DArc getScannerArc()
 	{
-		DArc oup = new DArc(myPosition, myType.getScannerRadius(),(myScannerHeading-myType.getScannerAngleSpan())/2,myType.getScannerAngleSpan());
+		DArc oup = new DArc(myPosition, myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
+		oup = oup.rotate(-myType.getScannerAngleSpan()/2);
 		return oup;
 	}
 	

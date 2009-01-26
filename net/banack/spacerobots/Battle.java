@@ -266,10 +266,11 @@ public class Battle
 				{
 					s.setScannerHeading(a.getScannerHeading());
 				}
-				else
-				{
-					s.setScannerHeading(s.getHeading());
-				}
+			}
+			
+			if(!s.getCanMoveScanner())
+			{
+				s.setScannerHeading(s.getHeading());
 			}
 			
 			//move s
@@ -281,11 +282,12 @@ public class Battle
 					s.setX(s.getX()-myWidth);
 				while(s.getX() < 0)
 					s.setX(s.getX()+myWidth);
-				while(s.getY() > myWidth)
-					s.setY(s.getY()-myWidth);
+				while(s.getY() > myHeight)
+					s.setY(s.getY()-myHeight);
 				while(s.getY() < 0)
-					s.setX(s.getY()+myWidth);
+					s.setY(s.getY()+myHeight);
 			}
+			
 			if(s.getMaxTickCount() > 0)
 			{
 				if(myTick - s.getCreationTick() > s.getMaxTickCount())
@@ -315,7 +317,7 @@ public class Battle
 			
 			if (canSpawn(a))
 			{
-				doSpawn(a);
+				doSpawn(a,myShips.get(a.getShipID()));
 			}
 			else
 			{
@@ -472,7 +474,7 @@ public class Battle
 		
 	}	
 	
-	private void doSpawn(ShipAction a)
+	private void doSpawn(ShipAction a, Ship s)
 	{
 		if(!canSpawn(a))
 			Debug.crash("Attempted an invalid spawn!");
@@ -485,6 +487,7 @@ public class Battle
 		cur.setLaunchDelay(getLaunchDelay(cur,newType));
 		
 		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), myTick, getDefaultLife(launchType));
+		oup.setHeading(s.getHeading());
 		myShips.add(oup);
 		
 		f.setNumShips(f.getNumShips()+1);

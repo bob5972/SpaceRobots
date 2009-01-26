@@ -1,10 +1,13 @@
-package net.banack.spacerobots.ai;
+package net.banack.spacerobots.fleets;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
+import net.banack.spacerobots.ai.AIShip;
+import net.banack.spacerobots.ai.AIShipList;
+import net.banack.spacerobots.ai.AbstractFleetAI;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;

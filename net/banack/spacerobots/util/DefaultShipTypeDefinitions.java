@@ -35,7 +35,7 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static ShipType FIGHTER = new ShipType(
 			"Fighter",FIGHTER_ID,
 			100, 1, 5, 5,
-			false, 0.2, 0.5,
+			false, 0.1, 0.5,
 			true, false,10,0.5,
 			true,true,0
 	);
@@ -43,7 +43,7 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static ShipType DESTROYER = new ShipType(
 			"Destroyer",DESTROYER_ID,
 			400,5,10,10,
-			true, 0.15, .2,
+			true, 0.05, .2,
 			true, true,15,0.6,
 			true,true,0
 	);

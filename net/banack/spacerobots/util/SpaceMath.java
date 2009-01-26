@@ -14,15 +14,31 @@ public class SpaceMath
 	public static final double HEADING_WRAP = 2*Math.PI;
 	public static final DPoint ORIGIN = new DPoint(0,0);
 	
+	public static double getAngle(DPoint origin, DPoint target)
+	{
+		return (target.subtract(origin)).getTheta();
+	}
+	
 	//figures out the new heading for a ship, taking into account how far a ship can turn
 	public static double calculateAdjustedHeading(double curHeading, double desiredHeading, double maxTurningRate)
 	{
-		if(Math.abs(curHeading-desiredHeading) <= maxTurningRate)
+		double angle = desiredHeading-curHeading;
+		if(angle > Math.PI)
+		{
+			angle-=2*Math.PI;
+		}
+		
+		if(angle < -Math.PI)
+		{
+			angle += 2*Math.PI;
+		}
+		
+		if(Math.abs(angle) <= maxTurningRate)
 			return desiredHeading;
-		else if (curHeading > desiredHeading)
-			return curHeading - maxTurningRate;
-		else //if (curHeading < desiredHeading)
-			return curHeading+maxTurningRate;		
+		else if (angle  > 0)
+			return curHeading + maxTurningRate;
+		else //if (angle < 0)
+			return curHeading-maxTurningRate;		
 	}
 	
 	public static double wrapHeading(double h)
