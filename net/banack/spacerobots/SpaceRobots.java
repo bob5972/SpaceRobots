@@ -13,8 +13,8 @@ import net.banack.util.MethodNotImplementedException;
 
 public class SpaceRobots
 {
-	public static final int DEFAULT_WIDTH = 100;
-	public static final int DEFAULT_HEIGHT = 100;
+	public static final int DEFAULT_WIDTH = 300;
+	public static final int DEFAULT_HEIGHT = 300;
 	public static final int STARTING_CREDITS=0;
 	public static final int CREDIT_INCREMENT=1;
 	public static long RANDOM_SEED=0;//0 for random

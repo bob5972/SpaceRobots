@@ -146,7 +146,8 @@ public class GLDisplay implements GLEventListener, Display
 	if (frame == null) {
 	    battleWidth = b.getWidth();
 	    battleHeight = b.getHeight();
-	    createFrame((int) b.getWidth()*7, (int) b.getHeight()*7);
+	    //createFrame((int) b.getWidth(), (int) b.getHeight());
+	    createFrame(700, 700);
 	}
 		
 	if (b.isOver()) {
