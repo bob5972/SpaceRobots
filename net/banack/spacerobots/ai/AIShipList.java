@@ -22,6 +22,16 @@ public class AIShipList
 		return (myShips.put(new Integer(s.getShipID()),s)==null);
 	}
 	
+	public void makeEmpty()
+	{
+		myShips.clear();
+	}
+	
+	public final void clear()
+	{
+		makeEmpty();
+	}
+	
 	public int size()
 	{
 		return myShips.size();
@@ -79,6 +89,32 @@ public class AIShipList
 		while(i.hasNext())
 		{
 			update(i.next());
+		}
+	}
+	
+	public void update(Ship[] s,AIShipFactory f)
+	{
+		for(int x=0;x<s.length;x++)
+		{
+			update(s[x],f);
+		}
+	}
+	
+	public void update(Ship s,AIShipFactory f)
+	{
+		AIShip cur = get(s.getID());
+		if(cur==null)
+			add(f.createShip(s));
+		else
+			cur.update(s);
+	}
+	
+	public void update(AIShipList s,AIShipFactory f)
+	{
+		Iterator<AIShip> i = s.iterator();
+		while(i.hasNext())
+		{
+			update(i.next(),f);
 		}
 	}
 	

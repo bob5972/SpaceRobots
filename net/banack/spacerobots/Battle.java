@@ -291,7 +291,7 @@ public class Battle
 				if(myTick - s.getCreationTick() > s.getMaxTickCount())
 				{
 					Debug.verbose("Expiring ship="+s.toString());
-					markForDeath(s);//it's flown too long					
+					markForDeath(s);//it's flown too long...			
 				}
 			}
 		}

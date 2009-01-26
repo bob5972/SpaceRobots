@@ -226,7 +226,8 @@ public class TextProtocol implements AIClientProtocol
 				curLevel--;
 				
 				Debug.info("Calling initBattle on client AI");
-				myShips.update(s);
+				myShips.makeEmpty();
+				myShips.update(s,myAI);
 				myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f);
 				
 				send("BATTLE_READY_BEGIN");
@@ -301,7 +302,7 @@ public class TextProtocol implements AIClientProtocol
 				for(int x=0;x<numShips;x++)
 				{
 					Ship s = sIn.readShip();
-					myShips.update(s);
+					myShips.update(s,myAI);
 					if(!s.isAlive())
 					{
 						//remove it later so the AI sees it as dead

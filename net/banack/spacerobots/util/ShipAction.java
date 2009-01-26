@@ -29,6 +29,15 @@ public class ShipAction
 		launchWhat=launch;
 	}
 	
+	public ShipAction(int id)
+	{
+		myShipID=id;
+		willMove=true;
+		newHeading=-1;
+		newScannerHeading=-1;
+		launchWhat=ShipTypeDefinitions.TYPE_INVALID;
+	}
+
 	public int getShipID()
 	{
 		return myShipID;

@@ -13,11 +13,6 @@ import net.banack.util.MethodNotImplementedException;
 public abstract class AbstractFleetAI implements FleetAI
 {
 	
-	public void endBattle(Fleet me, Team[] t, Fleet[] f)
-	{
-		return;
-	}
-	
 	public abstract String getAuthor();
 
 	public String getName()
@@ -28,6 +23,11 @@ public abstract class AbstractFleetAI implements FleetAI
 	public String getVersion()
 	{
 		return "0";
+	}
+	
+	public AIShip createShip(Ship s)
+	{
+		return new AIShip(s);
 	}
 	
 	public void battleStatusUpdate(int teamID, int fleetID, boolean doa, boolean winOrLose)
@@ -41,4 +41,9 @@ public abstract class AbstractFleetAI implements FleetAI
 	}
 	
 	public abstract Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s);
+	
+	public void endBattle(Fleet me, Team[] t, Fleet[] f)
+	{
+		return;
+	}
 }

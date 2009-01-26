@@ -12,8 +12,10 @@ import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.Team;
 
-public interface FleetAI
+public interface FleetAI extends AIShipFactory
 {	
+	public AIShip createShip(Ship s);
+	
 	public void initBattle(int fleetID,int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f);
 	
 	//The references to AIShipList and AIShips can be reused, but don't modify them outside this thread!

@@ -15,6 +15,12 @@ public class AIShip extends Ship
 {
 	private ShipAction myAction;
 	
+	public AIShip(int id)
+	{
+		super(id,ShipTypeDefinitions.TYPE_INVALID,null,-1,-1,-1,-1);
+		myAction = new ShipAction(id);
+	}
+	
 	public AIShip(Ship s)
 	{
 		super(s);

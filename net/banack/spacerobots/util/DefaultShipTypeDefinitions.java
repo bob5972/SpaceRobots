@@ -10,6 +10,12 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static int DESTROYER_ID = 4;
 	public final static int CRUISER_ID = 5;
 	
+//	public ShipType(String name, int id, 
+//			int cost, int life, double width, double height, 
+//			boolean canStop, double maxTurningRate, double maxSpeed, 
+//			boolean hasScanner, boolean canMoveScanner, double scannerRadius, double scannerAngleSpan,
+//			boolean hasAI, boolean isShip, int maxTickCount)
+	
 	public final static ShipType ROCKET = new ShipType(
 			"Rocket",ROCKET_ID,
 			5,1,2, 2,
@@ -45,7 +51,7 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static ShipType CRUISER = new ShipType(
 			"Cruiser",CRUISER_ID,
 			1000,10,15,10,
-			true, 0.09, 0.3,
+			true, 0.01, 0.3,
 			true, true,20,0.7,
 			true,true,0
 	);
