@@ -2,6 +2,7 @@ package net.banack.spacerobots.ai;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.Ship;
@@ -36,6 +37,15 @@ public class AIShipList
 		myShips.remove(new Integer(shipID));
 	}
 	
+	public void remove(Set<Integer> S)
+	{
+		Iterator<Integer> i = S.iterator();
+		while(i.hasNext())
+		{
+			remove(i.next());
+		}		
+	}
+	
 	public AIShip get(int shipID)
 	{
 		return (AIShip)myShips.get(new Integer(shipID));
@@ -50,11 +60,25 @@ public class AIShipList
 	{
 		for(int x=0;x<s.length;x++)
 		{
-			AIShip cur = get(s[x].getID());
-			if(cur == null)
-				add(new AIShip(s[x]));
-			else
-				cur.update(s[x]);
+			update(s[x]);
+		}
+	}
+	
+	public void update(Ship s)
+	{
+		AIShip cur = get(s.getID());
+		if(cur==null)
+			add(new AIShip(s));
+		else
+			cur.update(s);
+	}
+	
+	public void update(AIShipList s)
+	{
+		Iterator<AIShip> i = s.iterator();
+		while(i.hasNext())
+		{
+			update(i.next());
 		}
 	}
 	

@@ -35,10 +35,10 @@ public abstract class AbstractFleetAI implements FleetAI
 		return;
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, Ship[] s, Team[] teams, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f)
 	{
 		return;
 	}
 	
-	public abstract Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s);
+	public abstract Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s);
 }

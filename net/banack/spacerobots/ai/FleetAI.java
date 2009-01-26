@@ -14,9 +14,10 @@ import net.banack.spacerobots.util.Team;
 
 public interface FleetAI
 {	
-	public void initBattle(int fleetID,int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f);
+	public void initBattle(int fleetID,int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f);
 	
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s);
+	//The references to AIShipList and AIShips can be reused, but don't modify them outside this thread!
+	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s);
 	
 	public void battleStatusUpdate(int teamID, int fleetID, boolean doa, boolean winOrLose);
 	

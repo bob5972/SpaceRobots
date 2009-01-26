@@ -26,6 +26,7 @@ public class TextProtocol implements AIClientProtocol
 	private SpaceText sIn;
 	private PrintWriter sOut;
 	private int curLevel;
+	private AIShipList myShips;
 	
 	public TextProtocol(FleetAI ai, BufferedReader sIn, PrintWriter sOut)
 	{
@@ -33,6 +34,7 @@ public class TextProtocol implements AIClientProtocol
 		this.sIn = new SpaceText(sIn);
 		this.sOut = sOut;
 		curLevel=0;
+		myShips=new AIShipList();
 	}
 	
 	public void send(String message)
@@ -224,7 +226,8 @@ public class TextProtocol implements AIClientProtocol
 				curLevel--;
 				
 				Debug.info("Calling initBattle on client AI");
-				myAI.initBattle(fleetID, teamID, startingCredits, s, t, f);
+				myShips.update(s);
+				myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f);
 				
 				send("BATTLE_READY_BEGIN");
 				
@@ -263,7 +266,7 @@ public class TextProtocol implements AIClientProtocol
 				int fleetID = SpaceText.parseInt(words[2]);
 				boolean doa = SpaceText.parseInt(words[3])!= 0;
 				boolean wol = SpaceText.parseInt(words[4])!= 0;
-				//we could send these intermittantly to tell fleets when people die...
+				//we could send these intermittently to tell fleets when people die...
 				//>BATTLE_STATUS_UPDATE teamID deadOrAlive winOrLose
 				myAI.battleStatusUpdate(teamID,fleetID,doa,wol);
 			}
@@ -294,10 +297,16 @@ public class TextProtocol implements AIClientProtocol
 				words = read("BEGIN_SHIPS",2);;
 				int numShips = SpaceText.parseInt(words[1]);
 				curLevel++;
-				Ship[]s = new Ship[numShips];
+				HashSet<Integer> toDie = new HashSet<Integer>();
 				for(int x=0;x<numShips;x++)
 				{
-					s[x] = sIn.readShip();
+					Ship s = sIn.readShip();
+					myShips.update(s);
+					if(!s.isAlive())
+					{
+						//remove it later so the AI sees it as dead
+						toDie.add(s.getShipID());
+					}
 				}
 				
 				read("END_SHIPS");
@@ -305,32 +314,28 @@ public class TextProtocol implements AIClientProtocol
 				read("END_FLEET_STATUS");
 				curLevel--;
 				
-				Iterator<ShipAction> i = myAI.runTick(tick, credits, c, s);
+				Iterator<ShipAction> i = myAI.runTick(tick, credits, c, myShips);
 				
-				net.banack.util.Stack<ShipAction> tStack = new net.banack.util.Stack<ShipAction>();
-				
-				//this business of copying the iterator into a stack
-				//  can be eliminated if one drops the need to list the number before dumping the actions...
-				while(i.hasNext())
-				{
-					tStack.push(i.next());
-				}
-	
 				send("BEGIN_FLEET_ACTIONS");
 				send("TICK "+tick);
 				curLevel++;
-				send("BEGIN_SHIP_ACTIONS "+tStack.size());
+				//the -1 signaling unknown size
+				send("BEGIN_SHIP_ACTIONS "+-1);
 				curLevel++;
 				
-				while(!tStack.isEmpty())					
+				while(i.hasNext())					
 				{
-					writeAction(tStack.pop());
+					ShipAction cur = i.next();
+					if(myShips.get(cur.getShipID()).isAlive())
+						writeAction(cur);
 				}
 				
 				send("END_SHIP_ACTIONS");
 				curLevel--;
 				send("END_FLEET_ACTIONS");
 				curLevel--;
+				
+				myShips.remove(toDie);
 				
 				//<BEGIN_FLEET_ACTIONS
 				//<	TICK 803

@@ -62,38 +62,33 @@ public class DummyFleet extends AbstractFleetAI
 		return;
 	}
 		
-	public void initBattle(int fleetID, int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f)
 	{
-		for(int x=0;x<s.length;x++)
+		myShips = s;
+		Iterator<AIShip> i = myShips.iterator();
+		while(i.hasNext())
 		{
-			if(Debug.isDebug())
+			AIShip cur = i.next();
+						
+			if(cur.getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
-				if(s[x] == null)
-					Debug.warn("Null pointer in s["+x+"]!");
-			}
-			
-			myShips.add(new AIShip(s[x]));
-			if(s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
-			{
-				myCruiser=myShips.get(s[x].getID());
+				myCruiser=myShips.get(cur.getID());
 			}
 		}
 		return;
 	}
 	
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s)
+	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
 	{
-		myShips.update(s);
+		myShips=s;
 		
 		Iterator<AIShip> i = myShips.iterator();
-		HashSet<Integer> died= new HashSet<Integer>();
 		
 		while(i.hasNext())
 		{
 			AIShip ship = i.next();
 			if(!ship.isAlive())
 			{
-				died.add(ship.getID());
 				continue;
 			}
 			
@@ -111,13 +106,6 @@ public class DummyFleet extends AbstractFleetAI
 			}
 			myCruiser.setScannerHeading(myCruiser.getScannerHeading()+1);
 		}
-		
-		Iterator<Integer> di = died.iterator();
-		while(di.hasNext())
-		{
-			myShips.remove(di.next());
-		}
-		
 		
 		return myShips.getActionIterator();
 	}

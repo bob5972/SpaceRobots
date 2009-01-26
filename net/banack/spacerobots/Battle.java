@@ -404,14 +404,9 @@ public class Battle
 			if(s==null || s.getFleet() != f || !s.isAlive())
 			{
 				al.remove(a);
-				Debug.aiwarn("AI returned an action for an invalid ship id.");
+				Debug.aiwarn("AI "+s.getFleet().getAIName()+" returned an action for an invalid ship id.");
 				Debug.verbose("UnValidated ship="+s.toString());
-			}
-			else
-			{
-				Debug.verbose("Validated ship="+s.toString());
-			}
-			
+			}			
 		}
 				
 	}

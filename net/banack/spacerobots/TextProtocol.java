@@ -68,6 +68,11 @@ public class TextProtocol implements AIProtocol
 		return sIn.readWord();
 	}
 	
+	private String[] readWords() throws IOException
+	{
+		return sIn.readWords();
+	}
+	
 	private ShipAction readAction() throws IOException
 	{
 		return sIn.readAction();
@@ -340,12 +345,32 @@ public class TextProtocol implements AIProtocol
 		
 		numA = SpaceText.parseInt(read("BEGIN_SHIP_ACTIONS",2)[1]);
 		
-		for(int x=0;x<numA;x++)
+		if(numA == -1)
 		{
-			oup.add(readAction());
+			boolean done=false;
+			String[] words;
+			
+			while(!done)
+			{
+				words=readWords();
+				if(words.length >= 1 && words[0].equals("SHIP_ACTION"))
+					oup.add(SpaceText.parseAction(words));
+				else if (words.length >= 1 && words[0].equals("END_SHIP_ACTIONS"))
+					done=true;
+				else
+					Debug.error("Bad Protocol reponse during fleet actions: "+SpaceText.toString(words));
+			}
+		}
+		else
+		{
+			for(int x=0;x<numA;x++)
+			{
+				oup.add(readAction());
+			}
+			read("END_SHIP_ACTIONS",1);
 		}
 		
-		read("END_SHIP_ACTIONS",1);
+		
 		read("END_FLEET_ACTIONS",1);
 		
 		return oup;

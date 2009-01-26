@@ -23,13 +23,11 @@ public class SimpleFleet extends AbstractFleetAI
 	public SimpleFleet()
 	{
 		myRandom = new Random();
-		myShips=new AIShipList();
 	}
 	
 	public SimpleFleet(long seed)
 	{
 		myRandom = new Random(seed);
-		myShips=new AIShipList();
 	}
 	
 	
@@ -48,14 +46,14 @@ public class SimpleFleet extends AbstractFleetAI
 		return "1.1";
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f)
 	{
 		return;
 	}
 	
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s)
+	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
 	{
-		myShips.update(s);
+		myShips=s;
 		
 		Iterator<AIShip> i = myShips.iterator();
 		
@@ -109,10 +107,6 @@ public class SimpleFleet extends AbstractFleetAI
 				}
 			}
 		}
-		
-		ci = cantSpawn.iterator();
-		while(ci.hasNext())
-			myShips.remove(ci.next());
 		
 		return myShips.getActionIterator();	
 	}

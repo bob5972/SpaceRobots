@@ -164,11 +164,14 @@ public class SpaceText extends Parser
 		//<SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
 		if(inp.length < 5)
 			throw new IllegalArgumentException("Invalid ShipAction String: Expected 6 parameters, received "+inp.length);
-		int id = parseInt(inp[0]);
-		int willMove = parseInt(inp[1]);
-		double newHeading = SpaceMath.degToRad(parseInt(inp[2]));
-		double newScannerHeading = SpaceMath.degToRad(parseInt(inp[3]));
-		int launchWhat = parseInt(inp[4]);
+		int x=0;
+		if(inp[0].equals("SHIP_ACTION"))
+			x++;
+		int id = parseInt(inp[x++]);
+		int willMove = parseInt(inp[x++]);
+		double newHeading = SpaceMath.degToRad(parseInt(inp[x++]));
+		double newScannerHeading = SpaceMath.degToRad(parseInt(inp[x++]));
+		int launchWhat = parseInt(inp[x++]);
 		return new ShipAction(id,willMove!=0,newHeading,newScannerHeading,launchWhat);
 	}
 	
@@ -341,6 +344,18 @@ public class SpaceText extends Parser
 		String teamName = sbTemp.toString();
 		
 		return new Team(teamID,teamName);
+	}
+	
+	public static String toString(String[] w)
+	{
+		StringBuffer oup = new StringBuffer();
+		for(int x=0;x<w.length;x++)
+		{
+			oup.append(w[x]);
+			oup.append(" ");
+		}
+		
+		return oup.toString();
 	}
 	
 }
