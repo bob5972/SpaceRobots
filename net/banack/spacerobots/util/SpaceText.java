@@ -179,9 +179,9 @@ public class SpaceText extends Parser
 		oup.append(" ");
 		oup.append(a.willMove()?1:0);
 		oup.append(" ");
-		oup.append(SpaceMath.radToDeg(a.getHeading()));
+		oup.append((int)SpaceMath.radToDeg(a.getHeading()));
 		oup.append(" ");
-		oup.append(SpaceMath.radToDeg(a.getScannerHeading()));
+		oup.append((int)SpaceMath.radToDeg(a.getScannerHeading()));
 		oup.append(" ");
 		oup.append(a.getLaunch());
 		return oup.toString();		
@@ -208,6 +208,7 @@ public class SpaceText extends Parser
 	
 	public static String toString(Ship s)
 	{
+		//>		SHIP iD type xPos yPos heading scannerHeading creationTick life deltaLife launchDelay
 		StringBuffer oup = new StringBuffer();
 		
 		oup.append(s.getID());

@@ -208,7 +208,7 @@ public class TextProtocol implements AIProtocol
 		//>		TEAM_ID 2
 		//>		STARTING_CREDITS 1000
 		//>		BEGIN_STARTING_SHIPS
-		//>			SHIP iD type xPos yPos heading scannerHeading life deltaLife
+		//>			SHIP iD type xPos yPos heading scannerHeading creationTick life deltaLife launchDelay
 		//>		END_STARTING_SHIPS
 		//
 		//>		BEGIN_TEAMS
@@ -220,7 +220,7 @@ public class TextProtocol implements AIProtocol
 		//>		END_FLEETS
 		//>	END_INIT_BATTLE
 		
-		//let everyone initialize before starting, so require and acknowledgement
+		//let everyone initialize before starting, so require and acknowledgment
 		//<BATTLE_READY_BEGIN
 		
 		//it would make more sense to use something like "ACK_INIT_BATTLE"
@@ -233,7 +233,7 @@ public class TextProtocol implements AIProtocol
 	
 	public void battleStatusUpdate(int teamID, int fleetID, boolean doa) throws IOException
 	{
-		//we could send these intermittantly to tell fleets when people die...
+		//we could send these intermittently to tell fleets when people die...
 		//>BATTLE_STATUS_UPDATE teamID deadOrAlive winOrLose
 		send("BATTLE_STATUS_UPDATE "+teamID+" "+fleetID+" "+(doa?1:0));
 	}
@@ -302,7 +302,7 @@ public class TextProtocol implements AIProtocol
 	public void writeShip(ServerShip s) throws IOException
 	{
 		//write a single ship
-		//>		SHIP iD type xPos yPos heading scannerHeading life deltaLife
+		//>		SHIP iD type xPos yPos heading scannerHeading creationTick life deltaLife launchDelay
 		
 		send("SHIP "+SpaceText.toString(s));
 	}

@@ -12,20 +12,24 @@ import net.banack.spacerobots.util.Fleet;
 import net.banack.spacerobots.util.SensorContact;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
+import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
 
 public class SimpleFleet extends AbstractFleetAI
 {	
 	private Random myRandom;
+	private AIShipList myShips;
 	
 	public SimpleFleet()
 	{
 		myRandom = new Random();
+		myShips=new AIShipList();
 	}
 	
 	public SimpleFleet(long seed)
 	{
-		myRandom = new Random(seed);		
+		myRandom = new Random(seed);
+		myShips=new AIShipList();
 	}
 	
 	
@@ -41,45 +45,49 @@ public class SimpleFleet extends AbstractFleetAI
 		
 	public String getVersion()
 	{
-		return "1.0";
+		return "1.1";
 	}
 	
-	public ActionList runTick(int tick, int credits, ContactList c, Ship[] s)
+	public void initBattle(int fleetID, int teamID, int startingCredits, Ship[] s, Team[] t, Fleet[] f)
 	{
-		ActionList oup = new ActionList();
-		oup.setTick(tick);
+		return;
+	}
+	
+	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s)
+	{
+		myShips.update(s);
+		
+		Iterator<AIShip> i = myShips.iterator();
+		
 		HashSet<Integer> cantSpawn = new HashSet<Integer>();
 		
-	
-		for(int x=0;x<s.length;x++)
+		while(i.hasNext())
 		{
-			ShipAction a = new ShipAction(s[x]);
+			AIShip ship = i.next();
+			if(!ship.isAlive())
+			{
+				cantSpawn.add(ship.getID());
+				continue;
+			}
+		
+			if(!ship.readyToLaunch())
+				cantSpawn.add(ship.getID());
 			
-			if(s[x].isAlive())
+			if(ship.getTypeID() == DefaultShipTypeDefinitions.FIGHTER_ID)
 			{
-				if(!s[x].readyToLaunch())
-					cantSpawn.add(s[x].getID());
-				if(s[x].getTypeID() == DefaultShipTypeDefinitions.FIGHTER_ID)
-				{
-					//nothing to see here, move along...
-				}
-				else if(s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
-				{
-					if(s[x].readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
-					{
-						credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
-						a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
-					}
-				}
-				else if(s[x].getTypeID() == DefaultShipTypeDefinitions.ROCKET_ID)
-				{
-					cantSpawn.add(s[x].getID());
-				}
-				oup.add(a);
-			}		
-			else
+				//nothing to see here, move along...
+			}
+			else if(ship.getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
-				cantSpawn.add(s[x].getID());
+				if(ship.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
+				{
+					credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
+					ship.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+				}
+			}
+			else if(ship.getTypeID() == DefaultShipTypeDefinitions.ROCKET_ID)
+			{
+				cantSpawn.add(ship.getID());
 			}
 		}
 		
@@ -93,7 +101,7 @@ public class SimpleFleet extends AbstractFleetAI
 			Iterator<Integer> spotI = spot.iterator();
 			while(spotI.hasNext())
 			{			
-				ShipAction a = oup.get(spotI.next());
+				AIShip a = myShips.get(spotI.next());
 				if(a != null && !cantSpawn.contains(a.getShipID()) && credits > DefaultShipTypeDefinitions.ROCKET.getCost())
 				{
 					credits-=DefaultShipTypeDefinitions.ROCKET.getCost();
@@ -102,6 +110,10 @@ public class SimpleFleet extends AbstractFleetAI
 			}
 		}
 		
-		return oup;		
+		ci = cantSpawn.iterator();
+		while(ci.hasNext())
+			myShips.remove(ci.next());
+		
+		return myShips.getActionIterator();	
 	}
 }

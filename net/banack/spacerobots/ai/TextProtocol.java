@@ -305,18 +305,26 @@ public class TextProtocol implements AIClientProtocol
 				read("END_FLEET_STATUS");
 				curLevel--;
 				
-				ActionList al = myAI.runTick(tick, credits, c, s);
+				Iterator<ShipAction> i = myAI.runTick(tick, credits, c, s);
+				
+				net.banack.util.Stack<ShipAction> tStack = new net.banack.util.Stack<ShipAction>();
+				
+				//this business of copying the iterator into a stack
+				//  can be eliminated if one drops the need to list the number before dumping the actions...
+				while(i.hasNext())
+				{
+					tStack.push(i.next());
+				}
 	
 				send("BEGIN_FLEET_ACTIONS");
-				send("TICK "+al.getTick());
+				send("TICK "+tick);
 				curLevel++;
-				send("BEGIN_SHIP_ACTIONS "+al.size());
+				send("BEGIN_SHIP_ACTIONS "+tStack.size());
 				curLevel++;
 				
-				Iterator<ShipAction> i = al.iterator();
-				while(i.hasNext())					
+				while(!tStack.isEmpty())					
 				{
-					writeAction((ShipAction)i.next());
+					writeAction(tStack.pop());
 				}
 				
 				send("END_SHIP_ACTIONS");

@@ -400,21 +400,21 @@ public class GLDisplay implements GLEventListener, Display
 	gl.glVertex2f((float) (ship.scanner.getCenter().getX() + xOffset),
 		      (float) (ship.scanner.getCenter().getY() + yOffset));
 	gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
-			       Math.sin(ship.scanner.getAngleStart()) *
+			       Math.cos(ship.scanner.getAngleStart()) *
 			       ship.scanner.getRadius()
 			       + xOffset),
 		      (float) (ship.scanner.getCenter().getY() +
-			       Math.cos(ship.scanner.getAngleStart()) *
+			       Math.sin(ship.scanner.getAngleStart()) *
 			       ship.scanner.getRadius()
 			       + yOffset));
 	gl.glVertex2f((float) (ship.scanner.getCenter().getX() + xOffset),
 		      (float) (ship.scanner.getCenter().getY() + yOffset));
 	gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
-			       Math.sin(ship.scanner.getAngleEnd()) *
+			       Math.cos(ship.scanner.getAngleEnd()) *
 			       ship.scanner.getRadius()
 			       + xOffset),
 		      (float) (ship.scanner.getCenter().getY() +
-			       Math.cos(ship.scanner.getAngleEnd()) *
+			       Math.sin(ship.scanner.getAngleEnd()) *
 			       ship.scanner.getRadius()
 			       + yOffset));
 	gl.glEnd();

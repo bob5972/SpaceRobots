@@ -1,9 +1,12 @@
 package net.banack.spacerobots.ai;
 
+import java.util.Iterator;
+
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Fleet;
 import net.banack.spacerobots.util.Ship;
+import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.Team;
 import net.banack.util.MethodNotImplementedException;
 
@@ -37,5 +40,5 @@ public abstract class AbstractFleetAI implements FleetAI
 		return;
 	}
 	
-	public abstract ActionList runTick(int tick, int credits, ContactList c, Ship[] s);
+	public abstract Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s);
 }

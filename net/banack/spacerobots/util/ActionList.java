@@ -18,6 +18,15 @@ public class ActionList
 		myTick = -1;
 	}
 	
+	public ActionList(Ship[] s)
+	{
+		this();
+		for(int x=0;x<s.length;x++)
+		{
+			add(new ShipAction(s[x]));
+		}
+	}
+	
 	//So the battle can check that the AI knows what tick this is
 	public int getTick()
 	{

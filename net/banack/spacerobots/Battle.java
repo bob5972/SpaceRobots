@@ -127,7 +127,7 @@ public class Battle
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
 			double heading = myRandom.nextDouble()*Math.PI*2;
-			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, heading,getDefaultLife(launchType),myTick);
+			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, heading,myTick, getDefaultLife(launchType));
 			myShips.add(oup);
 			f.setNumShips(f.getNumShips()+1);
 			f.setCredits(0);
@@ -261,9 +261,14 @@ public class Battle
 				}
 				
 				s.setHeading(SpaceMath.calculateAdjustedHeading(s.getHeading(),a.getHeading(),s.getMaxTurningRate()));
+				
 				if(s.getCanMoveScanner())
 				{
 					s.setScannerHeading(a.getScannerHeading());
+				}
+				else
+				{
+					s.setScannerHeading(s.getHeading());
 				}
 			}
 			
@@ -343,6 +348,7 @@ public class Battle
 				
 				int iTeam = shi.getFleet().getTeamID();
 				int iType = shi.getTypeID();
+				
 				
 				//generate sensor contacts
 				if(oTeam != iTeam)
@@ -483,7 +489,7 @@ public class Battle
 		ServerFleet f = cur.getFleet();
 		cur.setLaunchDelay(getLaunchDelay(cur,newType));
 		
-		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), getDefaultLife(launchType),myTick);
+		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), myTick, getDefaultLife(launchType));
 		myShips.add(oup);
 		
 		f.setNumShips(f.getNumShips()+1);

@@ -1,5 +1,7 @@
 package net.banack.spacerobots.ai;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 
 import net.banack.spacerobots.Debug;
@@ -9,21 +11,25 @@ import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
+import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
 
 public class DummyFleet extends AbstractFleetAI
 {
-	private Ship myCruiser;
+	private AIShip myCruiser;
 	private Random myRandom;
+	private AIShipList myShips;
 	
 	public DummyFleet()
 	{
 		myRandom = new Random();
+		myShips=new AIShipList();
 	}
 	
 	public DummyFleet(long seed)
 	{
 		myRandom = new Random(seed);
+		myShips=new AIShipList();
 	}
 	
 	public void seedRandom(long seed)
@@ -43,7 +49,7 @@ public class DummyFleet extends AbstractFleetAI
 	
 	public String getVersion()
 	{
-		return "1.0";
+		return "1.1";
 	}
 	
 	public void endBattle(Fleet me, Team[] t, Fleet[] f)
@@ -60,49 +66,60 @@ public class DummyFleet extends AbstractFleetAI
 	{
 		for(int x=0;x<s.length;x++)
 		{
+			if(Debug.isDebug())
+			{
+				if(s[x] == null)
+					Debug.warn("Null pointer in s["+x+"]!");
+			}
+			
+			myShips.add(new AIShip(s[x]));
 			if(s[x].getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
-				myCruiser=s[x];
-				break;
+				myCruiser=myShips.get(s[x].getID());
 			}
 		}
 		return;
 	}
 	
-	public ActionList runTick(int tick, int credits, ContactList c, Ship[] s)
+	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, Ship[] s)
 	{
-		ActionList oup = new ActionList();
-		oup.setTick(tick);
-		ShipAction a;
-
-		for(int x=0;x<s.length;x++)
+		myShips.update(s);
+		
+		Iterator<AIShip> i = myShips.iterator();
+		HashSet<Integer> died= new HashSet<Integer>();
+		
+		while(i.hasNext())
 		{
-			if(Debug.isDebug())
+			AIShip ship = i.next();
+			if(!ship.isAlive())
 			{
-				if(s[x] == null)
-					Debug.warn("Null pointer at s["+x+"]");
+				died.add(ship.getID());
+				continue;
 			}
 			
-			a = new ShipAction(s[x]);
-			
-			if(myCruiser != null && s[x].getID() == myCruiser.getID())
+			if(tick % 100 == 0)
 			{
-				if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost())
-				{
-					a = new ShipAction(s[x]);
-					a.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
-				}
-			}
-			if(tick % 50 == 0)
-			{
-				a.setHeading(myRandom.nextDouble()*Math.PI/2);
-			}
-			
-			if(s[x].isAlive())
-				oup.add(a);
-			
+				ship.setHeading(myRandom.nextDouble()*Math.PI/2);
+			}			
 		}
-		return oup;
+		
+		if(myCruiser != null && myCruiser.isAlive())
+		{
+			if(credits > DefaultShipTypeDefinitions.FIGHTER.getCost())
+			{
+				myCruiser.setLaunch(DefaultShipTypeDefinitions.FIGHTER_ID);
+			}
+			myCruiser.setScannerHeading(myCruiser.getScannerHeading()+1);
+		}
+		
+		Iterator<Integer> di = died.iterator();
+		while(di.hasNext())
+		{
+			myShips.remove(di.next());
+		}
+		
+		
+		return myShips.getActionIterator();
 	}
 
 	

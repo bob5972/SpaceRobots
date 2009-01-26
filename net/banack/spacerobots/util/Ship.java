@@ -4,7 +4,6 @@ import net.banack.geometry.DArc;
 import net.banack.geometry.DDimension;
 import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
-import net.banack.spacerobots.ServerFleet;
 
 public class Ship
 {	
@@ -19,12 +18,12 @@ public class Ship
 	private ShipType myType;
 	private boolean willMove;
 	private int myLaunchDelay;//number of ticks until the ship can fire again
-	
-	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int life,int tick,int deltalife,int firingDelay)
+
+	public Ship(int id, int type,ShipType t, DPoint pos, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
 	{
 		myID=id;
 		myTypeID = type;
-		myPosition = new DPoint(x,y);
+		myPosition = pos;
 		myLife = life;
 		willMove=true;
 		myScannerHeading=scannerH;
@@ -35,21 +34,46 @@ public class Ship
 		myLaunchDelay = firingDelay;
 	}
 	
-	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick,int deltalife)
+	public Ship(Ship s)
 	{
-		this(id,type,t,x,y,0,0,life,tick,deltalife,0);
+		this(s.myID,s.myTypeID,s.myType,s.myPosition,s.myHeading,s.myScannerHeading,s.myCreationTick,s.myLife,s.myDeltaLife,s.myLaunchDelay);
+		this.willMove=s.willMove;
+	}
+	
+	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
+	{
+		this(id,type,t,new DPoint(x,y),heading,scannerH,tick,life,deltalife,firingDelay);
+	}
+	
+	public Ship(int id, int type,ShipType t, double x, double y,int tick, int life, int deltalife)
+	{
+		this(id,type,t,x,y,0,0,tick,life,deltalife,0);
 	}
 	
 	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife)
 	{
-		this(id,type,t,x,y,heading,scannerH,life,tick,deltalife,0);
+		this(id,type,t,x,y,heading,scannerH,tick,life,deltalife,0);
 	}
 	
-
-	
-	public Ship(int id, int type,ShipType t, double x, double y, int life,int tick)
+	public Ship(int id, int type,ShipType t, double x, double y, int tick, int life)
 	{
-		this(id,type,t,x,y,0,0,life,tick,0,0);
+		this(id,type,t,x,y,0,0,tick,life,0,0);
+	}
+	
+	//clobbers this ship with the contents of s
+	public void update(Ship s)
+	{
+		myID=s.myID;
+		myTypeID = s.myTypeID;
+		myPosition = s.myPosition;
+		myLife = s.myLife;
+		willMove=s.willMove;
+		myScannerHeading=s.myScannerHeading;
+		myHeading = s.myHeading;
+		myType = s.myType;
+		myCreationTick = s.myCreationTick;
+		myDeltaLife = s.myDeltaLife;
+		myLaunchDelay = s.myLaunchDelay;
 	}
 	
 	public int getLaunchDelay()
@@ -110,11 +134,6 @@ public class Ship
 	{
 		this.willMove = willMove;
 	}
-
-	public int getFleetID()
-	{
-		return getFleetID();
-	}
 	
 	public int getDeltaLife()
 	{
@@ -154,6 +173,12 @@ public class Ship
 	{
 		return myHeading;
 	}
+	
+	public void setHeading(double h)
+	{
+		myHeading = SpaceMath.wrapHeading(h);
+	}
+	
 	public int getLife()
 	{
 		return myLife;
@@ -223,10 +248,7 @@ public class Ship
 		return myPosition;
 	}
 	
-	public void setHeading(double h)
-	{
-		myHeading = SpaceMath.wrapHeading(h);
-	}
+
 	
 	public final int getID()
 	{
@@ -250,8 +272,7 @@ public class Ship
 	
 	public DArc getScannerArc()
 	{
-		DArc oup = new DArc(myPosition, myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
-		oup.rotate(-myType.getScannerAngleSpan()/2);
+		DArc oup = new DArc(myPosition, myType.getScannerRadius(),(myScannerHeading-myType.getScannerAngleSpan())/2,myType.getScannerAngleSpan());
 		return oup;
 	}
 	

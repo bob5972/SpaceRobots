@@ -17,7 +17,7 @@ public class ShipAction
 		willMove = s.willMove();
 		newHeading = s.getHeading();
 		newScannerHeading = s.getScannerHeading();
-		launchWhat = ShipTypeDefinitions.TYPE_INVALID;		
+		launchWhat = ShipTypeDefinitions.TYPE_INVALID;
 	}
 	
 	public ShipAction(int id, boolean move, double heading, double scannerHeading, int launch)
@@ -44,6 +44,11 @@ public class ShipAction
 		return willMove;
 	}
 	
+	public final boolean getWillMove()
+	{
+		return willMove();
+	}
+	
 	public void setWillMove(boolean b)
 	{
 		willMove = b;
@@ -64,6 +69,11 @@ public class ShipAction
 		return launchWhat;
 	}
 	
+	public final int getLaunchWhat()
+	{
+		return getLaunch();
+	}
+	
 	public int hashCode()
 	{
 		return myShipID;
@@ -79,6 +89,11 @@ public class ShipAction
 	public void setLaunchWhat(int t)
 	{
 		launchWhat = t;
+	}
+	
+	public final void setLaunch(int t)
+	{
+		setLaunchWhat(t);
 	}
 	
 	public void setHeading(double h)
