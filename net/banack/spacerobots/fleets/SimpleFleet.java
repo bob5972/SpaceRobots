@@ -49,11 +49,6 @@ public class SimpleFleet extends AbstractFleetAI
 		return "1.1";
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f)
-	{
-		return;
-	}
-	
 	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
 	{
 		myShips=s;

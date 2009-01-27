@@ -65,7 +65,7 @@ public class DummyFleet extends AbstractFleetAI
 		return;
 	}
 		
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f, double width, double height)
 	{
 		myShips = s;
 		Iterator<AIShip> i = myShips.iterator();

@@ -135,7 +135,7 @@ public class Battle
 			ServerShip[] s = new ServerShip[1];
 			s[0] = oup;
 
-			f.getAI().initBattle(f.getFleetID(), f.getTeamID(), f.getCredits(), s, t, fa);
+			f.getAI().initBattle(f.getFleetID(), f.getTeamID(), f.getCredits(), s, t, fa,myWidth,myHeight);
 		}
 		
 	}

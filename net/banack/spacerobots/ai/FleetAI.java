@@ -16,7 +16,7 @@ public interface FleetAI extends AIShipFactory
 {	
 	public AIShip createShip(Ship s);
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f);
+	public void initBattle(int fleetID,int teamID, int startingCredits, AIShipList s, Team[] t, Fleet[] f, double width, double height);
 	
 	//The references to AIShipList and AIShips can be reused, but don't modify them outside this thread!
 	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s);

@@ -161,12 +161,12 @@ public class TextProtocol implements AIProtocol
 		return oup;
 	}
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f) throws IOException
+	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f, double width, double height) throws IOException
 	{		
 		curLevel=0;
 		send("BEGIN_BATTLE");
 		curLevel++;
-		send("BEGIN_INIT_BATTLE");
+		send("BEGIN_INIT_BATTLE "+((int)width)+" "+((int)height));
 		curLevel++;
 		send("FLEET_ID "+fleetID);
 		send("TEAM_ID "+teamID);
@@ -208,7 +208,7 @@ public class TextProtocol implements AIProtocol
 		
 		//setup teams, starting positions, etc
 		//>BEGIN_BATTLE
-		//>	BEGIN_INIT_BATTLE
+		//>	BEGIN_INIT_BATTLE width height
 		//>		FLEET_ID 27
 		//>		TEAM_ID 2
 		//>		STARTING_CREDITS 1000

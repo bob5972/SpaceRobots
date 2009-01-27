@@ -37,9 +37,9 @@ public class FleetAI
 		return s;
 	}
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f) throws IOException
+	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f, double width, double height) throws IOException
 	{		
-		myCom.initBattle(fleetID,teamID,startingCredits,s,t,f);
+		myCom.initBattle(fleetID,teamID,startingCredits,s,t,f,width,height);
 	}
 	
 	public void beginFleetStatusUpdate(int tick, int credits, ContactList c, int numShips)throws IOException

@@ -11,7 +11,7 @@ public interface AIProtocol
 	//Returns {name, author,version}
 	String[] loadInfo() throws IOException;
 	
-	void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f) throws IOException;
+	void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f, double width, double height) throws IOException;
 	
 	void beginFleetStatusUpdate(int tick, int credits, ContactList c, int numShips) throws IOException;	
 

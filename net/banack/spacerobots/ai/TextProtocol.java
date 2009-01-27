@@ -177,8 +177,11 @@ public class TextProtocol implements AIClientProtocol
 			}
 			else if(cmd.equals("BEGIN_BATTLE"))
 			{
+				double width,height;
 				curLevel++;
 				words = read("BEGIN_INIT_BATTLE");
+				width = SpaceText.parseInt(words[1]);
+				height = SpaceText.parseInt(words[2]);
 				curLevel++;
 				words = read("FLEET_ID",2);
 				int fleetID = SpaceText.parseInt(words[1]);
@@ -228,13 +231,13 @@ public class TextProtocol implements AIClientProtocol
 				Debug.info("Calling initBattle on client AI");
 				myShips.makeEmpty();
 				myShips.update(s,myAI);
-				myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f);
+				myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f,width,height);
 				
 				send("BATTLE_READY_BEGIN");
 				
 				//setup teams, starting positions, etc
 				//>BEGIN_BATTLE
-				//>	BEGIN_INIT_BATTLE
+				//>	BEGIN_INIT_BATTLE width height
 				//>		FLEET_ID 27
 				//>		TEAM_ID 2
 				//>		STARTING_CREDITS 1000

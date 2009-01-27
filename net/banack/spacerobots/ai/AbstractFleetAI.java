@@ -12,7 +12,6 @@ import net.banack.util.MethodNotImplementedException;
 
 public abstract class AbstractFleetAI implements FleetAI
 {
-	
 	public abstract String getAuthor();
 
 	public String getName()
@@ -35,7 +34,7 @@ public abstract class AbstractFleetAI implements FleetAI
 		return;
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
 		return;
 	}

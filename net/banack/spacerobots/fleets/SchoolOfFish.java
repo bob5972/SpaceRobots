@@ -55,7 +55,7 @@ public class SchoolOfFish extends AbstractFleetAI
 		return "SchoolOfFish";
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
 		myShips=s;
 		Iterator<AIShip> i = myShips.iterator();
