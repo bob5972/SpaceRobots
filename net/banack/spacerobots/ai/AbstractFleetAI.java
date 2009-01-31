@@ -16,7 +16,11 @@ public abstract class AbstractFleetAI implements FleetAI
 
 	public String getName()
 	{
-		return this.getClass().getName();
+		String className = this.getClass().getName();
+		String[] oup = className.split("\\.");
+		if(oup.length == 0)
+			return "null";
+		return oup[oup.length-1];
 	}
 		
 	public String getVersion()

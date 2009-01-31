@@ -498,7 +498,7 @@ public class Battle
 	private static int getLaunchDelay(ServerShip s, ShipType t)
 	{
 		//These numbers are just made up and need to be balanced.
-		return 5+(int)(t.getCost()/20.0);		
+		return 2*(5+(int)(t.getCost()/20.0));		
 	}
 	
 	static private int getNewID()

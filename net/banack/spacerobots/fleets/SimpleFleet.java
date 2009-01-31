@@ -38,11 +38,6 @@ public class SimpleFleet extends AbstractFleetAI
 	{
 		return "Michael Banack";
 	}
-	
-	public String getName()
-	{
-		return "SimpleFleet";
-	}
 		
 	public String getVersion()
 	{

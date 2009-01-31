@@ -50,11 +50,6 @@ public class SchoolOfFish extends AbstractFleetAI
 		return "1.0";
 	}
 	
-	public String getName()
-	{
-		return "SchoolOfFish";
-	}
-	
 	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
 		myShips=s;

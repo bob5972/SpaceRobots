@@ -19,6 +19,51 @@ public class SpaceMath
 		return (target.subtract(origin)).getTheta();
 	}
 	
+	public static double getRawDistance(DPoint a, DPoint b)
+	{
+		return (a.subtract(b)).getRadius();
+	}
+	
+	public static DPoint getClosestMirror(DPoint orig, DPoint target, double width, double height)
+	{
+		DPoint sPos = orig;
+		
+		double x = target.getX();
+		double y = target.getY();
+		double mx = x+2*(width-x);
+		double my = y+2*(height-y);
+		
+		double d[] = new double[9];
+		DPoint m[] = new DPoint[9];
+		
+		//Zero Reflections (identity)
+		m[0] = target;		
+		//Single Reflections
+		m[1] = new DPoint(x,my);		
+		m[2] = new DPoint(mx,y);		
+		m[3] = new DPoint(x,-y);		
+		m[4] = new DPoint(-x,y);		
+		//Double Reflections
+		m[5] = new DPoint(mx,my);
+		m[6] = new DPoint(mx,-y);
+		m[7] = new DPoint(-x,-y);
+		m[8] = new DPoint(-x,my);
+		
+		//Find min
+		int index=0;
+		d[0] = getRawDistance(sPos,m[0]);
+		for(int i=1;i<d.length;i++)
+		{
+			d[i] = getRawDistance(sPos,m[i]);
+			
+			if(d[i] < d[index])
+			{
+				index = i;
+			}
+		}
+		return m[index];		
+	}
+	
 	//figures out the new heading for a ship, taking into account how far a ship can turn
 	public static double calculateAdjustedHeading(double curHeading, double desiredHeading, double maxTurningRate)
 	{
@@ -48,6 +93,12 @@ public class SpaceMath
 		while(h>=HEADING_WRAP)
 			h-=HEADING_WRAP;
 		return h;
+	}
+	
+	//does no wrapping
+	public static DPoint calculateNewPos(DPoint orig, double heading, double speed)
+	{
+		return orig.add(calculateOffset(heading,speed));
 	}
 	
 	public static DPoint calculateOffset(double heading, double speed)

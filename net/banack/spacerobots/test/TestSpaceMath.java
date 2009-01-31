@@ -568,7 +568,7 @@ public class TestSpaceMath
 	@Test
 	public void testIsCollisionDArcDQuad()
 	{
-		//fail("Not yet implemented"); // TODO
+		fail("Not yet implemented");
 	}
 	
 	/**
@@ -596,6 +596,15 @@ public class TestSpaceMath
 		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,4),a));
 		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,5),a));
 		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,6),a));		
+	}
+	
+	/**
+	 * Test method for {@link net.banack.spacerobots.util.SpaceMath#getClosestMirror(net.banack.geometry.DPoint, net.banack.geometry.DPoint, double, double)}.
+	 */
+	@Test
+	public void testGetClosestMirror()
+	{
+		fail("Not yet implemented");
 	}
 	
 }

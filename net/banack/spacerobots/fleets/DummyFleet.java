@@ -45,11 +45,6 @@ public class DummyFleet extends AbstractFleetAI
 		return "Michael Banack";
 	}
 	
-	public String getName()
-	{
-		return "DummyFleet";
-	}
-	
 	public String getVersion()
 	{
 		return "1.1";
