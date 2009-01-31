@@ -26,8 +26,8 @@ public class SchoolOfFish extends AbstractFleetAI
 	private double groupHeading;
 	
 	private static final int CRUISER_ID = DefaultShipTypeDefinitions.CRUISER_ID;
-	private static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
-	private static final int FIGHTER_ID = DefaultShipTypeDefinitions.FIGHTER_ID;
+	//private static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
+	//private static final int FIGHTER_ID = DefaultShipTypeDefinitions.FIGHTER_ID;
 	private static final int ROCKET_ID = DefaultShipTypeDefinitions.ROCKET_ID;
 	
 	public SchoolOfFish()
@@ -113,15 +113,10 @@ public class SchoolOfFish extends AbstractFleetAI
 			}
 		}
 		
-		i = myShips.iterator();
+		i = myShips.getAliveIterator();
 		while(i.hasNext())
 		{
 			AIShip cur = i.next();
-			
-			if(!cur.isAlive())
-			{
-				continue;
-			}
 			
 			if(!cur.isReadyToLaunch() || cur.getTypeID() == ROCKET_ID)
 				cantSpawn.add(cur.getShipID());

@@ -53,18 +53,13 @@ public class SimpleFleet extends AbstractFleetAI
 	{
 		myShips=s;
 		
-		Iterator<AIShip> i = myShips.iterator();
+		Iterator<AIShip> i = myShips.getAliveIterator();
 		
 		HashSet<Integer> cantSpawn = new HashSet<Integer>();
 		
 		while(i.hasNext())
 		{
 			AIShip ship = i.next();
-			if(!ship.isAlive())
-			{
-				cantSpawn.add(ship.getID());
-				continue;
-			}
 		
 			if(!ship.readyToLaunch())
 				cantSpawn.add(ship.getID());
@@ -75,7 +70,7 @@ public class SimpleFleet extends AbstractFleetAI
 			}
 			else if(ship.getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
-				if(ship.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
+				if(ship.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*(1+myRandom.nextDouble()))
 				{
 					credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
 					ship.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);

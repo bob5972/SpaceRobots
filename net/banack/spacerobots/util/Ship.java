@@ -189,6 +189,11 @@ public class Ship
 		return getLife()>0;
 	}
 	
+	public final boolean isDead()
+	{
+		return !isAlive();
+	}
+	
 	public int getTypeID()
 	{
 		return myTypeID;

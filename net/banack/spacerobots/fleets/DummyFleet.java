@@ -85,15 +85,11 @@ public class DummyFleet extends AbstractFleetAI
 	{
 		myShips=s;
 		
-		Iterator<AIShip> i = myShips.iterator();
+		Iterator<AIShip> i = myShips.getAliveIterator();
 		
 		while(i.hasNext())
 		{
 			AIShip ship = i.next();
-			if(!ship.isAlive())
-			{
-				continue;
-			}
 			
 			if(tick % 100 == 0)
 			{

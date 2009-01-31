@@ -301,16 +301,11 @@ public class TextProtocol implements AIClientProtocol
 				words = read("BEGIN_SHIPS",2);;
 				int numShips = SpaceText.parseInt(words[1]);
 				curLevel++;
-				HashSet<Integer> toDie = new HashSet<Integer>();
+				
 				for(int x=0;x<numShips;x++)
 				{
 					Ship s = sIn.readShip();
 					myShips.update(s,myAI);
-					if(!s.isAlive())
-					{
-						//remove it later so the AI sees it as dead
-						toDie.add(s.getShipID());
-					}
 				}
 				
 				read("END_SHIPS");
@@ -330,16 +325,17 @@ public class TextProtocol implements AIClientProtocol
 				while(i.hasNext())					
 				{
 					ShipAction cur = i.next();
-					if(myShips.get(cur.getShipID()).isAlive())
-						writeAction(cur);
+					writeAction(cur);
 				}
+				
+				myShips.reset();
 				
 				send("END_SHIP_ACTIONS");
 				curLevel--;
 				send("END_FLEET_ACTIONS");
 				curLevel--;
 				
-				myShips.remove(toDie);
+				
 				
 				//<BEGIN_FLEET_ACTIONS
 				//<	TICK 803
