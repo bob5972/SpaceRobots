@@ -1,6 +1,8 @@
 package net.banack.spacerobots;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,10 +20,12 @@ public class ProtocolFactory
 	
 	public static AIProtocol doHandshake(InputStream inp, OutputStream oup)
 	{
-		BufferedReader sIn = new BufferedReader(new InputStreamReader(inp));
-		PrintWriter sOut = new PrintWriter(oup);
+		DataInputStream sIn = new DataInputStream(inp);
+		DataOutputStream sOut = new DataOutputStream(oup);
 		
 		String temp;
+		StringBuffer b = new StringBuffer();
+		char c;
 		Pattern p;
 		Matcher m;
 		
@@ -29,9 +33,17 @@ public class ProtocolFactory
 		try{
 			//>SERVER_HELLO from PROGRAM_NAME
 			Debug.info("Sending SERVER_HELLO");
-			sOut.println("SERVER_HELLO from "+PROGRAM_NAME);
+			sOut.writeChars("SERVER_HELLO from "+PROGRAM_NAME+"\n");
 			sOut.flush();
-			temp = sIn.readLine();
+			
+			b.setLength(0);
+			c = sIn.readChar();
+			while(c!= '\n')
+			{
+				b.append(c);
+				c=sIn.readChar();
+			}
+			temp = b.toString();
 			
 			//<CLIENT_HELLO from AI_NAME
 			if(!Pattern.matches("CLIENT_HELLO\\s+.*",temp))
@@ -40,7 +52,14 @@ public class ProtocolFactory
 			}
 			Debug.info("Received CLIENT_HELLO");
 			
-			temp = sIn.readLine();
+			b.setLength(0);
+			c = sIn.readChar();
+			while(c!= '\n')
+			{
+				b.append(c);
+				c=sIn.readChar();
+			}
+			temp = b.toString();
 			
 			//<USING_PROTOCOL TEXT_1
 			p = Pattern.compile("USING_PROTOCOL\\s+(\\w*)");
@@ -57,9 +76,16 @@ public class ProtocolFactory
 				return ai;
 			
 			//>LIST_PROTOCOLS
-			sOut.println("LIST_PROTOCOLS");
+			sOut.writeChars("LIST_PROTOCOLS\n");
 			sOut.flush();
-			temp = sIn.readLine();
+			b.setLength(0);
+			c = sIn.readChar();
+			while(c!= '\n')
+			{
+				b.append(c);
+				c=sIn.readChar();
+			}
+			temp = b.toString();
 			p = Pattern.compile("HAVE_PROTOCOLS\\s+(.*)");
 			m = p.matcher(temp);
 			if(!m.matches())
@@ -93,13 +119,21 @@ public class ProtocolFactory
 		}
 	}
 		
-	private static AIProtocol matchProtocol(String p,BufferedReader sIn, PrintWriter sOut)
+	private static AIProtocol matchProtocol(String p,DataInputStream sIn, DataOutputStream sOut) throws IOException
 	{
 		if(p.equals("TEXT_1"))
 		{
 			//>ACK_PROTOCOL TEXT_1
-			sOut.println("ACK_PROTOCOL TEXT_1");
-			return new TextProtocol(sIn,sOut);
+			sOut.writeChars("ACK_PROTOCOL TEXT_1\n");
+			Debug.info("Using Protocol TEXT_1");
+			return new TextProtocol(new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
+		}
+		else if(p.equals("BINARY_1"))
+		{
+			sOut.writeChars("ACK_PROTOCOL BINARY_1\n");
+			sOut.flush();
+			Debug.info("Using Protocol BINARY_1");
+			return new BinaryProtocol(sIn,sOut);
 		}
 		
 		return null;

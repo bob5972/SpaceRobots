@@ -33,7 +33,7 @@ public abstract class AbstractFleetAI implements FleetAI
 		return new AIShip(s);
 	}
 	
-	public void battleStatusUpdate(int teamID, int fleetID, boolean doa, boolean winOrLose)
+	public void battleStatusUpdate(int teamID, int fleetID, boolean doa)
 	{
 		return;
 	}

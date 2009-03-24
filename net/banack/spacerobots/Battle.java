@@ -123,6 +123,12 @@ public class Battle
 			ServerFleet f = i.next();
 			f.getAI().loadInfo();
 			
+			if(Debug.isDebug())
+			{
+				if(f.getAIName() == null || f.getAIAuthor() == null || f.getAIVersion() == null)
+					Debug.warn("We've got null pointers in AI Info!");
+			}
+			
 			int launchType = TYPE_CRUISER;
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);

@@ -269,10 +269,9 @@ public class TextProtocol implements AIClientProtocol
 				int teamID = SpaceText.parseInt(words[1]);
 				int fleetID = SpaceText.parseInt(words[2]);
 				boolean doa = SpaceText.parseInt(words[3])!= 0;
-				boolean wol = SpaceText.parseInt(words[4])!= 0;
 				//we could send these intermittently to tell fleets when people die...
-				//>BATTLE_STATUS_UPDATE teamID deadOrAlive winOrLose
-				myAI.battleStatusUpdate(teamID,fleetID,doa,wol);
+				//>BATTLE_STATUS_UPDATE teamID deadOrAlive
+				myAI.battleStatusUpdate(teamID,fleetID,doa);
 			}
 			else if(cmd.equals("BEGIN_FLEET_STATUS"))
 			{

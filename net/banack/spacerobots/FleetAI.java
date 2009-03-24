@@ -69,16 +69,23 @@ public class FleetAI
 
 	public String getAuthor()
 	{
+		if(myAuthor == null)
+			return "";
 		return myAuthor;
 	}
 
 	public String getName()
 	{
-		return myName;
+		if(myName == null)
+			return "";
+		else
+			return myName;
 	}
 
 	public String getVersion()
 	{
+		if(myVersion == null)
+			return "";
 		return myVersion;
 	}
 }

@@ -81,6 +81,11 @@ public class Ship
 		return myLaunchDelay;
 	}
 	
+	public final int getFiringDelay()
+	{
+		return getLaunchDelay();
+	}
+	
 	public void setLaunchDelay(int d)
 	{
 		myLaunchDelay = d;

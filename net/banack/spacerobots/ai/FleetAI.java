@@ -21,7 +21,7 @@ public interface FleetAI extends AIShipFactory
 	//The references to AIShipList and AIShips can be reused, but don't modify them outside this thread!
 	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s);
 	
-	public void battleStatusUpdate(int teamID, int fleetID, boolean doa, boolean winOrLose);
+	public void battleStatusUpdate(int teamID, int fleetID, boolean doa);
 	
 	public void endBattle(Fleet me, Team[] t, Fleet[] f);
 

@@ -28,6 +28,18 @@ public class Fleet
 		myAIAuthor = aiAuthor;
 	}
 	
+	public Fleet(int fleetID,int teamID,String fleetName, String aiName, String aiAuthor, String aiVersion,boolean alive)
+	{
+		myFleetID = fleetID;
+		myTeamID = teamID;
+		winOrLose=STATUS_IN_PROGRESS;
+		isAlive=alive;
+		myFleetName = fleetName;
+		myAIName = aiName;
+		myAIAuthor = aiAuthor;
+		myAIVersion = aiVersion;
+	}
+	
 	public Fleet(int fleetID,int teamID,String fleetName, String aiName, String aiAuthor, String aiVersion,boolean alive, boolean won)
 	{
 		myFleetID = fleetID;

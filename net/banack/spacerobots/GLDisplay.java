@@ -21,7 +21,7 @@ import com.sun.opengl.util.j2d.*;
 
 public class GLDisplay implements GLEventListener, Display
 {
-	private static final float SHIP_TRANSPARENCY = .1f;
+	private static final float SHIP_TRANSPARENCY = 0.5f;
 	
     private boolean simulationFinished = false;
     private JFrame frame;
@@ -186,16 +186,16 @@ public class GLDisplay implements GLEventListener, Display
 	    disFleet.green = 0f;
 	    disFleet.blue = 0f;
 	    switch (disFleet.index) {
-	    case 0:
-		disFleet.red = 1f;
-		break;
-	    case 1:
-		disFleet.blue = 1f;
-		break;
-	    default:
-		disFleet.red = 1f;
-		disFleet.green = 1f;
-		disFleet.blue = 1f;
+	    	case 0:
+	    		disFleet.red = 1f;
+	    		break;
+	    	case 1:
+	    		disFleet.blue = 1f;
+	    		break;
+	    	default:
+	    		disFleet.red = 1f;
+	    		disFleet.green = 1f;
+	    		disFleet.blue = 1f;
 	    }
 	    disFleet.team = teams.get(fleet.getTeam().getTeamIndex());
 	    disFleet.indexInTeam = disFleet.team.numFleets;
@@ -386,7 +386,7 @@ public class GLDisplay implements GLEventListener, Display
 	GL gl = drawable.getGL();
 
 	gl.glBegin(GL.GL_QUADS);
-	gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, .2f);
+	gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, SHIP_TRANSPARENCY);
 	gl.glVertex2f((float) (ship.location.getP1().getX() + xOffset), 
 		      (float) (ship.location.getP1().getY() + yOffset));
 	gl.glVertex2f((float) (ship.location.getP2().getX() + xOffset), 
