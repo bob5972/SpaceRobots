@@ -12,7 +12,7 @@ import net.banack.util.MethodNotImplementedException;
 public class SpaceMath
 {
 	public static final double HEADING_WRAP = 2*Math.PI;
-	public static final DPoint ORIGIN = new DPoint(0,0);
+	public static final DPoint ORIGIN = DPoint.ORIGIN;
 	
 	public static double getAngle(DPoint origin, DPoint target)
 	{
@@ -88,11 +88,62 @@ public class SpaceMath
 	
 	public static double wrapHeading(double h)
 	{
-		while(h<0)
-			h+=HEADING_WRAP;
-		while(h>=HEADING_WRAP)
-			h-=HEADING_WRAP;
-		return h;
+		return wrap(h,HEADING_WRAP);
+	}
+	
+	
+	
+	public static double wrap(double value, double range)
+	{
+		value -= Math.floor(value/range)*range;
+		
+		while(value <0)
+			value+=range;
+		while(value >= range)
+			value -= range;
+		
+		return value;
+	}
+	
+	public static double wrap(double value, double range, double center)
+	{
+		double oup =  wrap(value,range);
+		double offset = wrap(center,range);
+		
+		//There's probably a faster way to do this, but I couldn't figure it out in 5 minutes.
+		//  and we should be within range of the correct value, so these really shouldn't run more than once
+		oup += (center-offset);		
+		while(oup < center-range/2)
+			oup+=range;
+		while(oup>= center+ range/2)
+			oup -= range;
+		
+		return oup;
+	}
+	
+	public static DPoint wrap(DPoint p, double width, double height)
+	{
+		DPoint oup = new DPoint(wrap(p.getX(),width),wrap(p.getY(),height));
+		return oup;
+	}
+	
+	public static DPoint wrap(DPoint p, DPoint center, double width, double height)
+	{
+		DPoint oup = new DPoint(wrap(p.getX(),width,center.getX()),wrap(p.getY(),height,center.getY()));
+		return oup;
+	}
+	
+	public static DQuad wrap(DQuad r, DPoint center, double width,double height)
+	{
+		DPoint rc = r.getCenter();
+		DPoint offset = wrap(rc,center,width,height);
+		offset = offset.subtract(rc);
+		DPoint p1 = r.getP1().add(offset);
+		DPoint p2 = r.getP2().add(offset);
+		DPoint p3 = r.getP3().add(offset);
+		DPoint p4 = r.getP4().add(offset);
+		
+		return new DQuad(p1,p2,p3,p4);
 	}
 	
 	//does no wrapping
@@ -240,6 +291,7 @@ public class SpaceMath
 	}
 	
 	//test if the interval [a1,a2] intersects the interval [b1,b2]
+	//Precondition: a1 <= a2, b1<= b2
 	public static boolean isIntersection(double a1, double a2, double b1, double b2)
 	{
 		if(a1 <= b1 && b1 <= a2)
@@ -468,63 +520,187 @@ public class SpaceMath
 		return false;
 	}
 	
-	public static boolean isCollision(DArc a, DQuad r)
-	{
-		//these are all speedups
-		//  but I havn't actually tested to see if any/how many help
+	public static boolean isCollision(DArc arc, DQuad r)
+	{		
+		//Debug.print("Entering isCollision: arc="+arc+", r="+r);
 		
-		for(int x=1;x<=4;x++)
+		double radius = arc.getRadius();
+		r = r.subtract(arc.getCenter());
+		//Debug.print("Recentering: arc="+arc+", r="+r);
+		r = rotate(r,ORIGIN,-arc.getAngleStart());
+		arc = new DArc(ORIGIN, radius,0,arc.getAngleSpan());
+		
+		//Debug.print("Rotating: arc="+arc+", r="+r);
+		
+		//There is an odd case where the rectangle completely encloses the arc, and thus there are no intersections
+		if(containsPoint(ORIGIN,r))
 		{
-			if(containsPoint(r.getVertex(x),a))
-				return true;
+			//Debug.print("Returning True: Contains Origin!");
+			return true;
 		}
 		
-		DPoint left = new DPoint(a.getRadius()*Math.cos(a.getAngleEnd()),a.getRadius()*Math.sin(a.getAngleEnd()));
-		left = left.add(a.getCenter());
+		//for each edge y=mx+intercept
+		double m,a,intercept,b,c,minX,maxX,minY,maxY;		
 		
-		if(containsPoint(left,r))
-			return true;
+		DPoint p1,p2;
+		p1 = p2 = null;
 		
-		DPoint right = new DPoint(a.getRadius()*Math.cos(a.getAngleStart()),a.getRadius()*Math.sin(a.getAngleStart()));
-		right = right.add(a.getCenter());
-		
-		if(containsPoint(right,r))
-			return true;
-		
-		if(containsPoint(a.getCenter(),r))
-			return true;
-		
+		for(int x=0;x<4;x++)
+		{
+			switch(x)
+			{
+				case 0:
+					p1 = r.getP1();
+					p2 = r.getP2();
+					break;
+				case 1:
+					p1 = r.getP2();
+					p2 = r.getP3();
+					break;
+				case 2:
+					p1 = r.getP3();
+					p2 = r.getP4();
+					break;
+				case 3:
+					p1 = r.getP4();
+					p2 = r.getP1();
+					break;
+				default:
+					Debug.crash("Somebody changed the loop without fixing the switch statement!");
+			}
 			
-		//no luck with fast and loose
-		// do real collision detection
-		
-		//cheat and use the java library!
+			double x1,x2,y1,y2,discriminant;
+			DPoint pp1,pp2;
+						
+			m = (p2.getY()-p1.getY())/(p2.getX()-p1.getX());
+			intercept = p2.getY()-m*p2.getX();
+			
+			//if there exist x and y (in the right range) such that sqrt(x^2+y^2) <= r
+			//  then we're shiny
+			// So if we're not vertical this is equivalent to sqrt(x^2+(mx+intercept)^2) <= r
+			//   x^2+m^2*x^2+2*m*intercept*x+intercept^2 <= r^2
+			//   x^2+m^2*x^2+2*m*intercept*x+intercept^2 -r^2<= 0
+			// which is all nice and quadratic
+			a = (m*m+1);
+			b = 2*m*intercept;
+			c = intercept*intercept-radius*radius;
+			
+			if(Math.abs(p2.getX()-p1.getX()) >= 0.001)
+			{
+				//make sure we're not vertical 
 
-		//This needs to be verified!
+				discriminant = b*b-4*a*c;
+				if(discriminant < 0)
+					continue;
+				
+				x1 = (-b - Math.sqrt(discriminant))/(2*a);
+				x2 = (-b + Math.sqrt(discriminant))/(2*a);
+				
+				//so now we need to get the intersection of these points with our line segment
+				minX = min(p1.getX(),p2.getX());
+				maxX = max(p1.getX(),p2.getX());
+				if(!isIntersection(x1,x2,minX,maxX))
+					continue;
+				if(minX > x1)
+					x1 = minX;
+				if(maxX < x2)
+					x2 = maxX;
+				
+				y1 = m*x1+intercept;
+				y2 = m*x2+intercept;
+			}
+			else
+			{
+				//we've got a vertical line...
+				
+				// so switch x and y here
+				//if there exist x and y (in the right range) such that sqrt(x^2+y^2) <= r
+				//  then we're shiny
+				//So this is equivalent to sqrt(y^2+(0*y+intercept)^2) <= r
+				//   x^2+intercept^2 <= r^2
+				//   x^2+intercept^2 -r^2<= 0
+				// which is all nice and quadratic
+				a = 1;
+				b = 0;
+				m=0;
+				intercept = (p1.getX()+p2.getX())/2;
+				c = intercept*intercept-radius*radius;
+			
+				discriminant = b*b-4*a*c;
+				if(discriminant < 0)
+					continue;
+				
+				y1 = (-b - Math.sqrt(discriminant))/(2*a);
+				y2 = (-b + Math.sqrt(discriminant))/(2*a);
+				
+				//so now we need to get the intersection of these points with our line segment
+				minY = min(p1.getY(),p2.getY());
+				maxY = max(p1.getY(),p2.getY());
+				if(!isIntersection(y1,y2,minY,maxY))
+					continue;
+				if(minY > y1)
+					y1 = minY;
+				if(maxY < y2)
+					y2 = maxY;
+				
+				x1 = intercept;
+				x2 = intercept;			
+			}
+			
+			pp1 = new DPoint(x1,y1);
+			pp2 = new DPoint(x2,y2);
+			
+			if(Math.abs(discriminant) < 0.001)
+			{
+				if(containsPoint(pp1,arc))
+				{
+//					Debug.print("m="+m);
+//					Debug.print("intercept="+intercept);
+//					Debug.print("a="+a);
+//					Debug.print("b="+b);
+//					Debug.print("c="+c);
+//					Debug.print("p1.x="+p1.getX()+", p1.y="+p1.getY());
+//					Debug.print("p2.x="+p2.getX()+", p2.y="+p2.getY());
+//					Debug.print("x1="+x1+", y1="+y1);
+//					Debug.print("x2="+x2+", y2="+y2);
+//					Debug.print("Returning True at x="+x);
+					return true;
+				}
+			}
+			
+			if(isIntersection(0,arc.getAngleSpan(),pp1.getTheta(),pp2.getTheta()))
+			{
+//				Debug.print("m="+m);
+//				Debug.print("intercept="+intercept);
+//				Debug.print("a="+a);
+//				Debug.print("b="+b);
+//				Debug.print("c="+c);
+//				Debug.print("p1.x="+p1.getX()+", p1.y="+p1.getY());
+//				Debug.print("p2.x="+p2.getX()+", p2.y="+p2.getY());
+//				Debug.print("x1="+x1+", y1="+y1);
+//				Debug.print("x2="+x2+", y2="+y2);
+//				Debug.print("Returning True at x="+x);
+				return true;
+			}
+			
+		}
 		
-		DPoint center = r.getP4();
-		DPoint offset  = r.getP3().subtract(center);
-		double angle = -offset.getTheta();
-		r = rotate(r,center,angle);
-		right = rotate(right,center,angle);
-		a = new DArc(rotate(a.getCenter(),center,angle),a.getRadius(),Math.atan((right.getY()-a.getCenter().getY())/(right.getX()-a.getCenter().getX())),a.getAngleSpan());
-		
-		
-		//r is now normal (parallel to axes)
-		
-		java.awt.geom.Arc2D.Double ja = new java.awt.geom.Arc2D.Double(a.getCenter().getX(), a.getCenter().getY(), a
-				.getRadius(), a.getRadius(), radToDeg(a.getAngleStart()), radToDeg(a.getAngleEnd()),
-				java.awt.geom.Arc2D.PIE);
-		return ja.intersects(r.getP1().getX(),r.getP1().getY(),r.getP2().getX()-r.getP1().getX(),r.getP1().getY()-r.getP4().getY());
+		//Debug.print("Returning False");
+		return false;		
 	}
 	
 	public static boolean containsPoint(DPoint p, DArc a)
 	{
 		DPoint offset = p.subtract(a.getCenter());
-		double angle = offset.getTheta();
 		double radius = offset.getRadius();
 		
-		return (radius <= a.getRadius() && (a.getAngleStart() <= angle && angle <= a.getAngleEnd()));		
+		if(radius > a.getRadius())
+			return false;
+		
+		double angle = offset.getTheta();
+		
+		
+		return (a.getAngleStart() <= angle && angle <= a.getAngleEnd());		
 	}
 }
 

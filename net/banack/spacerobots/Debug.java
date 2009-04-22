@@ -4,6 +4,7 @@ public class Debug extends net.banack.debug.Debug
 {
 	private static boolean aiWarning=false;
 	private static boolean comLog=false;
+	private static boolean slowGraphics=false;
 	
 	public static void setShowAIWarnings(boolean b)
 	{
@@ -35,6 +36,26 @@ public class Debug extends net.banack.debug.Debug
 	{
 		if(showComLog())
 			info(msg);
+	}
+	
+	public static boolean isSlowGraphics()
+	{
+		return slowGraphics;
+	}
+	
+	public static void setSlowGraphics(boolean b)
+	{
+		slowGraphics=b;
+	}
+	
+	public static void enableSlowGraphics()
+	{
+		slowGraphics =true;
+	}
+	
+	public static void disableSlowGraphics()
+	{
+		slowGraphics=false;
 	}
 	
 }

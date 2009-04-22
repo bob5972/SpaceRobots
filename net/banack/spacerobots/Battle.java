@@ -8,6 +8,7 @@ import java.util.Random;
 
 import net.banack.util.MethodNotImplementedException;
 import net.banack.geometry.DArc;
+import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 import net.banack.spacerobots.util.ActionList;
 import java.util.Iterator;
@@ -420,13 +421,16 @@ public class Battle
 	}
 	
 	private boolean canScan(ServerShip spotter, ServerShip enemy)
-	{		
-		return SpaceMath.isCollision(spotter.getScannerArc(),enemy.getLocation());
+	{
+		DArc arc = spotter.getScannerArc();
+		return  SpaceMath.isCollision(arc,SpaceMath.wrap(enemy.getLocation(),arc.getCenter(),myWidth,myHeight));
 	}
 	
 	private boolean isCollision(ServerShip o, ServerShip i)
 	{
-		return SpaceMath.isCollision(o.getLocation(), i.getLocation());
+		DPoint c = o.getPosition();
+		
+		return SpaceMath.isCollision(o.getLocation(), SpaceMath.wrap(i.getLocation(),c,myWidth,myHeight));
 	}
 	
 	

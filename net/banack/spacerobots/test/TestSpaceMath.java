@@ -563,15 +563,6 @@ public class TestSpaceMath
 	}
 	
 	/**
-	 * Test method for {@link net.banack.spacerobots.util.SpaceMath#isCollision(net.banack.geometry.DArc, net.banack.geometry.DQuad)}.
-	 */
-	@Test
-	public void testIsCollisionDArcDQuad()
-	{
-		fail("Not yet implemented");
-	}
-	
-	/**
 	 * Test method for {@link net.banack.spacerobots.util.SpaceMath#containsPoint(net.banack.geometry.DPoint, net.banack.geometry.DArc)}.
 	 */
 	@Test
@@ -595,17 +586,98 @@ public class TestSpaceMath
 		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,3),a));
 		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,4),a));
 		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,5),a));
-		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,6),a));		
+		Assert.assertFalse(SpaceMath.containsPoint(DPoint.newPolar(2.5,6),a));
+		
+		a = new DArc(SpaceMath.ORIGIN, 10,0,Math.PI/2);
+		Assert.assertTrue(SpaceMath.containsPoint(SpaceMath.ORIGIN, a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(0,0.5), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(2,2), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(1,2), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(3,1), a));
+		
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(10,11), a));
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(-1,-1), a));
+		
+		a = new DArc(SpaceMath.ORIGIN, 10,Math.PI,3*Math.PI/2);
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(0,0.5), a));
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(2,2), a));
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(1,2), a));
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(3,1), a));
+		Assert.assertFalse(SpaceMath.containsPoint(new DPoint(10,11), a));
+		
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(-1,-1), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(0,-0.5), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(-2,-2), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(-1,-2), a));
+		Assert.assertTrue(SpaceMath.containsPoint(new DPoint(-3,-1), a));
+		
 	}
 	
 	/**
-	 * Test method for {@link net.banack.spacerobots.util.SpaceMath#getClosestMirror(net.banack.geometry.DPoint, net.banack.geometry.DPoint, double, double)}.
+	 * Test method for {@link net.banack.spacerobots.util.SpaceMath#wrap(double, double, double)}
 	 */
 	@Test
-	public void testGetClosestMirror()
+	public void testWrap()
 	{
-		fail("Not yet implemented");
+		Assert.assertEquals(SpaceMath.wrap(10.7,10,10),10.7);
+		Assert.assertEquals(SpaceMath.wrap(19,10,10),9.0);
+		Assert.assertEquals(SpaceMath.wrap(19,10,20),19.0);
+		Assert.assertEquals(SpaceMath.wrap(19,10,30),29.0);
+		Assert.assertEquals(SpaceMath.wrap(19,10,50),49.0);		
 	}
 	
+	/**
+	 * Test method for {@link net.banack.spacerobots.util.SpaceMath#isCollision(net.banack.geometry.DArc, net.banack.geometry.DQuad)}.
+	 */
+	@Test
+	public void testIsCollisionDArcDQuad()
+	{
+		DArc arc;
+		DQuad r;
+		
+		arc = new DArc(SpaceMath.ORIGIN,1, 0,Math.PI/2);
+		r = new DQuad(new DPoint(0,1), new DPoint(1,1), new DPoint(1,0), new DPoint(0,0));
+		Assert.assertTrue(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(SpaceMath.ORIGIN,1, 0,Math.PI/2);
+		r = new DQuad(new DPoint(0,1), new DPoint(1,1), new DPoint(1,0), new DPoint(0.1,0.1));
+		Assert.assertTrue(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(SpaceMath.ORIGIN,1, 0,Math.PI/2);
+		r = new DQuad(new DPoint(2,2), new DPoint(3,2), new DPoint(3,0), new DPoint(2,0));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(SpaceMath.ORIGIN,1, 0,Math.PI/2);
+		r = new DQuad(new DPoint(-2,2), new DPoint(-1.1,2), new DPoint(-1.1,0), new DPoint(-2,0));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(SpaceMath.ORIGIN,1, Math.PI/2,Math.PI/2);
+		r = new DQuad(new DPoint(2,2), new DPoint(3,2), new DPoint(3,0), new DPoint(2,0));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(SpaceMath.ORIGIN,1, Math.PI/2,Math.PI/2);
+		r = new DQuad(new DPoint(-0.2,0.2), new DPoint(-0.1,0.2), new DPoint(-0.1,0.1), new DPoint(-0.2,0.1));
+		Assert.assertTrue(SpaceMath.isCollision(arc,r));			
+		
+		arc = new DArc(new DPoint(100.0,50.0),40,-0.35,0.7);
+		r = new DQuad(new DPoint(98,50+16), new DPoint(99,50+16), new DPoint(99,50+15), new DPoint(98,50+15));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(new DPoint(0,0),10,0,Math.PI/4);
+		r = new DQuad(new DPoint(0,30), new DPoint(25,30), new DPoint(25,20), new DPoint(0,20));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+
+		arc = new DArc(new DPoint(0,0),40,0,0.7);
+		r = new DQuad(new DPoint(50.18700890282735,133.76241449674657), new DPoint(-128.12627167394078,-94.49152127906225), new DPoint(65.93818143705835,124.993117843258), new DPoint(50.986155842519054,123.7943974337204));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+		
+		arc = new DArc(new DPoint(283.3,58.0),40,-0.35,0.7);
+		r = new DQuad(new DPoint(284.1980199960244,203.29457416972397), new DPoint(294.8617230662086,-86.15623454226986), new DPoint(301.89451725821266,206.73463007760736), new DPoint(291.2308141880285,196.1854387896012));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+
+		arc = new DArc(new DPoint(0,0),40,0,0.7);
+		r = new DQuad(new DPoint(46.523960398395516,-141.61749566123808), new DPoint(51.522081884704996,-141.75454166844565), new DPoint(51.385035877497444,-146.7526631547551), new DPoint(46.386914391187965,-146.61561714754754));
+		Assert.assertFalse(SpaceMath.isCollision(arc,r));
+	}
 }
 

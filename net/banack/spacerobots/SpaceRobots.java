@@ -5,11 +5,15 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.Random;
 
+import net.banack.geometry.DArc;
+import net.banack.geometry.DPoint;
+import net.banack.geometry.DQuad;
 import net.banack.spacerobots.ai.ClientProtocolFactory;
 import net.banack.spacerobots.fleets.Cache;
 import net.banack.spacerobots.fleets.DummyFleet;
 import net.banack.spacerobots.fleets.SchoolOfFish;
 import net.banack.spacerobots.fleets.SimpleFleet;
+import net.banack.spacerobots.util.SpaceMath;
 import net.banack.util.MethodNotImplementedException;
 
 
@@ -19,13 +23,13 @@ public class SpaceRobots
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int STARTING_CREDITS=0;
 	public static final int CREDIT_INCREMENT=1;
-	public static long RANDOM_SEED=100;//0 for random
+	public static long RANDOM_SEED=0;//0 for random
 	
 	public static void main(String[] args)
 	{
 		//Debug INIT
 		Debug.enableDebug();
-		Debug.enableMessages();
+		Debug.setMessages(true);
 		Debug.STD_ERR_MESSAGES=true;
 		Debug.STD_ERR_MESSAGES_VERBOSE=false;
 		Debug.STD_ERR_MESSAGES_INFO=true;
@@ -33,6 +37,7 @@ public class SpaceRobots
 		Debug.STD_ERR_MESSAGES_ERROR=true;		
 		Debug.setShowAIWarnings(true);
 		Debug.setShowComLog(false);
+		Debug.setSlowGraphics(false);
 		if(RANDOM_SEED ==0)
 		{
 			Random r = new Random();

@@ -19,7 +19,7 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static ShipType ROCKET = new ShipType(
 			"Rocket",ROCKET_ID,
 			5,1,2, 2,
-			false, 0, 1,
+			false, 0, 1.5,
 			false, false, 0,0,
 			false, false,20
 	);
@@ -27,9 +27,9 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static ShipType MISSILE = new ShipType(
 			"Missile",MISSILE_ID,
 			10,1,2,2,
-			true, 1, 1,
+			true, 1, 1.5,
 			false, false,0,0,
-			true, false,20
+			true, false,25
 	);
 	
 	public final static ShipType FIGHTER = new ShipType(
