@@ -105,6 +105,8 @@ public class Cache extends AbstractFleetAI
 	{
 		DPoint sPos = s.getPosition();
 		DPoint tPos = target.getPosition();
+		tPos = SpaceMath.wrap(tPos,sPos, myWidth, myHeight);
+		
 		DPoint offset = sPos.subtract(tPos);
 		
 		double h = - ( ( ( target.getHeading() - offset.getTheta()) + Math.PI * 3 ) % (Math.PI * 2) ) - Math.PI;

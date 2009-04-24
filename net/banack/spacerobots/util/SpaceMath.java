@@ -427,21 +427,40 @@ public class SpaceMath
 		
 		//s is now normal (parallel to axes)
 			
-		DPoint ul, br, bl;
+		DPoint ul, br, bl,p;
 		ul = s.getP1();
 		//ur = s.getP2(); //never actually used
 		br = s.getP3();
 		bl = s.getP4();
 		
+		double left,right,top,bottom;
+		left = ul.getX();
+		right = br.getX();
+		top = ul.getY();
+		bottom = bl.getY();
+		
+		boolean doRealTest = false;
 		for(int x=1;x<=4;x++)
 		{
-			DPoint p = r.getVertex(x);
+			p = r.getVertex(x);
+			if(isBoundedCollision(p,left,right,bottom,top))
+			{
+				doRealTest = true;
+				break;
+			}
+		}
+		if(!doRealTest)
+			return false;
+		
+		for(int x=1;x<=4;x++)
+		{
+			p = r.getVertex(x);
 			p = rotate(p,center,a);
 			
-			if(p.getX() > br.getX()  ||
-			  (p.getY() > ul.getY()) ||
-			  (p.getX() < bl.getX()) ||
-			  (p.getY() < bl.getY())  )
+			if((p.getX() > right) ||
+			   (p.getY() > top) ||
+			   (p.getX() < left) ||
+			   (p.getY() < bottom)  )
 			{
 				continue;
 			}
@@ -450,7 +469,7 @@ public class SpaceMath
 		
 		for(int x=1;x<=4;x++)
 		{
-			DPoint p = s.getVertex(x);
+			p = s.getVertex(x);
 			p = rotate(p,center,a);
 			
 			if(containsPoint(p,r))
@@ -461,41 +480,38 @@ public class SpaceMath
 		
 		//all corners are outside
 		//  so let's check if edges cross
-		
+				
+		//to keep java initializers happy
+		DPoint a1,a2,b1,b2;
+		a1 = a2 = b1 = b2 = null;		
 		
 		//If both end points of an r-edge are outside the rectangle
 		//  then it has to cross 2 s-edges (but it could be any 2)
 		//  So, we only need to check 3 s-edges for each r-edge
 		for(int ri=1;ri<=4;ri++)
 		{
+			switch(ri)
+			{
+				case 1:
+					a1 = r.getP1();
+					a2 = r.getP2();
+				break;
+				case 2:
+					a1 = r.getP2();
+					a2 = r.getP3();
+				break;
+				case 3:
+					a1 = r.getP3();
+					a2 = r.getP4();
+				break;
+				case 4:
+					a1 = r.getP4();
+					a2 = r.getP1();
+				break;
+			}
+			
 			for(int si=1;si<=3;si++)
 			{
-				DPoint a1,a2;
-				DPoint b1,b2;
-				
-				//to keep java initializers happy
-				a1 = a2 = b1 = b2 = null;
-				
-				switch(ri)
-				{
-					case 1:
-						a1 = r.getP1();
-						a2 = r.getP2();
-					break;
-					case 2:
-						a1 = r.getP2();
-						a2 = r.getP3();
-					break;
-					case 3:
-						a1 = r.getP3();
-						a2 = r.getP4();
-					break;
-					case 4:
-						a1 = r.getP4();
-						a2 = r.getP1();
-					break;
-				}
-				
 				switch(si)
 				{
 					case 1:
@@ -527,10 +543,22 @@ public class SpaceMath
 		double radius = arc.getRadius();
 		r = r.subtract(arc.getCenter());
 		//Debug.print("Recentering: arc="+arc+", r="+r);
-		r = rotate(r,ORIGIN,-arc.getAngleStart());
-		arc = new DArc(ORIGIN, radius,0,arc.getAngleSpan());
 		
-		//Debug.print("Rotating: arc="+arc+", r="+r);
+		//Check bounding rectangles
+		boolean doRealTest = false;
+		for(int x=1;x<=4;x++)
+		{
+			DPoint cp = r.getVertex(x);
+			double cx = cp.getX();
+			double cy = cp.getY();
+			if(isBoundedCollision(radius,cx,cy))
+			{
+				doRealTest = true;
+				break;
+			}
+		}
+		if(!doRealTest)
+			return false;
 		
 		//There is an odd case where the rectangle completely encloses the arc, and thus there are no intersections
 		if(containsPoint(ORIGIN,r))
@@ -538,6 +566,10 @@ public class SpaceMath
 			//Debug.print("Returning True: Contains Origin!");
 			return true;
 		}
+		
+		r = rotate(r,ORIGIN,-arc.getAngleStart());
+		arc = new DArc(ORIGIN, radius,0,arc.getAngleSpan());
+		//Debug.print("Rotating: arc="+arc+", r="+r);
 		
 		//for each edge y=mx+intercept
 		double m,a,intercept,b,c,minX,maxX,minY,maxY;		
@@ -575,19 +607,19 @@ public class SpaceMath
 			m = (p2.getY()-p1.getY())/(p2.getX()-p1.getX());
 			intercept = p2.getY()-m*p2.getX();
 			
-			//if there exist x and y (in the right range) such that sqrt(x^2+y^2) <= r
-			//  then we're shiny
-			// So if we're not vertical this is equivalent to sqrt(x^2+(mx+intercept)^2) <= r
-			//   x^2+m^2*x^2+2*m*intercept*x+intercept^2 <= r^2
-			//   x^2+m^2*x^2+2*m*intercept*x+intercept^2 -r^2<= 0
-			// which is all nice and quadratic
-			a = (m*m+1);
-			b = 2*m*intercept;
-			c = intercept*intercept-radius*radius;
-			
 			if(Math.abs(p2.getX()-p1.getX()) >= 0.001)
 			{
-				//make sure we're not vertical 
+				//make sure we're not vertical
+				
+				//if there exist x and y (in the right range) such that sqrt(x^2+y^2) <= r
+				//  then we're shiny
+				// So if we're not vertical this is equivalent to sqrt(x^2+(mx+intercept)^2) <= r
+				//   x^2+m^2*x^2+2*m*intercept*x+intercept^2 <= r^2
+				//   x^2+m^2*x^2+2*m*intercept*x+intercept^2 -r^2<= 0
+				// which is all nice and quadratic
+				a = (m*m+1);
+				b = 2*m*intercept;
+				c = intercept*intercept-radius*radius;
 
 				discriminant = b*b-4*a*c;
 				if(discriminant < 0)
@@ -687,6 +719,64 @@ public class SpaceMath
 		
 		//Debug.print("Returning False");
 		return false;		
+	}
+	
+	//collision checks rectangles that have sides parallel to the axes
+	// abl,aur = a bottom left, a upper right
+	// bbl,bur = b bottom left, b upper right
+	public static boolean isBoundedCollision(DPoint abl, DPoint aur,DPoint bbl, DPoint bur)
+	{
+		if(bbl.getY() > aur.getY())
+			return false;
+		if(bbl.getX()>aur.getX())
+			return false;
+		if(bur.getX() < abl.getX())
+			return false;
+		if(bur.getY() < abl.getY())
+			return false;
+		
+		return true;
+	}
+	
+	//collision checks rectangles that have sides parallel to the axes
+	// a => (-radius,-radius) to (radius,radius)
+	// bbl,bur = b bottom left, b upper right
+	public static boolean isBoundedCollision(double radius,DPoint bbl, DPoint bur)
+	{
+		return isBoundedCollision(radius,bbl.getX(),bur.getX(),bbl.getY(),bur.getY());
+	}
+	
+	//collision checks bounding rectangle defined by radius and (left,right,top,bottom)
+	public static boolean isBoundedCollision(double radius,double left, double right, double bottom, double top)
+	{
+		if(bottom > radius)
+			return false;
+		if(left>radius)
+			return false;
+		if(right < -radius)
+			return false;
+		if(top < -radius)
+			return false;
+		
+		return true;
+	}
+	
+	public static boolean isBoundedCollision(double radius,DPoint p)
+	{
+		return isBoundedCollision(radius,p.getX(),p.getY());
+	}
+	
+	public static boolean isBoundedCollision(double radius, double x, double y)
+	{
+		return (x >= -radius) && (x <= radius) && (y >= -radius) && (y <= radius);
+	}
+	
+	public static boolean isBoundedCollision(DPoint p, double left, double right, double bottom, double top)
+	{
+		double x = p.getX();
+		double y = p.getY();
+		
+		return (x >= left) && (x <= right) && (y >= bottom) && (y <= top);
 	}
 	
 	public static boolean containsPoint(DPoint p, DArc a)

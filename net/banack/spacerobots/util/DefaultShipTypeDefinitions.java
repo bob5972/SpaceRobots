@@ -50,9 +50,9 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	
 	public final static ShipType CRUISER = new ShipType(
 			"Cruiser",CRUISER_ID,
-			1000,10,15,10,
+			1000,10,30,20,
 			true, 0.01, 0.3,
-			true, true,40,0.7,
+			true, true,60,0.7,
 			true,true,0
 	);
 	

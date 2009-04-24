@@ -192,6 +192,8 @@ public class BinaryProtocol implements AIClientProtocol
 				break;
 				case BEGIN_BATTLE_OUTCOME:
 				{
+					Debug.verbose("Client received BEGIN_BATTLE_OUTCOME");
+					
 					Fleet me = readFleet();
 					
 					int numTeams = sIn.readInt();
@@ -213,6 +215,7 @@ public class BinaryProtocol implements AIClientProtocol
 					sOut.writeInt(BATTLE_READY_END);
 					sOut.flush();
 					
+					Debug.verbose("Client AI exiting...");
 					return;//its all over..
 				}				
 				//implied break here is unreachable due to return

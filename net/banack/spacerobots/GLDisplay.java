@@ -22,37 +22,30 @@ import com.sun.opengl.util.j2d.*;
 public class GLDisplay implements GLEventListener, Display
 {
 	private static final float SHIP_TRANSPARENCY = 0.5f;
+	private static final int MAX_QUEUED_TICKS = 4000;
+	private static final int FRAMES_PER_SECOND = 60;
 	
 	private boolean simulationFinished = false;
 	
-	private JFrame frame;
+	private JFrame frame;	
+	private GLCanvas canvas;	
+	private TextRenderer plainRenderer;	
+	private TextRenderer boldRenderer;	
+	private DisplayFrame lastFrame;	
 	
-	private GLCanvas canvas;
-	
-	private TextRenderer plainRenderer;
-	
-	private TextRenderer boldRenderer;
-	
-	private DisplayFrame lastFrame;
-	
-	private double battleWidth;
-	
-	private double battleHeight;
+	private double battleWidth;	
+	private double battleHeight;	
 	
 	private AbstractQueue<DisplayFrame> frameQueue;
 	
 	private class DisplayFrame
 	{
-		public ArrayList<DisplayTeam> teams;
-		
-		public ArrayList<DisplayFleet> fleets;
-		
-		public ArrayList<DisplayShip> ships;
-		
+		public ArrayList<DisplayTeam> teams;		
+		public ArrayList<DisplayFleet> fleets;		
+		public ArrayList<DisplayShip> ships;		
 		public int tick;
 		
-		public DisplayFrame(ArrayList<DisplayTeam> teams, ArrayList<DisplayFleet> fleets, ArrayList<DisplayShip> ships,
-				int tick)
+		public DisplayFrame(ArrayList<DisplayTeam> teams, ArrayList<DisplayFleet> fleets, ArrayList<DisplayShip> ships,	int tick)
 		{
 			this.teams = teams;
 			this.fleets = fleets;
@@ -63,48 +56,32 @@ public class GLDisplay implements GLEventListener, Display
 	
 	private class DisplayTeam
 	{
-		int index;
-		
-		int numFleets;
-		
+		int index;		
+		int numFleets;		
 		String name;
 	}
 	
 	private class DisplayFleet
 	{
-		int index;
-		
-		DisplayTeam team;
-		
-		int indexInTeam;
-		
+		int index;		
+		DisplayTeam team;		
+		int indexInTeam;		
 		int credits;
-		
-		int numShips;
-		
-		String name;
-		
-		String aiName;
-		
-		String aiAuthor;
-		
-		String aiVersion;
-		
-		float red;
-		
-		float green;
-		
+		int numShips;		
+		String name;		
+		String aiName;		
+		String aiAuthor;		
+		String aiVersion;		
+		float red;		
+		float green;		
 		float blue;
 	}
 	
 	private class DisplayShip
 	{
-		int indexInFleet;
-		
-		DisplayFleet fleet;
-		
-		DQuad location;
-		
+		int indexInFleet;		
+		DisplayFleet fleet;		
+		DQuad location;		
 		DArc scanner;
 	}
 	
@@ -139,7 +116,7 @@ public class GLDisplay implements GLEventListener, Display
 		
 		canvas.addGLEventListener(this);
 		frame.add(canvas);
-		animator = new FPSAnimator(canvas, 60);
+		animator = new FPSAnimator(canvas, FRAMES_PER_SECOND);
 		
 		canvas.setSize(width, height);
 		frame.pack();
@@ -240,14 +217,14 @@ public class GLDisplay implements GLEventListener, Display
 			ships.add(disShip);
 		}
 		
-		if(Debug.isDebug() && Debug.isSlowGraphics() && frameQueue.size() > 2)
+		if(frameQueue.size() >= MAX_QUEUED_TICKS || (Debug.isDebug() && Debug.isSlowGraphics() && frameQueue.size() > 2))
 		{
 			try{
 				Thread.sleep(100);
 			}
 			catch(InterruptedException e)
 			{
-				
+				Debug.warn("Thread sleeping in GLDisplay.updateDisplay was interrupted!");
 			}
 		}
 		

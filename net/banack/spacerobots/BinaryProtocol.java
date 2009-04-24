@@ -294,8 +294,11 @@ public class BinaryProtocol implements AIProtocol
 		for(int x=0;x<f.length;x++)
 			writeFleet(f[x]);
 		
+		sOut.writeInt(END_BATTLE);
+		
 		sOut.flush();
 		
+		Debug.verbose("Waiting for Client Response to endBattle...");
 		int cmd = sIn.readInt();
 		if(cmd != BATTLE_READY_END)
 			Debug.crash("Bad Client Response: Expected BATTLE_READY_END ("+BATTLE_READY_END+"), received "+cmd);

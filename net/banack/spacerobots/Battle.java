@@ -155,6 +155,7 @@ public class Battle
 		for(int x=0;x<f.length;x++)
 		{
 			FleetAI ai = f[x].getAI();
+			Debug.print("Closing AI Socket: "+ai.getName());
 			ai.endBattle(f[x], t, f);
 		}
 	}
@@ -285,14 +286,7 @@ public class Battle
 			{
 				s.addPosition(SpaceMath.calculateOffset(s.getHeading(),s.getMaxSpeed()));
 				
-				while(s.getX() > myWidth)
-					s.setX(s.getX()-myWidth);
-				while(s.getX() < 0)
-					s.setX(s.getX()+myWidth);
-				while(s.getY() > myHeight)
-					s.setY(s.getY()-myHeight);
-				while(s.getY() < 0)
-					s.setY(s.getY()+myHeight);
+				s.setPosition(SpaceMath.wrap(s.getPosition(),myWidth,myHeight));
 			}
 			
 			if(s.getMaxTickCount() > 0)
@@ -334,11 +328,9 @@ public class Battle
 				Debug.aiwarn("AI attempted an illegal spawn: ai="+myShips.get(a.getShipID()).getFleet().getAIName()+", credits="+credits+" ship="+SpaceText.prettyPrint(ship));
 			}
 		}
-
-
+		
 		contacts.makeEmpty();
 		Iterator<ServerShip> outer = myShips.iterator();
-		
 		
 		while(outer.hasNext())
 		{
@@ -361,7 +353,7 @@ public class Battle
 				
 				//generate sensor contacts
 				if(oTeam != iTeam)
-				{
+				{						
 					if(canScan(sho,shi))
 						contacts.addContact(shi,sho);
 					
@@ -381,13 +373,12 @@ public class Battle
 									//mark stuff to be blown up
 									markForDeath(shi);
 								}
-								
 							}
 						}
 					}
 				}
 			}
-		}
+		} 
 	}
 	
 	private void markForDeath(ServerShip s)
@@ -421,7 +412,7 @@ public class Battle
 	}
 	
 	private boolean canScan(ServerShip spotter, ServerShip enemy)
-	{
+	{		
 		DArc arc = spotter.getScannerArc();
 		return  SpaceMath.isCollision(arc,SpaceMath.wrap(enemy.getLocation(),arc.getCenter(),myWidth,myHeight));
 	}

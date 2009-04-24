@@ -3,6 +3,7 @@ package net.banack.spacerobots;
 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.Iterator;
 import java.util.Random;
 
 import net.banack.geometry.DArc;
@@ -14,13 +15,14 @@ import net.banack.spacerobots.fleets.DummyFleet;
 import net.banack.spacerobots.fleets.SchoolOfFish;
 import net.banack.spacerobots.fleets.SimpleFleet;
 import net.banack.spacerobots.util.SpaceMath;
+import net.banack.spacerobots.util.Team;
 import net.banack.util.MethodNotImplementedException;
 
 
 public class SpaceRobots
 {
-	public static final int DEFAULT_WIDTH = 300;
-	public static final int DEFAULT_HEIGHT = 300;
+	public static final int DEFAULT_WIDTH = 500;
+	public static final int DEFAULT_HEIGHT = 500;
 	public static final int STARTING_CREDITS=0;
 	public static final int CREDIT_INCREMENT=1;
 	public static long RANDOM_SEED=0;//0 for random
@@ -38,6 +40,8 @@ public class SpaceRobots
 		Debug.setShowAIWarnings(true);
 		Debug.setShowComLog(false);
 		Debug.setSlowGraphics(false);
+		final boolean USE_CONSOLE_DISPLAY = false;
+		
 		if(RANDOM_SEED ==0)
 		{
 			Random r = new Random();
@@ -47,7 +51,7 @@ public class SpaceRobots
 		
 		//SETUP
 		Debug.info("Initializing Display...");
-		Display d = new GLDisplay();
+		Display d = (USE_CONSOLE_DISPLAY? new ConsoleDisplay(): new GLDisplay());
 		
 		//setup initial battle state
 		Debug.info("Initializing Battle...");
@@ -66,7 +70,7 @@ public class SpaceRobots
 			PipedOutputStream sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #1");
-			Thread background = new AIThread(new SimpleFleet(RANDOM_SEED),cIn,cOut);
+			Thread background = new AIThread(new DummyFleet(RANDOM_SEED),cIn,cOut);
 			Debug.info("Starting background thread #1");
 			background.start();
 			Debug.info("Handshaking...");
@@ -80,7 +84,7 @@ public class SpaceRobots
 			sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #2");
-			background = new AIThread(new DummyFleet(RANDOM_SEED+1),cIn,cOut);
+			background = new AIThread(new SimpleFleet(RANDOM_SEED+1),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}
@@ -134,8 +138,28 @@ public class SpaceRobots
 		Debug.info("Battle over!");
 		//END GAME LOOP
 		
+		Iterator<ServerTeam> it = b.teamIterator();
+		while(it.hasNext())
+		{
+			ServerTeam t = it.next();
+			if(t.isAlive())
+			{
+				System.out.println("The winner is: "+t.getName());
+				Iterator<ServerFleet> itf = b.fleetIterator();
+				while(itf.hasNext())
+				{
+					ServerFleet f = itf.next();
+					if(f.getTeam() == t)
+						System.out.print("               "+f.getName()+": "+f.getAIName()+" v "+f.getAIVersion()+ " by "+f.getAIAuthor());
+				}
+				System.out.println();
+			}
+		}
+		
 		// cleanup
 		try {
+			
+			
 			b.cleanup();
 		}
 		catch(java.io.IOException e)
