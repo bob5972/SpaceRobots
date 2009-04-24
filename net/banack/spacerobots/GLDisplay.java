@@ -217,7 +217,7 @@ public class GLDisplay implements GLEventListener, Display
 			ships.add(disShip);
 		}
 		
-		if(frameQueue.size() >= MAX_QUEUED_TICKS || (Debug.isDebug() && Debug.isSlowGraphics() && frameQueue.size() > 2))
+		while(frameQueue.size() >= MAX_QUEUED_TICKS || (Debug.isDebug() && Debug.isSlowGraphics() && frameQueue.size() > 2))
 		{
 			try{
 				Thread.sleep(100);
