@@ -88,6 +88,12 @@ public class ShipType
 	{
 		return typeID;
 	}
+	
+	public final int getID()
+	{
+		return getTypeID();
+	}
+	
 	public double getWidth()
 	{
 		return width;

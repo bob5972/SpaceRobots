@@ -12,7 +12,7 @@ import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
-import net.banack.spacerobots.util.SensorContact;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceText;

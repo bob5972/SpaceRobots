@@ -20,7 +20,6 @@ public class ServerFleet extends Fleet
 		super(fleetID,teamID,"Fleet "+fleetID,null,null,null);
 		myFleetIndex=fleetIndex;
 		myAI = ai;
-		setWinOrLose(STATUS_IN_PROGRESS);
 		setAlive(true);
 		myTeam =t;
 	}
@@ -30,7 +29,6 @@ public class ServerFleet extends Fleet
 		super(fleetID,teamID,name,ai.getName(),ai.getAuthor(),ai.getVersion());
 		myFleetIndex=fleetIndex;
 		myAI = ai;
-		setWinOrLose(STATUS_IN_PROGRESS);
 		setAlive(true);
 		myTeam=t;
 	}

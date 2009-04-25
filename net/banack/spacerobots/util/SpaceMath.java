@@ -7,6 +7,7 @@ import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 import net.banack.spacerobots.Battle;
 import net.banack.spacerobots.Debug;
+import net.banack.spacerobots.ai.AIShip;
 import net.banack.util.MethodNotImplementedException;
 
 public class SpaceMath
@@ -22,6 +23,23 @@ public class SpaceMath
 	public static double getRawDistance(DPoint a, DPoint b)
 	{
 		return (a.subtract(b)).getRadius();
+	}
+	
+	public static double interceptHeading(Ship s, Ship target, double battleWidth, double battleHeight)
+	{
+		DPoint sPos = s.getPosition();
+		DPoint tPos = target.getPosition();
+		tPos = SpaceMath.wrap(tPos,sPos, battleWidth, battleHeight);
+		
+		DPoint offset = sPos.subtract(tPos);
+		
+		double h = - ( ( ( target.getHeading() - offset.getTheta()) + Math.PI * 3 ) % (Math.PI * 2) ) - Math.PI;
+		h = Math.asin( Math.sin(h)* (target.getMaxSpeed()/s.getMaxSpeed()) ) + offset.getTheta()+Math.PI;
+		return h;
+		
+		//old way
+		//DPoint newPos = SpaceMath.calculateNewPos(target.getPosition(),target.getHeading(),target.getMaxSpeed());
+		//return SpaceMath.getAngle(s.getPosition(), newPos);
 	}
 	
 	public static DPoint getClosestMirror(DPoint orig, DPoint target, double width, double height)
@@ -288,6 +306,8 @@ public class SpaceMath
 	{
 		//Write a unit test whenever this gets done.
 		throw new MethodNotImplementedException();
+		//Obviously, this method is not being used, so I may never finish it.
+		//I don't even remember why I wanted it...
 	}
 	
 	//test if the interval [a1,a2] intersects the interval [b1,b2]

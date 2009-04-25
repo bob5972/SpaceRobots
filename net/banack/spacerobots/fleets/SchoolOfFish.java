@@ -1,4 +1,5 @@
 package net.banack.spacerobots.fleets;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -6,9 +7,13 @@ import java.util.Set;
 
 import net.banack.debug.Debug;
 import net.banack.geometry.DPoint;
+import net.banack.spacerobots.ai.AIFilter;
+import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.AbstractFleetAI;
+import net.banack.spacerobots.ai.CompositeGovernor;
+import net.banack.spacerobots.ai.MBFleet;
+import net.banack.spacerobots.ai.MBShip;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -17,27 +22,20 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 
-public class SchoolOfFish extends AbstractFleetAI
+public class SchoolOfFish extends MBFleet
 {
-	private AIShipList myShips;
-	private Random myRandom;
-	private AIShip myCruiser;
 	private int nextMove;
 	private double groupHeading;
 	
-	private static final int CRUISER_ID = DefaultShipTypeDefinitions.CRUISER_ID;
-	//private static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
-	//private static final int FIGHTER_ID = DefaultShipTypeDefinitions.FIGHTER_ID;
-	private static final int ROCKET_ID = DefaultShipTypeDefinitions.ROCKET_ID;
 	
 	public SchoolOfFish()
 	{
-		myRandom = new Random();
+		super();
 	}
 	
 	public SchoolOfFish(long seed)
 	{
-		myRandom = new Random(seed);
+		super(seed);
 	}
 	
 	public String getAuthor()
@@ -47,23 +45,12 @@ public class SchoolOfFish extends AbstractFleetAI
 	
 	public String getVersion()
 	{
-		return "1.0";
+		return "1.1";
 	}
 	
 	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
-		myShips=s;
-		Iterator<AIShip> i = myShips.iterator();
-		
-		while(i.hasNext())
-		{
-			AIShip cur = i.next();
-			if(cur.getTypeID() == CRUISER_ID)
-			{
-				myCruiser=cur;
-				break;
-			}
-		}
+		super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
 		
 		nextMove=100;
 		groupHeading=0;
@@ -71,11 +58,10 @@ public class SchoolOfFish extends AbstractFleetAI
 
 	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
 	{
+		myCredits = credits;
 		myShips=s;
 		
-		Iterator<AIShip> i;
-		
-		HashSet<Integer> cantSpawn = new HashSet<Integer>();
+		Iterator<MBShip> i;
 		
 		boolean adjTick = false;
 		
@@ -89,7 +75,7 @@ public class SchoolOfFish extends AbstractFleetAI
 				double ax= 0;
 				double ay= 0;
 				
-				i = myShips.iterator();
+				i = MBShip.wrapIterator(myShips.iterator());
 				while(i.hasNext())
 				{
 					AIShip cur = i.next();
@@ -108,45 +94,51 @@ public class SchoolOfFish extends AbstractFleetAI
 			}
 		}
 		
-		i = myShips.getAliveIterator();
-		while(i.hasNext())
+		CompositeGovernor govna = new CompositeGovernor();
+		
+		if(adjTick)
 		{
-			AIShip cur = i.next();
-			
-			if(!cur.isReadyToLaunch() || cur.getTypeID() == ROCKET_ID)
-				cantSpawn.add(cur.getShipID());
-			
-			if(adjTick && cur != myCruiser)
-			{
-				if(myRandom.nextInt(10) < 3)
+			govna.insert(AIFilter.FIGHTERS, new AIGovernor(){
+				public void run(AIShip s)
 				{
-					cur.setHeading(myCruiser.getPosition());
-				}
-				else
-				{
-					cur.setHeading(groupHeading);
-				}
-			}
-			
-			if(c.size() > 0 && !cantSpawn.contains(cur.getShipID()) && credits > DefaultShipTypeDefinitions.ROCKET.getCost())
-			{
-				if(cur.getHeading() == groupHeading)
-				{
-					credits-=DefaultShipTypeDefinitions.ROCKET.getCost();
-					cur.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
-				}
-			}
+					MBShip t = (MBShip) s;
+					if(myRandom.nextInt(10) < 3)
+					{
+						t.intercept(myCruiser);
+					}
+					else
+					{
+						t.setHeading(groupHeading); 
+					}
+				};
+			});
 		}
 		
+		if(c.size() > 0)
+		{
+			govna.insert(new AIGovernor(){
+				public void run(AIShip s)
+				{
+					MBShip t = (MBShip) s;
+					if(t.canLaunch(ROCKET) && Math.abs(t.getHeading() -groupHeading) < 0.1)
+					{
+						t.launch(ROCKET);
+					}
+				}
+			});
+		}
+		
+		myShips.apply(govna);
 		
 		if(myCruiser.isAlive())
 		{
 			if(myCruiser.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
 			{
-				credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
-				myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+				myCruiser.launch(FIGHTER);
 			}
+			
 			myCruiser.setScannerHeading(myCruiser.projHeading());			
+			
 			if(tick % 100 == 0)
 			{
 				double h = myCruiser.curHeading();

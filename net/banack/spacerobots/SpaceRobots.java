@@ -70,7 +70,7 @@ public class SpaceRobots
 			PipedOutputStream sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #1");
-			Thread background = new AIThread(new DummyFleet(RANDOM_SEED),cIn,cOut);
+			Thread background = new AIThread(new SchoolOfFish(RANDOM_SEED),cIn,cOut);
 			Debug.info("Starting background thread #1");
 			background.start();
 			Debug.info("Handshaking...");
@@ -84,7 +84,7 @@ public class SpaceRobots
 			sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #2");
-			background = new AIThread(new SimpleFleet(RANDOM_SEED+1),cIn,cOut);
+			background = new AIThread(new Cache(RANDOM_SEED+1),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}

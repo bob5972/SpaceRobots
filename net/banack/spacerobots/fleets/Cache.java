@@ -8,6 +8,8 @@ import net.banack.geometry.DPoint;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.ai.AbstractFleetAI;
+import net.banack.spacerobots.ai.MBFleet;
+import net.banack.spacerobots.ai.MBShip;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -17,29 +19,16 @@ import net.banack.spacerobots.util.ShipTypeDefinitions;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
-public class Cache extends AbstractFleetAI
+public class Cache extends MBFleet
 {
-	private AIShipList myShips;
-	private Random myRandom;
-	private AIShip myCruiser;
-	private int myCredits;
-	private double myWidth,myHeight;
-	
-	private static DefaultShipTypeDefinitions TYPE = new DefaultShipTypeDefinitions();
-	
-	private static final int CRUISER_ID = DefaultShipTypeDefinitions.CRUISER_ID;
-	//private static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
-	private static final int FIGHTER_ID = DefaultShipTypeDefinitions.FIGHTER_ID;
-	private static final int ROCKET_ID = DefaultShipTypeDefinitions.ROCKET_ID;
-	
 	public Cache()
 	{
-		myRandom = new Random();
+		super();
 	}
 	
 	public Cache(long seed)
 	{
-		myRandom = new Random(seed);
+		super(seed);
 	}
 	
 	public String getAuthor()
@@ -52,79 +41,6 @@ public class Cache extends AbstractFleetAI
 		return "1.0";
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
-	{
-		myWidth=width;
-		myHeight = height;
-		
-		myShips=s;
-		Iterator<AIShip> i = myShips.iterator();
-		
-		while(i.hasNext())
-		{
-			AIShip cur = i.next();
-			if(cur.getTypeID() == CRUISER_ID)
-			{
-				myCruiser=cur;
-				break;
-			}
-		}
-	}
-	
-	private boolean canLaunch(AIShip s)
-	{
-		return (s.isAlive() && s.isReadyToLaunch() && s.getTypeID() != ROCKET_ID);
-	}
-	
-	private boolean canLaunch(AIShip s, ShipType t)
-	{
-		return canLaunch(s) && myCredits >= t.getCost();
-	}
-	
-	private boolean canLaunch(AIShip s , int type)
-	{
-		return canLaunch(s,TYPE.get(type));
-	}
-	
-	private double getRawDistance(AIShip s, AIShip t)
-	{
-		return getRawDistance(s.getPosition(),t.getPosition());
-	}
-	
-	private double getRawDistance(DPoint x, DPoint y)
-	{
-		return (x.subtract(y)).getRadius();
-	}
-	
-	private DPoint getClosestMirror(AIShip s, AIShip t)
-	{
-		return SpaceMath.getClosestMirror(s.getPosition(),t.getPosition(),myWidth,myHeight);				
-	}
-	
-	private double interceptHeading(AIShip s, AIShip target)
-	{
-		DPoint sPos = s.getPosition();
-		DPoint tPos = target.getPosition();
-		tPos = SpaceMath.wrap(tPos,sPos, myWidth, myHeight);
-		
-		DPoint offset = sPos.subtract(tPos);
-		
-		double h = - ( ( ( target.getHeading() - offset.getTheta()) + Math.PI * 3 ) % (Math.PI * 2) ) - Math.PI;
-		h = Math.asin( Math.sin(h)* (target.getMaxSpeed()/s.getMaxSpeed()) ) + offset.getTheta()+Math.PI;
-		return h;
-		
-		//old way
-		//DPoint newPos = SpaceMath.calculateNewPos(target.getPosition(),target.getHeading(),target.getMaxSpeed());
-		//return SpaceMath.getAngle(s.getPosition(), newPos);
-	}
-	
-	private double intercept(AIShip s, AIShip target)
-	{
-		double oup = interceptHeading(s,target);
-		s.setHeading(oup);
-		return oup;
-	}
-
 	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList sIn)
 	{
 		myShips=sIn;
@@ -135,26 +51,26 @@ public class Cache extends AbstractFleetAI
 		i = myShips.getAliveIterator();
 		while(i.hasNext())
 		{
-			AIShip cur = i.next();
+			MBShip cur = (MBShip) i.next();
 			
 			if(cur == myCruiser)
 				continue;
 			
 			if(tick % 20 == 0)
 			{
-				intercept(cur,myCruiser);
+				cur.intercept(myCruiser);
 			}
 		}
 		
 		
 		if(myCruiser.isAlive())
 		{
-			if(canLaunch(myCruiser,FIGHTER_ID) && myCredits >= TYPE.FIGHTER.getCost()*2)
+			if(myCruiser.canLaunch(FIGHTER) && myCredits >= FIGHTER.getCost()*2)
 			{
-				credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
-				myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+				myCruiser.launch(FIGHTER);
 			}
 			myCruiser.setScannerHeading(myCruiser.projHeading());			
+			
 			if(tick % 100 == 0)
 			{
 				double h = myRandom.nextDouble();
@@ -169,11 +85,10 @@ public class Cache extends AbstractFleetAI
 			Iterator<Integer> si = c.getSpotters(eid).iterator();
 			while(si.hasNext())
 			{
-				AIShip s = myShips.get(si.next());
-				if(canLaunch(s,ROCKET_ID))
+				MBShip s = (MBShip) myShips.get(si.next());
+				if(s.canLaunch(ROCKET))
 				{
-					myCredits-=TYPE.ROCKET.getCost();
-					s.setLaunch(ROCKET_ID);
+					s.launch(ROCKET);
 				}
 			}
 		}

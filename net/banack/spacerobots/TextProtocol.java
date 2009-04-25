@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import net.banack.geometry.DPoint;
 import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.util.ActionList;
-import net.banack.spacerobots.util.SensorContact;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.SpaceText;
@@ -258,7 +258,7 @@ public class TextProtocol implements AIProtocol
 		while(i.hasNext())
 		{
 			Integer eID = (Integer)i.next();
-			SensorContact ghost = c.getContact(eID);
+			Contact ghost = c.getContact(eID);
 			DPoint pos = ghost.getPosition();
 			StringBuffer cmd = new StringBuffer();
 			cmd.append("CONTACT ");

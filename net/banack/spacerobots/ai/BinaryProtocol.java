@@ -14,7 +14,7 @@ import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
-import net.banack.spacerobots.util.SensorContact;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceMath;
@@ -250,7 +250,7 @@ public class BinaryProtocol implements AIClientProtocol
 		double heading = sIn.readDouble();
 		int numSpotters = sIn.readInt();
 		
-		SensorContact ghost = new SensorContact(eID,fleetID,typeID,x,y,heading);
+		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading);
 		
 		HashSet<Integer> spotters = new HashSet<Integer>();
 		

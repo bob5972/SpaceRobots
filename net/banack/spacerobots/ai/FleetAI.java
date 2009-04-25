@@ -7,9 +7,11 @@ import java.util.Iterator;
 
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
+import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
+import net.banack.spacerobots.util.ShipType;
 import net.banack.spacerobots.util.Team;
 
 public interface FleetAI extends AIShipFactory

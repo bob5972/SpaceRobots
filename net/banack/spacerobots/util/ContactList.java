@@ -11,7 +11,7 @@ import java.util.Iterator;
 public class ContactList
 {
 	//HashMap of enemyID's to SensorContacts
-	private HashMap<Integer,SensorContact> myContacts;
+	private HashMap<Integer,Contact> myContacts;
 	//HashMap of enemyID's to HashSets of spotterID's
 	private HashMap<Integer, Set<Integer> > mySpotters;
 	//number of enemyID's in this list
@@ -20,7 +20,7 @@ public class ContactList
 	
 	public ContactList()
 	{
-		myContacts = new HashMap<Integer,SensorContact>();
+		myContacts = new HashMap<Integer,Contact>();
 		mySpotters = new HashMap<Integer, Set<Integer> >();
 		mySize=0;
 	}
@@ -34,7 +34,7 @@ public class ContactList
 	}
 	
 	//if two SensorContacts for the same enemy are added, only the first one will be stored
-	public void addContact(SensorContact e, int spotterID)
+	public void addContact(Contact e, int spotterID)
 	{
 		Integer eID = new Integer(e.getID());
 		Integer sID = new Integer(spotterID);
@@ -58,7 +58,7 @@ public class ContactList
 	
 	//spotters MUST BE a HashSet of Integers of spotters
 	// or BAD THINGS will  happen (like ClassCastExceptions)
-	public void addContact(SensorContact e, Set<Integer> spotters)
+	public void addContact(Contact e, Set<Integer> spotters)
 	{
 		Integer eID = new Integer(e.getID());
 		
@@ -85,12 +85,12 @@ public class ContactList
 		return myContacts.keySet().iterator();
 	}
 	
-	public SensorContact getContact(int enemyID)
+	public Contact getContact(int enemyID)
 	{
 		return myContacts.get(new Integer(enemyID));
 	}
 	
-	public SensorContact getContact(Integer enemyID)
+	public Contact getContact(Integer enemyID)
 	{
 		return myContacts.get(enemyID);
 	}

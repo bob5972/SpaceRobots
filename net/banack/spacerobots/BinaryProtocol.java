@@ -11,7 +11,7 @@ import java.util.Set;
 import net.banack.geometry.DPoint;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
-import net.banack.spacerobots.util.SensorContact;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceText;
 
@@ -153,7 +153,7 @@ public class BinaryProtocol implements AIProtocol
 		Iterator<Integer> i = c.enemyIterator();
 		while(i.hasNext())
 		{
-			SensorContact sc = c.getContact(i.next());
+			Contact sc = c.getContact(i.next());
 			
 
 			sOut.writeInt(CONTACT_ID);

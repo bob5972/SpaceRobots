@@ -10,13 +10,13 @@ import net.banack.spacerobots.ServerShip;
 import net.banack.spacerobots.ServerFleet;
 import net.banack.util.IntMap;
 import java.util.Iterator;
-import net.banack.spacerobots.util.SensorContact;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 
 public class FleetContactList
 {
 	//HashMap of enemyID's to SensorContacts
-	private HashMap<Integer,SensorContact> myContacts;
+	private HashMap<Integer,Contact> myContacts;
 	//HashMap of fleetID's to (HashMap's of enemyID's to (HashSets of spotterID's))	
 	private HashMap<Integer, Map<Integer, Set<Integer> > > mySpotters;
 	private IntMap myFleetSize;
@@ -24,7 +24,7 @@ public class FleetContactList
 	
 	public FleetContactList()
 	{
-		myContacts = new HashMap<Integer,SensorContact>();
+		myContacts = new HashMap<Integer,Contact>();
 		mySpotters = new HashMap<Integer, Map<Integer, Set<Integer> > >();
 		myFleetSize = new IntMap();
 	}
@@ -48,7 +48,7 @@ public class FleetContactList
 		Integer sFID = new Integer(spotter.getFleetID());
 		
 		if(!myContacts.containsKey(eID))
-			myContacts.put(eID,new SensorContact(enemy));
+			myContacts.put(eID,new Contact(enemy));
 		
 		if(mySpotters.containsKey(sFID))
 		{
@@ -94,7 +94,7 @@ public class FleetContactList
 		while(i.hasNext())
 		{
 			Integer eid = (Integer)i.next();
-			SensorContact c = (SensorContact)myContacts.get(eid);
+			Contact c = (Contact)myContacts.get(eid);
 			
 			oup.addContact(c,eMap.get(eid));			
 		}

@@ -3,7 +3,7 @@ package net.banack.spacerobots.util;
 import net.banack.geometry.DPoint;
 import net.banack.spacerobots.ServerShip;
 
-public class SensorContact
+public class Contact
 {
 	private int enemyID;
 	private int enemyFleetID;
@@ -13,7 +13,7 @@ public class SensorContact
 	
 	public static final int INVALID_FLEET_ID = net.banack.spacerobots.Battle.INVALID_ID;
 	
-	public SensorContact(ServerShip enemy)
+	public Contact(ServerShip enemy)
 	{
 		this.enemyID = enemy.getID();
 		this.enemyFleetID = enemy.getFleetID();
@@ -22,12 +22,12 @@ public class SensorContact
 		this.enemyHeading = enemy.getHeading();
 	}
 	
-	public SensorContact(int enemyID, int fleetID, int type, double x, double y, double heading)
+	public Contact(int enemyID, int fleetID, int type, double x, double y, double heading)
 	{
 		this(enemyID,fleetID,type,new DPoint(x,y),heading);
 	}
 	
-	public SensorContact(int enemyID, int fleetID, int type, DPoint position, double heading)
+	public Contact(int enemyID, int fleetID, int type, DPoint position, double heading)
 	{
 		this.enemyID = enemyID;
 		this.enemyFleetID = fleetID;
@@ -68,8 +68,8 @@ public class SensorContact
 	
 	public boolean equals(Object rhs)
 	{
-		if(!(rhs instanceof SensorContact))
+		if(!(rhs instanceof Contact))
 			return false;
-		return enemyID == ((SensorContact)rhs).enemyID;
+		return enemyID == ((Contact)rhs).enemyID;
 	}
 }

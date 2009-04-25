@@ -15,7 +15,7 @@ public class SpaceText extends Parser
 	
 	public static String toString(Fleet f)
 	{
-		return f.getFleetID()+" "+f.getTeamID()+" "+" \""+f.getFleetName()+"\" \""+f.getAIName()+"\" \""+f.getAIAuthor()+"\" \""+f.getAIVersion()+"\" "+(f.isAlive()?1:0)+" "+((f.getWinOrLose()==Fleet.STATUS_WIN)?1:0);
+		return f.getFleetID()+" "+f.getTeamID()+" "+" \""+f.getFleetName()+"\" \""+f.getAIName()+"\" \""+f.getAIAuthor()+"\" \""+f.getAIVersion()+"\" "+(f.isAlive()?1:0);
 	}
 	
 	public Fleet parseFleet(String str)

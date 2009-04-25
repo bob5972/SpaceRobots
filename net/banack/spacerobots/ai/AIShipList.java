@@ -181,6 +181,29 @@ public class AIShipList
 		}
 	}
 	
+	public void apply(AIGovernor g)
+	{
+		Iterator<AIShip> i = iterator();
+		while(i.hasNext())
+		{
+			AIShip s = i.next();
+			
+			g.run(s);
+		}
+	}
+	
+	public void apply(AIFilter f, AIGovernor g)
+	{
+		Iterator<AIShip> i = iterator();
+		while(i.hasNext())
+		{
+			AIShip s = i.next();
+			
+			if(f.test(s))
+				g.run(s);
+		}
+	}
+	
 	//iterates over all ships (including dead ones)
 	public java.util.Iterator<AIShip> iterator()
 	{
