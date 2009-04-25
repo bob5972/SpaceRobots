@@ -10,10 +10,7 @@ import net.banack.geometry.DArc;
 import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 import net.banack.spacerobots.ai.ClientProtocolFactory;
-import net.banack.spacerobots.fleets.Cache;
-import net.banack.spacerobots.fleets.DummyFleet;
-import net.banack.spacerobots.fleets.SchoolOfFish;
-import net.banack.spacerobots.fleets.SimpleFleet;
+import net.banack.spacerobots.fleets.*;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 import net.banack.util.MethodNotImplementedException;
@@ -21,8 +18,8 @@ import net.banack.util.MethodNotImplementedException;
 
 public class SpaceRobots
 {
-	public static final int DEFAULT_WIDTH = 500;
-	public static final int DEFAULT_HEIGHT = 500;
+	public static final int DEFAULT_WIDTH = 300;
+	public static final int DEFAULT_HEIGHT = 300;
 	public static final int STARTING_CREDITS=0;
 	public static final int CREDIT_INCREMENT=1;
 	public static long RANDOM_SEED=0;//0 for random
@@ -70,7 +67,7 @@ public class SpaceRobots
 			PipedOutputStream sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #1");
-			Thread background = new AIThread(new SchoolOfFish(RANDOM_SEED),cIn,cOut);
+			Thread background = new AIThread(new BattleCruiserFleet(RANDOM_SEED),cIn,cOut);
 			Debug.info("Starting background thread #1");
 			background.start();
 			Debug.info("Handshaking...");
@@ -84,7 +81,7 @@ public class SpaceRobots
 			sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #2");
-			background = new AIThread(new Cache(RANDOM_SEED+1),cIn,cOut);
+			background = new AIThread(new SchoolOfFish(RANDOM_SEED+1),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}

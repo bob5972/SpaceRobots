@@ -97,4 +97,9 @@ public abstract class MBFleet extends AbstractFleetAI
 			myRandom.setSeed(seed);
 	}
 	
+	public boolean isAmmo(int type)
+	{
+		return (type == MISSILE_ID) || (type == ROCKET_ID);
+	}
+	
 }

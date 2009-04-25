@@ -27,19 +27,20 @@ public class SpaceMath
 	
 	public static double interceptHeading(Ship s, Ship target, double battleWidth, double battleHeight)
 	{
+		return interceptHeading(s,target.getPosition(),target.getHeading(),target.getMaxSpeed(),battleWidth,battleHeight);
+	}
+	
+	public static double interceptHeading(Ship s, DPoint target, double targetHeading, double targetSpeed, double battleWidth, double battleHeight)
+	{
 		DPoint sPos = s.getPosition();
-		DPoint tPos = target.getPosition();
+		DPoint tPos = target;
 		tPos = SpaceMath.wrap(tPos,sPos, battleWidth, battleHeight);
 		
 		DPoint offset = sPos.subtract(tPos);
 		
-		double h = - ( ( ( target.getHeading() - offset.getTheta()) + Math.PI * 3 ) % (Math.PI * 2) ) - Math.PI;
-		h = Math.asin( Math.sin(h)* (target.getMaxSpeed()/s.getMaxSpeed()) ) + offset.getTheta()+Math.PI;
+		double h = - ( ( ( targetHeading - offset.getTheta()) + Math.PI * 3 ) % (Math.PI * 2) ) - Math.PI;
+		h = Math.asin( Math.sin(h)* (targetSpeed/s.getMaxSpeed()) ) + offset.getTheta()+Math.PI;
 		return h;
-		
-		//old way
-		//DPoint newPos = SpaceMath.calculateNewPos(target.getPosition(),target.getHeading(),target.getMaxSpeed());
-		//return SpaceMath.getAngle(s.getPosition(), newPos);
 	}
 	
 	public static DPoint getClosestMirror(DPoint orig, DPoint target, double width, double height)
@@ -490,9 +491,12 @@ public class SpaceMath
 		for(int x=1;x<=4;x++)
 		{
 			p = s.getVertex(x);
-			p = rotate(p,center,a);
-			
+						
 			if(containsPoint(p,r))
+				return true;
+			
+			p = r.getVertex(x);
+			if(containsPoint(p,s))
 				return true;
 		}
 		

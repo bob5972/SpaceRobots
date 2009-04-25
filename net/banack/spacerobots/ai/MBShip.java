@@ -3,6 +3,7 @@ package net.banack.spacerobots.ai;
 import java.util.Iterator;
 
 import net.banack.geometry.DPoint;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipType;
@@ -98,10 +99,23 @@ public class MBShip extends AIShip
 		return oup;
 	}
 	
+	public double intercept(Contact target)
+	{
+		double oup = SpaceMath.interceptHeading(this,target.getPosition(),target.getHeading(),TYPE.getShipType(target.getTypeID()).getMaxSpeed(),myFleet.battleWidth,myFleet.battleHeight);
+		setHeading(oup);
+		return oup;
+	}
+	
 	public void setHeading(DPoint p)
 	{
 		DPoint loc = getPosition();
 		setHeading(SpaceMath.getAngle(loc, wrap(p)));
+	}
+	
+	public void setScannerHeading(DPoint p)
+	{
+		DPoint loc = getPosition();
+		setScannerHeading(SpaceMath.getAngle(loc,wrap(p)));
 	}
 	
 	public DPoint wrap(DPoint p)

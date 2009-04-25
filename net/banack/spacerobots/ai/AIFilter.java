@@ -20,6 +20,14 @@ public abstract class AIFilter
 		public boolean test(AIShip s)
 		{ return s.getTypeID() == DefaultShipTypeDefinitions.MISSILE_ID; }
 	};
+	public static AIFilter ALL = new AIFilter(){
+		public boolean test(AIShip s)
+		{ return true; }
+	};
+	public static AIFilter NONE = new AIFilter() {
+		public boolean test(AIShip s)
+		{ return false; }
+	};
 	
 	private static class JoinByANDFilter extends AIFilter
 	{

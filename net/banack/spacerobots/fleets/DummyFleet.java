@@ -47,7 +47,7 @@ public class DummyFleet extends AbstractFleetAI
 	
 	public String getVersion()
 	{
-		return "1.1";
+		return "1.2";
 	}
 	
 	public void endBattle(Fleet me, Team[] t, Fleet[] f)
@@ -98,7 +98,6 @@ public class DummyFleet extends AbstractFleetAI
 			{
 				myCruiser.setLaunch(DefaultShipTypeDefinitions.FIGHTER_ID);
 			}
-			myCruiser.setScannerHeading(myCruiser.getScannerHeading()+1);
 		}
 		
 		return myShips.getActionIterator();

@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 public class ContactList
 {
-	//HashMap of enemyID's to SensorContacts
+	//HashMap of enemyID's to Contacts
 	private HashMap<Integer,Contact> myContacts;
 	//HashMap of enemyID's to HashSets of spotterID's
 	private HashMap<Integer, Set<Integer> > mySpotters;

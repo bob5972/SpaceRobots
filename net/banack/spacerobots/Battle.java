@@ -155,7 +155,7 @@ public class Battle
 		for(int x=0;x<f.length;x++)
 		{
 			FleetAI ai = f[x].getAI();
-			Debug.print("Closing AI Socket: "+ai.getName());
+			Debug.verbose("Closing AI Socket: "+ai.getName());
 			ai.endBattle(f[x], t, f);
 		}
 	}

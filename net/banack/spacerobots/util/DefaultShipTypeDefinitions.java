@@ -29,7 +29,7 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 			10,1,2,2,
 			true, 1, 1.5,
 			false, false,0,0,
-			true, false,25
+			true, false,40
 	);
 	
 	public final static ShipType FIGHTER = new ShipType(
