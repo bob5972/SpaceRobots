@@ -10,10 +10,13 @@ public class CompositeGovernor implements AIGovernor
 	private ListNode<AIGovernor> gBottom;
 	private ListNode<AIFilter> fBottom;
 	
+	private int mySize;
+	
 	public CompositeGovernor()
 	{
 		gBottom = myGovernors=null;
 		fBottom = myFilters  =null;
+		mySize=0;
 	}
 	
 	public void insert(AIGovernor g)
@@ -35,6 +38,7 @@ public class CompositeGovernor implements AIGovernor
 			gBottom = myGovernors;
 		if(fBottom == null)
 			fBottom = myFilters;
+		mySize++;
 	}
 	
 	public void append(AIGovernor g)
@@ -64,6 +68,12 @@ public class CompositeGovernor implements AIGovernor
 		
 		gBottom = newG;
 		fBottom = newF;
+		mySize++;
+	}
+	
+	public int size()
+	{
+		return mySize;
 	}
 	
 	public void run(AIShip s)

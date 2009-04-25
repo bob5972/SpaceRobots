@@ -128,7 +128,8 @@ public class SchoolOfFish extends MBFleet
 			});
 		}
 		
-		myShips.apply(govna);
+		if(govna.size() > 0)
+			myShips.apply(govna);
 		
 		if(myCruiser.isAlive())
 		{
