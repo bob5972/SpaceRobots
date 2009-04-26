@@ -24,6 +24,11 @@ public class GLDisplay implements GLEventListener, Display
     private static final float SHIP_TRANSPARENCY = .5f;
     private static final int MAX_QUEUED_TICKS = 4000;
     private static final int FRAMES_PER_SECOND = 60;
+
+    private static final int SENSOR_ARC_POINTS = 5;
+
+    private static final int OBJECT_SENSOR_ARCS = 1;
+    private static final int OBJECT_SHIPS = 2;
 	
     private boolean simulationFinished = false;
     private JFrame frame;
@@ -291,20 +296,19 @@ public class GLDisplay implements GLEventListener, Display
 	if (displayFrame == null) {
 	    return;
 	}
+
+	renderObjects(drawable, displayFrame, OBJECT_SENSOR_ARCS);
+	renderObjects(drawable, displayFrame, OBJECT_SHIPS);
 		
-	renderShips(drawable, displayFrame);
 	renderTeamText(drawable, displayFrame);
 	renderFrameStatsText(drawable, displayFrame);
     }
 
-    private void renderShips(GLAutoDrawable drawable,
-			    DisplayFrame displayFrame) {
-	GL gl = drawable.getGL();
-
+    private void renderObjects(GLAutoDrawable drawable,
+			       DisplayFrame displayFrame,
+			       int type) {
 	for (int i = 0; i < displayFrame.ships.size(); i++) {
 	    DisplayShip ship = displayFrame.ships.get(i);
-	    gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue,
-			 SHIP_TRANSPARENCY);
 	    double xOffset;
 	    double yOffset;
 	    if (ship.location.getP1().getX() > battleWidth / 2) {
@@ -319,10 +323,17 @@ public class GLDisplay implements GLEventListener, Display
 		yOffset = battleHeight;
 	    }
 
-	    renderShip(drawable, ship, 0, 0);
-	    renderShip(drawable, ship, 0, yOffset);
-	    renderShip(drawable, ship, xOffset, yOffset);
-	    renderShip(drawable, ship, xOffset, 0);
+	    switch (type) {
+	    case OBJECT_SENSOR_ARCS:
+		renderSensorArc(drawable, ship, 0, 0);
+		break;
+	    case OBJECT_SHIPS:
+		renderShip(drawable, ship, 0, 0);
+		renderShip(drawable, ship, 0, yOffset);
+		renderShip(drawable, ship, xOffset, yOffset);
+		renderShip(drawable, ship, xOffset, 0);
+		break;
+	    }
 	}
     }
 
@@ -399,6 +410,41 @@ public class GLDisplay implements GLEventListener, Display
 	plainRenderer.endRendering();
     }
 
+    private void renderSensorArc(GLAutoDrawable drawable,
+			    DisplayShip ship,
+			    double xOffset,
+			    double yOffset) {
+	GL gl = drawable.getGL();
+
+	gl.glBegin(GL.GL_TRIANGLE_FAN);
+	gl.glColor4f(ship.fleet.red/5, ship.fleet.green/5, ship.fleet.blue/5, 1f);
+	gl.glVertex2f((float) (ship.scanner.getCenter().getX() + xOffset),
+		      (float) (ship.scanner.getCenter().getY() + yOffset));
+	gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
+			       Math.cos(ship.scanner.getAngleStart()) *
+			       ship.scanner.getRadius()
+			       + xOffset),
+		      (float) (ship.scanner.getCenter().getY() +
+			       Math.sin(ship.scanner.getAngleStart()) *
+			       ship.scanner.getRadius()
+			       + yOffset));
+	for (int i = 0; i <= SENSOR_ARC_POINTS; i++) {
+	    float angle = ((SENSOR_ARC_POINTS - i) *
+			   (float) ship.scanner.getAngleStart() +
+			    i * (float) ship.scanner.getAngleEnd()) /
+		SENSOR_ARC_POINTS;
+	    gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
+				   Math.cos(angle) *
+				   ship.scanner.getRadius()
+				   + xOffset),
+			  (float) (ship.scanner.getCenter().getY() +
+				   Math.sin(angle) *
+				   ship.scanner.getRadius()
+				   + yOffset));
+	}
+	gl.glEnd();
+    }
+
     private void renderShip(GLAutoDrawable drawable,
 			    DisplayShip ship,
 			    double xOffset,
@@ -417,29 +463,7 @@ public class GLDisplay implements GLEventListener, Display
 		      (float) (ship.location.getP4().getY() + yOffset));	
 	gl.glEnd();
 
-	gl.glBegin(GL.GL_LINES);
-	gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, 1f);
-	gl.glVertex2f((float) (ship.scanner.getCenter().getX() + xOffset),
-		      (float) (ship.scanner.getCenter().getY() + yOffset));
-	gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
-			       Math.cos(ship.scanner.getAngleStart()) *
-			       ship.scanner.getRadius()
-			       + xOffset),
-		      (float) (ship.scanner.getCenter().getY() +
-			       Math.sin(ship.scanner.getAngleStart()) *
-			       ship.scanner.getRadius()
-			       + yOffset));
-	gl.glVertex2f((float) (ship.scanner.getCenter().getX() + xOffset),
-		      (float) (ship.scanner.getCenter().getY() + yOffset));
-	gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
-			       Math.cos(ship.scanner.getAngleEnd()) *
-			       ship.scanner.getRadius()
-			       + xOffset),
-		      (float) (ship.scanner.getCenter().getY() +
-			       Math.sin(ship.scanner.getAngleEnd()) *
-			       ship.scanner.getRadius()
-			       + yOffset));
-	gl.glEnd();
+
     }
 	
     public void init(GLAutoDrawable drawable)
