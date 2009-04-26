@@ -85,9 +85,7 @@ public class Mob extends MBFleet
     }
 
     public Iterator<ShipAction> runTick(int tick,
-					int credits,
-					ContactList c,
-					AIShipList ships) {
+					ContactList c) {
 	double fighterAngleStep = Math.PI * 2 * 2 / ships.size();
 
 	if (c.size() > 0) {
@@ -143,8 +141,8 @@ public class Mob extends MBFleet
 							target.getPosition()));
 
 		    if ((distance < 20) && cur.isReadyToLaunch() &&
-			credits > DefaultShipTypeDefinitions.ROCKET.getCost()) {
-			credits -= DefaultShipTypeDefinitions.ROCKET.getCost();
+			myCredits > DefaultShipTypeDefinitions.ROCKET.getCost()) {
+			myCredits -= DefaultShipTypeDefinitions.ROCKET.getCost();
 			cur.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
 		    }
 		}
@@ -174,8 +172,8 @@ public class Mob extends MBFleet
 		    amountToSave = 150;
 		}	    
 
-		if (credits > DefaultShipTypeDefinitions.FIGHTER.getCost() + amountToSave) {
-		    credits -= DefaultShipTypeDefinitions.FIGHTER.getCost();
+		if (myCredits > DefaultShipTypeDefinitions.FIGHTER.getCost() + amountToSave) {
+		    myCredits -= DefaultShipTypeDefinitions.FIGHTER.getCost();
 		    myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
 		}
 	    }
@@ -185,8 +183,8 @@ public class Mob extends MBFleet
 							     target.getPosition()));
 
 	    if (myCruiser.readyToLaunch()) {
-		if (credits > DefaultShipTypeDefinitions.MISSILE.getCost()) {
-		    credits -= DefaultShipTypeDefinitions.MISSILE.getCost();
+		if (myCredits > DefaultShipTypeDefinitions.MISSILE.getCost()) {
+		    myCredits -= DefaultShipTypeDefinitions.MISSILE.getCost();
 		    myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.MISSILE_ID);
 		}
 	    }

@@ -54,9 +54,8 @@ public class BattleCruiserFleet extends MBFleet
 		
 	
 	
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
+	public Iterator<ShipAction> runTick(int tick, ContactList c)
 	{
-		myCredits = credits;
 		if(stateTimer > 0)
 			stateTimer--;
 		

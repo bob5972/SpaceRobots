@@ -81,7 +81,17 @@ public abstract class MBFleet extends AbstractFleetAI
 			myRandom = new Random();
 	}
 	
-	public abstract Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s);
+	public final Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
+	{
+		myCredits=credits;
+		myShips=s;
+		
+		//Do other stuff (like processing ContactList
+		
+		return runTick(tick,c);
+	}
+	
+	public abstract Iterator<ShipAction> runTick(int tick, ContactList c);
 	
 	public void endBattle(Fleet me, Team[] t, Fleet[] f)
 	{

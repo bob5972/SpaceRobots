@@ -41,10 +41,8 @@ public class Cache extends MBFleet
 		return "1.0";
 	}
 	
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList sIn)
+	public Iterator<ShipAction> runTick(int tick, ContactList c)
 	{
-		myShips=sIn;
-		myCredits=credits;
 		
 		Iterator<AIShip> i;
 		

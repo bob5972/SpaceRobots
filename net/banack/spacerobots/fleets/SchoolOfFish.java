@@ -56,11 +56,8 @@ public class SchoolOfFish extends MBFleet
 		groupHeading=0;
 	}
 
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
-	{
-		myCredits = credits;
-		myShips=s;
-		
+	public Iterator<ShipAction> runTick(int tick, ContactList c)
+	{		
 		Iterator<MBShip> i;
 		
 		boolean adjTick = false;
