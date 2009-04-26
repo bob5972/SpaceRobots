@@ -18,8 +18,8 @@ import net.banack.util.MethodNotImplementedException;
 
 public class SpaceRobots
 {
-	public static final int DEFAULT_WIDTH = 300;
-	public static final int DEFAULT_HEIGHT = 300;
+	public static final int DEFAULT_WIDTH = 500;
+	public static final int DEFAULT_HEIGHT = 500;
 	public static final int STARTING_CREDITS=0;
 	public static final int CREDIT_INCREMENT=1;
 	public static long RANDOM_SEED=0;//0 for random
@@ -81,7 +81,7 @@ public class SpaceRobots
 			sOut = new PipedOutputStream(cIn);
 			
 			Debug.info("Initializing background thread #2");
-			background = new AIThread(new SchoolOfFish(RANDOM_SEED+1),cIn,cOut);
+			background = new AIThread(new DummyFleet(RANDOM_SEED+1),cIn,cOut);
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}

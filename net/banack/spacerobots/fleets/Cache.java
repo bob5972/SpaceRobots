@@ -57,18 +57,15 @@ public class Cache extends MBFleet
 				continue;
 			
 			if(tick % 20 == 0)
-			{
 				cur.intercept(myCruiser);
-			}
 		}
 		
 		
 		if(myCruiser.isAlive())
 		{
 			if(myCruiser.canLaunch(FIGHTER) && myCredits >= FIGHTER.getCost()*2)
-			{
 				myCruiser.launch(FIGHTER);
-			}
+			
 			myCruiser.setScannerHeading(myCruiser.projHeading());			
 			
 			if(tick % 100 == 0)
@@ -87,9 +84,7 @@ public class Cache extends MBFleet
 			{
 				MBShip s = (MBShip) myShips.get(si.next());
 				if(s.canLaunch(ROCKET))
-				{
 					s.launch(ROCKET);
-				}
 			}
 		}
 		

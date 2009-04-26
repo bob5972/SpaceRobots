@@ -12,6 +12,7 @@ import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Fleet;
 import net.banack.spacerobots.util.ShipAction;
+import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 public class BattleCruiserFleet extends MBFleet
@@ -87,6 +88,7 @@ public class BattleCruiserFleet extends MBFleet
 				while(ei.hasNext() && (myTarget == null || isAmmo(myTarget.getTypeID())))
 					myTarget = c.getContact(ei.next());
 				myCruiser.intercept(myTarget);
+				myCruiser.setHeading((myCruiser.getHeading()+SpaceMath.getAngle(myCruiser.getPosition(),myCruiser.wrap(myTarget.getPosition())))/2);
 				myCruiser.setScannerHeading(myTarget.getPosition());
 			break;
 			case STATE_RETREAT:
