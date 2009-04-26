@@ -6,3 +6,4 @@ ref/
 runSpaceRobots.sh
 killSpaceRobots.sh
 *.class
+*.patch
