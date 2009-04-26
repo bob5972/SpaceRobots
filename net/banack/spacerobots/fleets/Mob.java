@@ -6,9 +6,14 @@ import java.util.Set;
 
 import net.banack.debug.Debug;
 import net.banack.geometry.DPoint;
+import net.banack.spacerobots.ai.AIFilter;
+import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.ai.AbstractFleetAI;
+import net.banack.spacerobots.ai.MBFleet;
+import net.banack.spacerobots.ai.MBShip;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -17,8 +22,11 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 
-public class Mob extends AbstractFleetAI
+public class Mob extends MBFleet
 {
+    private double width;
+    private double height;
+
     private AIShipList ships;
     private Random random;
     private AIShip cruiser;
@@ -29,8 +37,9 @@ public class Mob extends AbstractFleetAI
     private double scannerHeading = 0;
     private int timeOutTick;
 
-    private double width;
-    private double height;
+    private Contact target;
+
+
 
     private static final int CRUISER_ID = DefaultShipTypeDefinitions.CRUISER_ID;
     private static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
@@ -50,30 +59,26 @@ public class Mob extends AbstractFleetAI
     }
 	
     public String getVersion() {
-	return "1.0";
+	return "1.1";
     }
 	
     public String getName() {
 	return "Mob";
     }
 
-    public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double w, double h) {
+    public void initBattle(int fleetID,
+			   int teamID,
+			   int startingCredits,
+			   AIShipList s,
+			   Team[] teams,
+			   Fleet[] f,
+			   double w,
+			   double h) {
 	super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
-
-	ships = s;
-	Iterator<AIShip> iter = ships.iterator();
-		
-	while(iter.hasNext()) {
-	    AIShip cur = iter.next();
-	    if(cur.getTypeID() == CRUISER_ID) {
-		cruiser=cur;
-		break;
-	    }
-	}
 
 	width = w;
 	height = h;
-	center = cruiser.getPosition();
+	center = myCruiser.getPosition();
 	destination = new DPoint(random.nextDouble() * 300,
 				 random.nextDouble() * 300);
 	timeOutTick = 500;
@@ -82,26 +87,27 @@ public class Mob extends AbstractFleetAI
     public Iterator<ShipAction> runTick(int tick,
 					int credits,
 					ContactList c,
-					AIShipList s) {
+					AIShipList ships) {
+	double fighterAngleStep = Math.PI * 2 * 2 / ships.size();
 
-	double fighterAngleStep = Math.PI * 2 * 2 / s.size();
-	
-	scannerHeading += .2;
-	if (scannerHeading >= Math.PI * 2) {
-	    scannerHeading = 0;
+	if (c.size() > 0) {
+	    Iterator<Integer> ei = c.enemyIterator();
+	    target = c.getContact(ei.next());
+	    while(ei.hasNext() && (target == null || isAmmo(target.getTypeID()))) {
+		target = c.getContact(ei.next());
+	    }
+	} else {
+	    target = null;
 	}
-
-	ships = s;
 		
 	Iterator<AIShip> iter = ships.iterator();;
 
-	cruiser.setHeading(shortestAngleToPoint(cruiser.getPosition(),
+	myCruiser.setHeading(shortestAngleToPoint(myCruiser.getPosition(),
 						destination));
-	//	center = cruiser.getPosition().add(DPoint.newPolar(10, cruiser.getHeading()));
-	center = cruiser.getPosition();
+	center = myCruiser.getPosition();
 
-	if (((Math.abs(cruiser.getPosition().getX() - destination.getX()) < 10) &&
-	     (Math.abs(cruiser.getPosition().getY() - destination.getY()) < 10))  || tick > timeOutTick) {
+	if (((Math.abs(myCruiser.getPosition().getX() - destination.getX()) < 10) &&
+	     (Math.abs(myCruiser.getPosition().getY() - destination.getY()) < 10))  || tick > timeOutTick) {
 	    
 	    destination = new DPoint(random.nextDouble() * width,
 				     random.nextDouble() * height);
@@ -113,30 +119,31 @@ public class Mob extends AbstractFleetAI
 	    AIShip cur = iter.next();
 
 	    if (curShipIndex < ships.size() / 2) {
-		radius = (double) curShipIndex / 2;
-	    } else {
 		radius = (double) curShipIndex;
+	    } else {
+		radius = (double) curShipIndex * 3;
 	    }
 	    
 	    if(!cur.isAlive()) {
 		continue;
 	    }
 
-	    if (cur.getTypeID() == FIGHTER_ID || cur.getTypeID() == DESTROYER_ID) {
-		if (c.size() == 0 || curShipIndex < ships.size() / 2) {
+	    if (cur.getTypeID() == FIGHTER_ID ||
+		cur.getTypeID() == DESTROYER_ID) {
+		if (c.size() == 0) {
 		    DPoint heading;
 		    heading = center.add(DPoint.newPolar
 					 (radius, curShipIndex * fighterAngleStep));
 		    cur.setHeading(shortestAngleToPoint(cur.getPosition(),
 						heading));
 		} else {
-		    DPoint targetPos = c.getContact(c.enemyIterator().next()).getPosition();
-		    double distance = distance(cur.getPosition(), targetPos);
+		    double distance = distance(cur.getPosition(), target.getPosition());
 
 		    cur.setHeading(shortestAngleToPoint(cur.getPosition(),
-							targetPos));
+							target.getPosition()));
 
-		    if ((distance < 20) && cur.isReadyToLaunch() && credits > DefaultShipTypeDefinitions.ROCKET.getCost()) {
+		    if ((distance < 20) && cur.isReadyToLaunch() &&
+			credits > DefaultShipTypeDefinitions.ROCKET.getCost()) {
 			credits -= DefaultShipTypeDefinitions.ROCKET.getCost();
 			cur.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
 		    }
@@ -146,17 +153,46 @@ public class Mob extends AbstractFleetAI
 	    curShipIndex = (curShipIndex + 1) % ships.size();
 	}
 
+	ships.apply(AIFilter.MISSILES, new AIGovernor() {
+		public void run(AIShip s)
+		{
+		    if(target != null) {
+			s.setHeading(shortestAngleToPoint(s.getPosition(),
+							  target.getPosition()));
+		    }
+		}
+	    });
+	
+	if (target == null) {
+	    myCruiser.setScannerHeading(myCruiser.getScannerHeading()+CRUISER.getScannerAngleSpan());
 
+	    if (myCruiser.readyToLaunch()) {
+		int amountToSave;
+		if (ships.size() < 5) {
+		    amountToSave = 0;
+		} else {
+		    amountToSave = 150;
+		}	    
 
-	cruiser.setScannerHeading(scannerHeading);
+		if (credits > DefaultShipTypeDefinitions.FIGHTER.getCost() + amountToSave) {
+		    credits -= DefaultShipTypeDefinitions.FIGHTER.getCost();
+		    myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+		}
+	    }
+	} else {
+	    double distance = distance(myCruiser.getPosition(), target.getPosition());
+	    myCruiser.setScannerHeading(shortestAngleToPoint(myCruiser.getPosition(),
+							     target.getPosition()));
 
-	if (cruiser.readyToLaunch()) {
-	    if (credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2) {
-		credits -= DefaultShipTypeDefinitions.FIGHTER.getCost();
-		cruiser.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
+	    if (myCruiser.readyToLaunch()) {
+		if (credits > DefaultShipTypeDefinitions.MISSILE.getCost()) {
+		    credits -= DefaultShipTypeDefinitions.MISSILE.getCost();
+		    myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.MISSILE_ID);
+		}
 	    }
 	}
-	    return ships.getActionIterator();
+
+	return ships.getActionIterator();
     }
 	
 
