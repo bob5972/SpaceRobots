@@ -82,6 +82,7 @@ public class SpaceRobots
 			
 			Debug.info("Initializing background thread #2");
 			background = new AIThread(new Mob(RANDOM_SEED+1),cIn,cOut);
+>>>>>>> Inital version of Mob fleet:net/banack/spacerobots/SpaceRobots.java
 			background.start();
 			ai[1] = new FleetAI(sIn,sOut);
 		}
