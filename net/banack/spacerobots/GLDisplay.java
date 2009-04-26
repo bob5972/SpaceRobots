@@ -225,9 +225,9 @@ public class GLDisplay implements GLEventListener, Display
 	    ships.add(disShip);
 	}
 
-	while (frameQueue.size() > MAX_QUEUED_TICKS) {
+	while (frameQueue.size() > MAX_QUEUED_TICKS || (Debug.isSlowGraphics() && frameQueue.size()>0)) {
 	    try {
-		Thread.sleep(1000);
+		Thread.sleep(1000/FRAMES_PER_SECOND+1);
 	    }
 	    catch (InterruptedException e) { 
 	    }    
@@ -406,7 +406,7 @@ public class GLDisplay implements GLEventListener, Display
 	GL gl = drawable.getGL();
 
 	gl.glBegin(GL.GL_QUADS);
-	gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, .2f);
+	gl.glColor4f(ship.fleet.red, ship.fleet.green, ship.fleet.blue, SHIP_TRANSPARENCY);
 	gl.glVertex2f((float) (ship.location.getP1().getX() + xOffset), 
 		      (float) (ship.location.getP1().getY() + yOffset));
 	gl.glVertex2f((float) (ship.location.getP2().getX() + xOffset), 

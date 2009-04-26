@@ -130,7 +130,7 @@ public class SchoolOfFish extends MBFleet
 		
 		if(myCruiser.isAlive())
 		{
-			if(myCruiser.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
+			if(myCruiser.readyToLaunch() &&  myCredits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
 			{
 				myCruiser.launch(FIGHTER);
 			}

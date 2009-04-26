@@ -177,7 +177,8 @@ public class Mob extends MBFleet
 		}
 	    }
 	} else {
-	    double distance = distance(myCruiser.getPosition(), target.getPosition());
+	    //You weren't using this anymore :-) --bob5972
+		//double distance = distance(myCruiser.getPosition(), target.getPosition());
 	    myCruiser.setScannerHeading(shortestAngleToPoint(myCruiser.getPosition(),
 							     target.getPosition()));
 
