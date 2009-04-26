@@ -40,11 +40,18 @@ public class SpaceRobots
 		Debug.setSlowGraphics(false);
 		final boolean USE_CONSOLE_DISPLAY = false;
 		
+		Random r;
+		
 		if(RANDOM_SEED ==0)
 		{
-			Random r = new Random();
+			r = new Random();
 			RANDOM_SEED=r.nextLong();
 		}
+		else
+		{
+			r = new Random(RANDOM_SEED);
+		}
+		
 		Debug.info("Random Seed = "+RANDOM_SEED);
 		
 		//SETUP
@@ -59,8 +66,8 @@ public class SpaceRobots
 		// load AI's
 		Debug.info("Initializing AI's...");
 		AIFleet ai[] = {
-			new BattleCruiserFleet(RANDOM_SEED+1),
-			new Mob(RANDOM_SEED+2)
+			new BattleCruiserFleet(r.nextLong()),
+			new Mob(r.nextLong())
 		};
 		addAIFleets(b,ai);
 		
