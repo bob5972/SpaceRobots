@@ -103,7 +103,7 @@ public class BattleCruiserFleet extends MBFleet
 			break;
 		}
 		
-		s.apply(AIFilter.MISSILES, new AIGovernor() {
+		myShips.apply(AIFilter.MISSILES, new AIGovernor() {
 			public void run(AIShip s)
 			{
 				MBShip t = (MBShip) s;
@@ -114,7 +114,7 @@ public class BattleCruiserFleet extends MBFleet
 		});
 		
 		
-		return s.getActionIterator();
+		return myShips.getActionIterator();
 	}
 	
 }

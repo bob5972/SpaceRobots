@@ -27,7 +27,6 @@ public class Mob extends MBFleet
     private double width;
     private double height;
 
-    private AIShipList ships;
     private Random random;
     private AIShip cruiser;
     
@@ -86,7 +85,7 @@ public class Mob extends MBFleet
 
     public Iterator<ShipAction> runTick(int tick,
 					ContactList c) {
-	double fighterAngleStep = Math.PI * 2 * 2 / ships.size();
+	double fighterAngleStep = Math.PI * 2 * 2 / myShips.size();
 
 	if (c.size() > 0) {
 	    Iterator<Integer> ei = c.enemyIterator();
@@ -98,7 +97,7 @@ public class Mob extends MBFleet
 	    target = null;
 	}
 		
-	Iterator<AIShip> iter = ships.iterator();;
+	Iterator<AIShip> iter = myShips.iterator();;
 
 	myCruiser.setHeading(shortestAngleToPoint(myCruiser.getPosition(),
 						destination));
@@ -116,7 +115,7 @@ public class Mob extends MBFleet
 	while(iter.hasNext()) {
 	    AIShip cur = iter.next();
 
-	    if (curShipIndex < ships.size() / 2) {
+	    if (curShipIndex < myShips.size() / 2) {
 		radius = (double) curShipIndex;
 	    } else {
 		radius = (double) curShipIndex * 3;
@@ -148,10 +147,10 @@ public class Mob extends MBFleet
 		}
 	    }
 
-	    curShipIndex = (curShipIndex + 1) % ships.size();
+	    curShipIndex = (curShipIndex + 1) % myShips.size();
 	}
 
-	ships.apply(AIFilter.MISSILES, new AIGovernor() {
+	myShips.apply(AIFilter.MISSILES, new AIGovernor() {
 		public void run(AIShip s)
 		{
 		    if(target != null) {
@@ -166,7 +165,7 @@ public class Mob extends MBFleet
 
 	    if (myCruiser.readyToLaunch()) {
 		int amountToSave;
-		if (ships.size() < 5) {
+		if (myShips.size() < 5) {
 		    amountToSave = 0;
 		} else {
 		    amountToSave = 150;
@@ -190,7 +189,7 @@ public class Mob extends MBFleet
 	    }
 	}
 
-	return ships.getActionIterator();
+	return myShips.getActionIterator();
     }
 	
 
