@@ -189,14 +189,17 @@ public class Battle
 		while(fi.hasNext())
 		{
 			f=fi.next();
-			ai = f.getAI();
+			if(f.isAlive())
+			{
+				ai = f.getAI();
 			
-			//add credits to fleets
-			int credit = f.getCreditIncrement();
-			f.incrementCredits(credit);
-			
-			//Write ships to AI sockets
-			ai.beginFleetStatusUpdate(myTick,f.getCredits(),contacts.getFleetList(f),f.getNumShips());
+				//add credits to fleets
+				int credit = f.getCreditIncrement();
+				f.incrementCredits(credit);
+				
+				//Write ships to AI sockets
+				ai.beginFleetStatusUpdate(myTick,f.getCredits(),contacts.getFleetList(f),f.getNumShips());
+			}
 		}
 		
 		Iterator<ServerShip> si = myShips.iterator();
@@ -212,18 +215,21 @@ public class Battle
 		while(fi.hasNext())
 		{
 			f=(ServerFleet)fi.next();
-			ai = f.getAI();
-			
-			ai.endFleetStatusUpdate();
-			
-			ActionList AL = ai.readFleetActions();
-			if(Debug.showAIWarnings())
+			if(f.isAlive())
 			{
-				if(AL.getTick() != myTick)
-					Debug.aiwarn("AI responded with an invalid tick: Expected="+myTick+", received="+AL.getTick());
+				ai = f.getAI();
+			
+				ai.endFleetStatusUpdate();
+			
+				ActionList AL = ai.readFleetActions();
+				if(Debug.showAIWarnings())
+				{
+					if(AL.getTick() != myTick)
+						Debug.aiwarn("AI responded with an invalid tick: Expected="+myTick+", received="+AL.getTick());
+				}
+				validateShipIDs(AL,f);
+				aggregate.add(AL);
 			}
-			validateShipIDs(AL,f);
-			aggregate.add(AL);
 		}
 		
 		//blow stuff up (from last round)
