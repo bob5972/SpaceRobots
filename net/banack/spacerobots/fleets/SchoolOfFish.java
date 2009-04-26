@@ -12,7 +12,7 @@ import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.ai.CompositeGovernor;
-import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIFleet;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
@@ -22,7 +22,7 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 
-public class SchoolOfFish extends FleetAI
+public class SchoolOfFish extends AIFleet
 {
 	private int nextMove;
 	private double groupHeading;

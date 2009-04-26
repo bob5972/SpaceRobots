@@ -11,7 +11,7 @@ import net.banack.spacerobots.ai.AIFilter;
 import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIFleet;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
@@ -21,7 +21,7 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 
-public class Mob extends FleetAI
+public class Mob extends AIFleet
 {
     private DPoint center;
     private Double radius;

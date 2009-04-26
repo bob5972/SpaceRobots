@@ -25,7 +25,7 @@ public class AIShip extends BasicAIShip
 	public static final ShipType ROCKET = TYPE.ROCKET;
 	public static final ShipType MISSILE = TYPE.MISSILE;
 	
-	protected FleetAI myFleet;
+	protected AIFleet myFleet;
 	
 	public AIShip(Ship s)
 	{
@@ -33,7 +33,7 @@ public class AIShip extends BasicAIShip
 		myFleet = null;
 	}
 	
-	public AIShip(Ship s, FleetAI f)
+	public AIShip(Ship s, AIFleet f)
 	{
 		super(s);
 		myFleet = f;

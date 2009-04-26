@@ -6,7 +6,7 @@ import net.banack.spacerobots.ai.AIFilter;
 import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.BasicAIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIFleet;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
@@ -15,7 +15,7 @@ import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
-public class BattleCruiserFleet extends FleetAI
+public class BattleCruiserFleet extends AIFleet
 {
 	private final int STATE_IDLE = 1;
 	private final int STATE_ATTACK = 2;

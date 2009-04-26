@@ -22,13 +22,13 @@ import net.banack.util.MethodNotImplementedException;
 
 public class TextProtocol implements AIClientProtocol
 {
-	private FleetAI myAI;
+	private AIFleet myAI;
 	private SpaceText sIn;
 	private PrintWriter sOut;
 	private int curLevel;
 	private AIShipList myShips;
 	
-	public TextProtocol(FleetAI ai, BufferedReader sIn, PrintWriter sOut)
+	public TextProtocol(AIFleet ai, BufferedReader sIn, PrintWriter sOut)
 	{
 		myAI = ai;
 		this.sIn = new SpaceText(sIn);

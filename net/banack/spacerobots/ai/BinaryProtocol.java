@@ -23,7 +23,7 @@ import net.banack.spacerobots.util.Team;
 
 public class BinaryProtocol implements AIClientProtocol
 {
-	private FleetAI myAI;
+	private AIFleet myAI;
 	private DataInputStream sIn;
 	private DataOutputStream sOut;
 	private AIShipList myShips;
@@ -46,7 +46,7 @@ public class BinaryProtocol implements AIClientProtocol
 	public static final int TEAM_ID = 500;
 	
 	
-	public BinaryProtocol(FleetAI ai, DataInputStream sIn, DataOutputStream sOut)
+	public BinaryProtocol(AIFleet ai, DataInputStream sIn, DataOutputStream sOut)
 	{
 		myAI = ai;
 		this.sIn = sIn;

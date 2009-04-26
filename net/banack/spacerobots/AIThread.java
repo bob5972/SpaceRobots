@@ -8,11 +8,11 @@ import net.banack.spacerobots.ai.ClientProtocolFactory;
 
 public class AIThread extends Thread
 {
-	private net.banack.spacerobots.ai.FleetAI myAI;
+	private net.banack.spacerobots.ai.AIFleet myAI;
 	private InputStream myInp;
 	private OutputStream myOup;
 	
-	public AIThread(net.banack.spacerobots.ai.FleetAI ai, InputStream inp, OutputStream oup)
+	public AIThread(net.banack.spacerobots.ai.AIFleet ai, InputStream inp, OutputStream oup)
 	{
 		super();
 		myAI = ai;

@@ -11,7 +11,7 @@ import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.ShipType;
 import net.banack.spacerobots.util.Team;
 
-public abstract class FleetAI implements AIShipFactory
+public abstract class AIFleet implements AIShipFactory
 {
 	public static final DefaultShipTypeDefinitions TYPE = new DefaultShipTypeDefinitions();
 	
@@ -38,12 +38,12 @@ public abstract class FleetAI implements AIShipFactory
 	protected Fleet[] battleFleets;
 	protected Team[] battleTeams;
 	
-	public FleetAI()
+	public AIFleet()
 	{
 		myRandom = new Random();
 	}
 	
-	public FleetAI(long seed)
+	public AIFleet(long seed)
 	{
 		myRandom = new Random(seed);
 	}

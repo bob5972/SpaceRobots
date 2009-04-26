@@ -7,7 +7,7 @@ import java.util.Random;
 import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIFleet;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
@@ -17,7 +17,7 @@ import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
 
-public class DummyFleet extends FleetAI
+public class DummyFleet extends AIFleet
 {	
 	public DummyFleet()
 	{

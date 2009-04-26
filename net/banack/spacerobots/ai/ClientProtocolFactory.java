@@ -17,7 +17,7 @@ public class ClientProtocolFactory
 {
 	private static final String PROGRAM_NAME = "SpaceRobots Java Protocol Server version 1";
 	
-	public static AIClientProtocol doHandshake(FleetAI ai, InputStream inp, OutputStream oup)
+	public static AIClientProtocol doHandshake(AIFleet ai, InputStream inp, OutputStream oup)
 	{
 		DataInputStream sIn = new DataInputStream(inp);
 		DataOutputStream sOut = new DataOutputStream(oup);
