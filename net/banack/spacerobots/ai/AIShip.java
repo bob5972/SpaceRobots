@@ -1,132 +1,110 @@
 package net.banack.spacerobots.ai;
 
-import net.banack.geometry.DArc;
-import net.banack.geometry.DDimension;
-import net.banack.geometry.DPoint;
-import net.banack.geometry.DQuad;
-import net.banack.spacerobots.util.Ship;
-import net.banack.spacerobots.util.ShipAction;
-import net.banack.spacerobots.util.ShipType;
-import net.banack.spacerobots.util.ShipTypeDefinitions;
-import net.banack.spacerobots.util.SpaceMath;
-import net.banack.spacerobots.util.SpaceText;
+import java.util.Iterator;
 
-public class AIShip extends Ship
+import net.banack.geometry.DPoint;
+import net.banack.spacerobots.util.Contact;
+import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
+import net.banack.spacerobots.util.Ship;
+import net.banack.spacerobots.util.ShipType;
+import net.banack.spacerobots.util.SpaceMath;
+
+public class AIShip extends BasicAIShip
 {
-	private ShipAction myAction;
+	public static final DefaultShipTypeDefinitions TYPE = new DefaultShipTypeDefinitions();
+
+	public static final int CRUISER_ID = DefaultShipTypeDefinitions.CRUISER_ID;
+	public static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
+	public static final int FIGHTER_ID = DefaultShipTypeDefinitions.FIGHTER_ID;
+	public static final int ROCKET_ID = DefaultShipTypeDefinitions.ROCKET_ID;
+	public static final int MISSILE_ID = DefaultShipTypeDefinitions.MISSILE_ID;
 	
-	public AIShip(int id)
-	{
-		super(id,ShipTypeDefinitions.TYPE_INVALID,null,-1,-1,-1,-1);
-		myAction = new ShipAction(id);
-	}
+	public static final ShipType CRUISER = TYPE.CRUISER;
+	public static final ShipType DESTROYER = TYPE.DESTROYER;
+	public static final ShipType FIGHTER = TYPE.FIGHTER;
+	public static final ShipType ROCKET = TYPE.ROCKET;
+	public static final ShipType MISSILE = TYPE.MISSILE;
+	
+	protected FleetAI myFleet;
 	
 	public AIShip(Ship s)
 	{
 		super(s);
-		myAction = new ShipAction(s);
+		myFleet = null;
 	}
 	
-	public ShipAction getAction()
+	public AIShip(Ship s, FleetAI f)
 	{
-		//there is a threading issue here if someone decides to muck with the returned action...
-		//but I don't really feel like copying it yet
-		return myAction;
+		super(s);
+		myFleet = f;
 	}
 	
-	public void update(Ship s)
+	public boolean canLaunch()
 	{
-		if(getID() != s.getID())
-			throw new IllegalArgumentException("Updating with a bad ID!");
-		double desiredHeading = myAction.getHeading();
-		super.update(s);
-		myAction = new ShipAction(s);
-		myAction.setHeading(desiredHeading);
+		return isAlive() && isReadyToLaunch() && getTypeID() != ROCKET_ID && getTypeID() != MISSILE_ID;
 	}
 	
-	public boolean willSpawn()
+	public boolean canLaunch(int type)
 	{
-		return myAction.isSpawn();
+		return canLaunch(TYPE.get(type));
 	}
 	
-	public boolean willMove()
+	public boolean canLaunch(ShipType t)
 	{
-		return myAction.willMove();
+		return canLaunch() && myFleet.myCredits >= t.getCost();
 	}
 	
-	public final boolean getWillMove()
+	public double getDistanceFrom(DPoint p)
 	{
-		return willMove();
+		DPoint loc = getPosition();
+		return SpaceMath.getRawDistance(loc,wrap(p));
 	}
 	
-	public void setWillMove(boolean b)
+	public double intercept(Ship target)
 	{
-		myAction.setWillMove(b);
+		double oup = SpaceMath.interceptHeading(this,target,myFleet.battleWidth,myFleet.battleHeight);
+		setHeading(oup);
+		return oup;
 	}
 	
-	public boolean curWillMove()
+	public double intercept(Contact target)
 	{
-		return super.willMove();
+		double oup = SpaceMath.interceptHeading(this,target.getPosition(),target.getHeading(),TYPE.getShipType(target.getTypeID()).getMaxSpeed(),myFleet.battleWidth,myFleet.battleHeight);
+		setHeading(oup);
+		return oup;
 	}
 	
-	public double getHeading()
+	public void setHeading(DPoint p)
 	{
-		return  myAction.getHeading();
+		DPoint loc = getPosition();
+		setHeading(SpaceMath.getAngle(loc, wrap(p)));
 	}
 	
-	public double curHeading()
+	public void setScannerHeading(DPoint p)
 	{
-		return super.getHeading();
+		DPoint loc = getPosition();
+		setScannerHeading(SpaceMath.getAngle(loc,wrap(p)));
 	}
 	
-	public double projHeading()
+	public DPoint wrap(DPoint p)
 	{
-		return SpaceMath.calculateAdjustedHeading(curHeading(), getHeading(), getMaxTurningRate());
+		DPoint loc = getPosition();
+		return SpaceMath.wrap(p,loc, myFleet.battleWidth,myFleet.battleHeight);
 	}
 	
-	public double getScannerHeading()
+	public DPoint wrap(double x, double y)
 	{
-		return myAction.getScannerHeading();
+		return wrap(new DPoint(x,y));
 	}
 	
-	public double curScannerHeading()
+	public void launch(int type)
 	{
-		return super.getScannerHeading();
+		launch(TYPE.get(type));
 	}
 	
-	public int getLaunch()
+	public void launch(ShipType t)
 	{
-		return myAction.getLaunch();
-	}
-	
-	public final int getLaunchWhat()
-	{
-		return getLaunch();
-	}
-	
-	public void setLaunchWhat(int t)
-	{
-		myAction.setLaunchWhat(t);
-	}
-	
-	public final void setLaunch(int t)
-	{
-		setLaunchWhat(t);
-	}
-	
-	public void setHeading(double h)
-	{
-		myAction.setHeading(h);
-	}
-	
-	public void setHeading(DPoint pos)
-	{
-		//note this won't wrap right
-		setHeading(SpaceMath.getAngle(getPosition(), pos));
-	}
-	
-	public void setScannerHeading(double h)
-	{
-		myAction.setScannerHeading(h);
+		setLaunchWhat(t.getID());
+		myFleet.myCredits-=t.getCost();
 	}
 }

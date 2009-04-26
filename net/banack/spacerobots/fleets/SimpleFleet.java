@@ -7,7 +7,7 @@ import java.util.Set;
 
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.AbstractFleetAI;
+import net.banack.spacerobots.ai.FleetAI;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
@@ -18,11 +18,8 @@ import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
 
-public class SimpleFleet extends AbstractFleetAI
-{	
-	private Random myRandom;
-	private AIShipList myShips;
-	
+public class SimpleFleet extends FleetAI
+{		
 	public SimpleFleet()
 	{
 		myRandom = new Random();
@@ -44,10 +41,8 @@ public class SimpleFleet extends AbstractFleetAI
 		return "1.1";
 	}
 	
-	public Iterator<ShipAction> runTick(int tick, int credits, ContactList c, AIShipList s)
-	{
-		myShips=s;
-		
+	public Iterator<ShipAction> runTick(int tick, ContactList c)
+	{		
 		Iterator<AIShip> i = myShips.getAliveIterator();
 		
 		HashSet<Integer> cantSpawn = new HashSet<Integer>();
@@ -65,9 +60,9 @@ public class SimpleFleet extends AbstractFleetAI
 			}
 			else if(ship.getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
-				if(ship.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*(1+myRandom.nextDouble()))
+				if(ship.readyToLaunch() &&  myCredits > DefaultShipTypeDefinitions.FIGHTER.getCost()*(1+myRandom.nextDouble()))
 				{
-					credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
+					myCredits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
 					ship.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
 				}
 			}
@@ -88,9 +83,9 @@ public class SimpleFleet extends AbstractFleetAI
 			while(spotI.hasNext())
 			{			
 				AIShip a = myShips.get(spotI.next());
-				if(a != null && !cantSpawn.contains(a.getShipID()) && credits > DefaultShipTypeDefinitions.ROCKET.getCost())
+				if(a != null && !cantSpawn.contains(a.getShipID()) && myCredits > DefaultShipTypeDefinitions.ROCKET.getCost())
 				{
-					credits-=DefaultShipTypeDefinitions.ROCKET.getCost();
+					myCredits-=DefaultShipTypeDefinitions.ROCKET.getCost();
 					a.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
 				}
 			}

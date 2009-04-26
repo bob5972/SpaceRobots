@@ -7,7 +7,7 @@ import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 import net.banack.spacerobots.Battle;
 import net.banack.spacerobots.Debug;
-import net.banack.spacerobots.ai.AIShip;
+import net.banack.spacerobots.ai.BasicAIShip;
 import net.banack.util.MethodNotImplementedException;
 
 public class SpaceMath

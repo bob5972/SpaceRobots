@@ -1,4 +1,5 @@
 package net.banack.spacerobots.fleets;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -10,9 +11,7 @@ import net.banack.spacerobots.ai.AIFilter;
 import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.AbstractFleetAI;
-import net.banack.spacerobots.ai.MBFleet;
-import net.banack.spacerobots.ai.MBShip;
+import net.banack.spacerobots.ai.FleetAI;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
@@ -22,14 +21,8 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 
-public class Mob extends MBFleet
+public class Mob extends FleetAI
 {
-    private double width;
-    private double height;
-
-    private Random random;
-    private AIShip cruiser;
-    
     private DPoint center;
     private Double radius;
     private DPoint destination;
@@ -38,19 +31,12 @@ public class Mob extends MBFleet
 
     private Contact target;
 
-
-
-    private static final int CRUISER_ID = DefaultShipTypeDefinitions.CRUISER_ID;
-    private static final int DESTROYER_ID = DefaultShipTypeDefinitions.DESTROYER_ID;
-    private static final int FIGHTER_ID = DefaultShipTypeDefinitions.FIGHTER_ID;
-    private static final int ROCKET_ID = DefaultShipTypeDefinitions.ROCKET_ID;
-
     public Mob() {
-	random = new Random();
+		super();
     }
 	
     public Mob(long seed) {
-	random = new Random(seed);
+		super();
     }
 	
     public String getAuthor() {
@@ -73,18 +59,15 @@ public class Mob extends MBFleet
 			   Fleet[] f,
 			   double w,
 			   double h) {
-	super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
+	super.initBattle(fleetID, teamID, startingCredits, s, teams, f, w, h);
 
-	width = w;
-	height = h;
 	center = myCruiser.getPosition();
-	destination = new DPoint(random.nextDouble() * 300,
-				 random.nextDouble() * 300);
+	destination = new DPoint(myRandom.nextDouble() * 300,
+				 myRandom.nextDouble() * 300);
 	timeOutTick = 500;
     }
 
-    public Iterator<ShipAction> runTick(int tick,
-					ContactList c) {
+    public Iterator<ShipAction> runTick(int tick, ContactList c) {
 	double fighterAngleStep = Math.PI * 2 * 2 / myShips.size();
 
 	if (c.size() > 0) {
@@ -106,8 +89,8 @@ public class Mob extends MBFleet
 	if (((Math.abs(myCruiser.getPosition().getX() - destination.getX()) < 10) &&
 	     (Math.abs(myCruiser.getPosition().getY() - destination.getY()) < 10))  || tick > timeOutTick) {
 	    
-	    destination = new DPoint(random.nextDouble() * width,
-				     random.nextDouble() * height);
+	    destination = new DPoint(myRandom.nextDouble() * battleHeight,
+				     myRandom.nextDouble() * battleHeight);
 	    timeOutTick = tick + 1000;
 	}
 
@@ -208,18 +191,18 @@ public class Mob extends MBFleet
 	double x2 = to.getX();
 	double y2 = to.getY();
 
-	if ((x1 < x2) && (x2 - x1 > width / 2)) {
-	    x1 = x1 + width;
+	if ((x1 < x2) && (x2 - x1 > battleWidth / 2)) {
+	    x1 = x1 + battleWidth;
 	}
-	if ((x2 < x1) && (x1 - x2 > width / 2)) {
-	    x2 = x2 + width;
+	if ((x2 < x1) && (x1 - x2 > battleWidth / 2)) {
+	    x2 = x2 + battleWidth;
 	}
 
-	if ((y1 < y2) && (y2 - y1 > height / 2)) {
-	    y1 = y1 + height;
+	if ((y1 < y2) && (y2 - y1 > battleHeight / 2)) {
+	    y1 = y1 + battleHeight;
 	}
-	if ((y2 < y1) && (y1 - y2 > height / 2)) {
-	    y2 = y2 + height;
+	if ((y2 < y1) && (y1 - y2 > battleHeight / 2)) {
+	    y2 = y2 + battleHeight;
 	}
 
 	return SpaceMath.getAngle(new DPoint(x1, y1), new DPoint(x2, y2));

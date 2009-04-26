@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
 
@@ -24,7 +23,7 @@ public class AIShipList
 	
 	//DOES NOT CLEAR THE LIST
 	//Instead it wipes the new and dead ship lists
-	//I could probably call this something better... --bob5972
+	//I could probably name this something better... --bob5972
 	public void reset()
 	{
 		myNewShips.clear();
@@ -39,7 +38,7 @@ public class AIShipList
 		myDeadShips.clear();
 	}
 	
-	//note that this will replace the old AIShip associated with the idea
+	//note that this will replace the old BasicAIShip associated with the idea
 	// (probably causing any outstanding client-side references to it to stop updating...
 	//Use with care...
 	//RETURN VALUES:
@@ -112,28 +111,17 @@ public class AIShipList
 	
 	public AIShip get(int shipID)
 	{
-		return (AIShip)myShips.get(new Integer(shipID));
+		return get(new Integer(shipID));
 	}
 	
-	public void update(Ship s)
+	public AIShip get(Integer shipID)
 	{
-		AIShip cur = get(s.getID());
-		if(cur==null)
-		{
-			//takes care of new and dead lists for us
-			add(new AIShip(s));
-		}
-		else
-		{
-			cur.update(s);
-			if(cur.isDead())
-				myDeadShips.add(cur.getID());
-		}
+		return myShips.get(shipID);
 	}
 	
 	public void update(Ship s,AIShipFactory f)
 	{
-		AIShip cur = get(s.getID());
+		BasicAIShip cur = get(s.getID());
 		if(cur==null)
 		{
 			//takes care of the new and dead lists for us
@@ -144,23 +132,6 @@ public class AIShipList
 			cur.update(s);
 			if(cur.isDead())
 				myDeadShips.add(cur.getID());
-		}
-	}
-	
-	public void update(Ship[] s)
-	{
-		for(int x=0;x<s.length;x++)
-		{
-			update(s[x]);
-		}
-	}	
-	
-	public void update(AIShipList s)
-	{
-		Iterator<AIShip> i = s.iterator();
-		while(i.hasNext())
-		{
-			update(i.next());
 		}
 	}
 	

@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 import net.banack.spacerobots.ai.AIFilter;
 import net.banack.spacerobots.ai.AIGovernor;
-import net.banack.spacerobots.ai.AIShip;
+import net.banack.spacerobots.ai.BasicAIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.MBFleet;
-import net.banack.spacerobots.ai.MBShip;
+import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Fleet;
@@ -15,7 +15,7 @@ import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
-public class BattleCruiserFleet extends MBFleet
+public class BattleCruiserFleet extends FleetAI
 {
 	private final int STATE_IDLE = 1;
 	private final int STATE_ATTACK = 2;
@@ -106,7 +106,7 @@ public class BattleCruiserFleet extends MBFleet
 		myShips.apply(AIFilter.MISSILES, new AIGovernor() {
 			public void run(AIShip s)
 			{
-				MBShip t = (MBShip) s;
+				AIShip t = (AIShip) s;
 				if(myTarget != null)
 					t.intercept(myTarget);
 				

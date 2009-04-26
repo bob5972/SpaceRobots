@@ -5,11 +5,9 @@ import java.util.Iterator;
 import java.util.Random;
 
 import net.banack.geometry.DPoint;
-import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
-import net.banack.spacerobots.ai.AbstractFleetAI;
-import net.banack.spacerobots.ai.MBFleet;
-import net.banack.spacerobots.ai.MBShip;
+import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -19,7 +17,7 @@ import net.banack.spacerobots.util.ShipTypeDefinitions;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
-public class Cache extends MBFleet
+public class Cache extends FleetAI
 {
 	public Cache()
 	{
@@ -49,7 +47,7 @@ public class Cache extends MBFleet
 		i = myShips.getAliveIterator();
 		while(i.hasNext())
 		{
-			MBShip cur = (MBShip) i.next();
+			AIShip cur = (AIShip) i.next();
 			
 			if(cur == myCruiser)
 				continue;
@@ -80,7 +78,7 @@ public class Cache extends MBFleet
 			Iterator<Integer> si = c.getSpotters(eid).iterator();
 			while(si.hasNext())
 			{
-				MBShip s = (MBShip) myShips.get(si.next());
+				AIShip s = (AIShip) myShips.get(si.next());
 				if(s.canLaunch(ROCKET))
 					s.launch(ROCKET);
 			}

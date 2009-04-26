@@ -12,8 +12,8 @@ import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.ai.CompositeGovernor;
-import net.banack.spacerobots.ai.MBFleet;
-import net.banack.spacerobots.ai.MBShip;
+import net.banack.spacerobots.ai.FleetAI;
+import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -22,7 +22,7 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
 
-public class SchoolOfFish extends MBFleet
+public class SchoolOfFish extends FleetAI
 {
 	private int nextMove;
 	private double groupHeading;
@@ -58,7 +58,7 @@ public class SchoolOfFish extends MBFleet
 
 	public Iterator<ShipAction> runTick(int tick, ContactList c)
 	{		
-		Iterator<MBShip> i;
+		Iterator<AIShip> i;
 		
 		boolean adjTick = false;
 		
@@ -72,7 +72,7 @@ public class SchoolOfFish extends MBFleet
 				double ax= 0;
 				double ay= 0;
 				
-				i = MBShip.wrapIterator(myShips.iterator());
+				i = myShips.iterator();
 				while(i.hasNext())
 				{
 					AIShip cur = i.next();
@@ -98,7 +98,7 @@ public class SchoolOfFish extends MBFleet
 			govna.insert(AIFilter.FIGHTERS, new AIGovernor(){
 				public void run(AIShip s)
 				{
-					MBShip t = (MBShip) s;
+					AIShip t = (AIShip) s;
 					if(myRandom.nextInt(10) < 3)
 					{
 						t.intercept(myCruiser);
@@ -116,7 +116,7 @@ public class SchoolOfFish extends MBFleet
 			govna.insert(new AIGovernor(){
 				public void run(AIShip s)
 				{
-					MBShip t = (MBShip) s;
+					AIShip t = (AIShip) s;
 					if(t.canLaunch(ROCKET) && Math.abs(t.getHeading() -groupHeading) < 0.1)
 					{
 						t.launch(ROCKET);
