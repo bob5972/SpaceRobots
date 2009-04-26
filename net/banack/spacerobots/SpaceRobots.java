@@ -67,7 +67,9 @@ public class SpaceRobots
 		Debug.info("Initializing AI's...");
 		AIFleet ai[] = {
 			new BattleCruiserFleet(r.nextLong()),
-			new Mob(r.nextLong())
+			new BattleCruiserFleet(r.nextLong()),
+			new Mob(r.nextLong()),
+			new Mob(r.nextLong()),
 		};
 		addAIFleets(b,ai);
 		

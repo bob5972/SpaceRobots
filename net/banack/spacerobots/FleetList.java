@@ -39,5 +39,8 @@ public class FleetList
 		
 		return oup;
 	}
-	
+    
+        public int size() {
+	        return m.size();
+        }
 }

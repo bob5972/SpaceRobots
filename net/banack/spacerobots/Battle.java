@@ -546,4 +546,14 @@ public class Battle
 	{
 		return myShips.size();
 	}
+
+        public int getNumTeams()
+        {
+	        return myTeams.size();
+        }
+
+        public int getNumFleets()
+        {
+	        return myFleets.size();
+        }
 }

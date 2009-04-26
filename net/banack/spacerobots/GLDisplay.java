@@ -38,25 +38,22 @@ public class GLDisplay implements GLEventListener, Display
     private DisplayFrame lastFrame;
     private double battleWidth;
     private double battleHeight;
-	
+
     private AbstractQueue<DisplayFrame> frameQueue;
 	
     private class DisplayFrame
     {
-	public ArrayList<DisplayTeam> teams;
-	public ArrayList<DisplayFleet> fleets;
-	public ArrayList<DisplayShip> ships;
+	DisplayTeam teams[];
+	DisplayFleet fleets[];
 		
 	public int tick;
 		
-	public DisplayFrame(ArrayList<DisplayTeam> teams,
-			    ArrayList<DisplayFleet> fleets,
-			    ArrayList<DisplayShip> ships,
+	public DisplayFrame(DisplayTeam teams[],
+			    DisplayFleet fleets[],
 			    int tick)
 	{
 	    this.teams = teams;
 	    this.fleets = fleets;
-	    this.ships = ships;
 	    this.tick = tick;
 	}
     }
@@ -84,6 +81,8 @@ public class GLDisplay implements GLEventListener, Display
 	float red;
 	float green;
 	float blue;
+
+ 	public ArrayList<DisplayShip> ships;
     }
 	
     private class DisplayShip
@@ -162,10 +161,9 @@ public class GLDisplay implements GLEventListener, Display
 	if (b.isOver()) {
 	    simulationFinished = true;
 	}
-	
-	ArrayList<DisplayTeam> teams = new ArrayList<DisplayTeam>();
-	ArrayList<DisplayFleet> fleets = new ArrayList<DisplayFleet>();
-	ArrayList<DisplayShip> ships = new ArrayList<DisplayShip>();
+
+	DisplayTeam teams[] = new DisplayTeam[b.getNumTeams()];
+	DisplayFleet fleets[] = new DisplayFleet[b.getNumFleets()];
 		
 	Iterator<ServerTeam> teamIter = b.teamIterator();
 	while(teamIter.hasNext()) {
@@ -175,7 +173,7 @@ public class GLDisplay implements GLEventListener, Display
 	    disTeam.index = team.getTeamIndex();
 	    disTeam.name = team.getName();
 	    disTeam.numFleets = 0;
-	    teams.add(disTeam.index, disTeam);
+	    teams[disTeam.index] = disTeam;
 	}
 		
 	Iterator<ServerFleet> fleetIter = b.fleetIterator();
@@ -213,21 +211,25 @@ public class GLDisplay implements GLEventListener, Display
 		disFleet.green = 1f;
 		disFleet.blue = 1f;
 	    }
-	    disFleet.team = teams.get(fleet.getTeam().getTeamIndex());
+	    disFleet.team = teams[fleet.getTeam().getTeamIndex()];
 	    disFleet.indexInTeam = disFleet.team.numFleets;
 	    disFleet.team.numFleets++;
-	    fleets.add(disFleet.index, disFleet);
+	    disFleet.ships = new ArrayList<DisplayShip>();
+
+	    fleets[fleet.getIndex()] = disFleet;
 	}
-		
+
 	Iterator<ServerShip> iter = b.shipIterator();
 	while(iter.hasNext()) {
 	    ServerShip ship = iter.next();
 	    DisplayShip disShip = new DisplayShip();
+
 		
 	    disShip.location = ship.getLocation();
 	    disShip.scanner = ship.getScannerArc();
-	    disShip.fleet = fleets.get(ship.getFleet().getFleetIndex());
-	    ships.add(disShip);
+	    disShip.fleet = fleets[ship.getFleet().getFleetIndex()];
+
+	    fleets[ship.getFleet().getFleetIndex()].ships.add(disShip);
 	}
 
 	while (frameQueue.size() > MAX_QUEUED_TICKS || (Debug.isSlowGraphics() && frameQueue.size()>0)) {
@@ -238,7 +240,7 @@ public class GLDisplay implements GLEventListener, Display
 	    }    
 	}
 		
-	frameQueue.add(new DisplayFrame(teams, fleets, ships, b.getTick()));
+	frameQueue.add(new DisplayFrame(teams, fleets, b.getTick()));
     }
 	
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
@@ -270,45 +272,49 @@ public class GLDisplay implements GLEventListener, Display
 	
     public void display(GLAutoDrawable drawable)
     {
-	DisplayFrame displayFrame;
-	GL gl = drawable.getGL();
+ 	DisplayFrame displayFrame;
+ 	GL gl = drawable.getGL();
 		
-	if (simulationFinished && frameQueue.isEmpty()) {
-	    try {
-		Debug.info("Pausing for 3 seconds...");
-		Thread.sleep(3000);
-	    }
-	    catch (InterruptedException e)
-		{
+ 	if (simulationFinished && frameQueue.isEmpty()) {
+ 	    try {
+ 		Debug.info("Pausing for 3 seconds...");
+ 		Thread.sleep(3000);
+ 	    }
+ 	    catch (InterruptedException e)
+ 		{
 				
-		}
-	    closeAndExit();
-	}
+ 		}
+ 	    closeAndExit();
+ 	}
 		
-	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-	if (frameQueue.isEmpty()) {
-	    displayFrame = lastFrame;
-	} else {
-	    displayFrame = frameQueue.poll();
-	}
-	lastFrame = displayFrame;
+ 	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+ 	if (frameQueue.isEmpty()) {
+ 	    displayFrame = lastFrame;
+ 	} else {
+ 	    displayFrame = frameQueue.poll();
+ 	}
+ 	lastFrame = displayFrame;
 		
-	if (displayFrame == null) {
-	    return;
-	}
+ 	if (displayFrame == null) {
+ 	    return;
+ 	}
 
-	renderObjects(drawable, displayFrame, OBJECT_SENSOR_ARCS);
-	renderObjects(drawable, displayFrame, OBJECT_SHIPS);
+	for (int i = 0; i < displayFrame.fleets.length; i++) {
+	    renderFleetObjects(drawable, displayFrame.fleets[i], OBJECT_SENSOR_ARCS);
+	}
+	for (int i = 0; i < displayFrame.fleets.length; i++) {
+	    renderFleetObjects(drawable, displayFrame.fleets[i], OBJECT_SHIPS);
+	}
 		
-	renderTeamText(drawable, displayFrame);
-	renderFrameStatsText(drawable, displayFrame);
+ 	renderTeamText(drawable, displayFrame);
+ 	renderFrameStatsText(drawable, displayFrame);
     }
 
-    private void renderObjects(GLAutoDrawable drawable,
-			       DisplayFrame displayFrame,
-			       int type) {
-	for (int i = 0; i < displayFrame.ships.size(); i++) {
-	    DisplayShip ship = displayFrame.ships.get(i);
+    private void renderFleetObjects(GLAutoDrawable drawable,
+				    DisplayFleet fleet,
+				    int type) {
+	for (int i = 0; i < fleet.ships.size(); i++) {
+	    DisplayShip ship = fleet.ships.get(i);
 	    double xOffset;
 	    double yOffset;
 	    if (ship.location.getP1().getX() > battleWidth / 2) {
@@ -346,9 +352,9 @@ public class GLDisplay implements GLEventListener, Display
 	 */
 	boldRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
 	boldRenderer.setColor(1.0f, 0.0f, 0.0f, 0.8f);
-	for (int i = 0; i < displayFrame.teams.size(); i++) {
-	    boldRenderer.draw("" + displayFrame.teams.get(i).name,
-			      (drawable.getWidth() / displayFrame.teams.size()) * i,
+	for (int i = 0; i < displayFrame.teams.length; i++) {
+	    boldRenderer.draw("" + displayFrame.teams[i].name,
+			      (drawable.getWidth() / displayFrame.teams.length) * i,
 			      drawable.getHeight() - 12);
 	}
 	boldRenderer.endRendering();
@@ -357,15 +363,23 @@ public class GLDisplay implements GLEventListener, Display
 	 * Fleet Names
 	 */
 	plainRenderer.beginRendering(drawable.getWidth(), drawable.getHeight());
-	for (int i = 0; i < displayFrame.fleets.size(); i++) {
-	    plainRenderer.draw("   " + displayFrame.fleets.get(i).name +
-			       " (" + displayFrame.fleets.get(i).aiName + 
-			       ":" + displayFrame.fleets.get(i).aiVersion +
-			       ") -- " + displayFrame.fleets.get(i).aiAuthor,
-			       displayFrame.fleets.get(i).team.index * (drawable.getWidth() / displayFrame.teams.size()), drawable.getHeight() - 12 * (2*displayFrame.fleets.get(i).indexInTeam + 2));
+	for (int i = 0; i < displayFrame.fleets.length; i++) {
+	    plainRenderer.draw("   " + displayFrame.fleets[i].name,
+			       displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length), drawable.getHeight() - 12 * (5*displayFrame.fleets[i].indexInTeam + 2));
+
+	    plainRenderer.draw("   " + displayFrame.fleets[i].aiName +
+			       " (" + displayFrame.fleets[i].aiVersion +
+			       ")",
+			       displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length), drawable.getHeight() - 12 * (5*displayFrame.fleets[i].indexInTeam + 3));
+
+	    plainRenderer.draw("   " + displayFrame.fleets[i].aiAuthor,
+			       displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length), drawable.getHeight() - 12 * (5*displayFrame.fleets[i].indexInTeam + 4));
 	    plainRenderer.draw("       Credits: " +
-			       displayFrame.fleets.get(i).credits,
-			       displayFrame.fleets.get(i).team.index * (drawable.getWidth() / displayFrame.teams.size()), drawable.getHeight() - 12 * (2*displayFrame.fleets.get(i).indexInTeam + 3));
+			       displayFrame.fleets[i].credits,
+			       displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length), drawable.getHeight() - 12 * (5*displayFrame.fleets[i].indexInTeam + 5));
+	    plainRenderer.draw("       Ships: " +
+			       displayFrame.fleets[i].ships.size(),
+			       displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length), drawable.getHeight() - 12 * (5*displayFrame.fleets[i].indexInTeam + 6));
 	}
 	plainRenderer.endRendering();
 
@@ -380,10 +394,10 @@ public class GLDisplay implements GLEventListener, Display
 	gl.glOrtho(0, drawable.getWidth(), drawable.getHeight(), 0, 1, -1);
 		
 	gl.glBegin(GL.GL_QUADS);
-	for (int i = 0; i < displayFrame.fleets.size(); i++) {
-	    gl.glColor4f(displayFrame.fleets.get(i).red, displayFrame.fleets.get(i).green, displayFrame.fleets.get(i).blue, 0.8f);
-	    float x = displayFrame.fleets.get(i).team.index * (drawable.getWidth() / displayFrame.teams.size());
-	    float y = 12 + 24 * displayFrame.fleets.get(i).indexInTeam;
+	for (int i = 0; i < displayFrame.fleets.length; i++) {
+	    gl.glColor4f(displayFrame.fleets[i].red, displayFrame.fleets[i].green, displayFrame.fleets[i].blue, 0.8f);
+	    float x = displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length);
+	    float y = 12 + 24 * displayFrame.fleets[i].indexInTeam;
 
 	    gl.glVertex2f(3 + x, 3 + y);
 	    gl.glVertex2f(3 + x, 9 + y);
@@ -405,8 +419,8 @@ public class GLDisplay implements GLEventListener, Display
 			   0, 24);
 	plainRenderer.draw("Ticks in Queue: " + frameQueue.size(),
 			   0, 12);
-	plainRenderer.draw("Ship Count: " + displayFrame.ships.size(),
-			   0, 0);
+	//	plainRenderer.draw("Ship Count: " + displayFrame.ships.size(),
+	//			   0, 0);
 	plainRenderer.endRendering();
     }
 
