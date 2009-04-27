@@ -26,7 +26,7 @@ public class GLDisplay implements GLEventListener, Display
     private static final int MAX_QUEUED_TICKS = 4000;
     private static final int FRAMES_PER_SECOND = 60;
 
-    private static final int SENSOR_ARC_POINTS = 5;
+    private static final int SENSOR_ARC_POINTS = 10;
 
     private static final int OBJECT_SENSOR_ARCS = 1;
     private static final int OBJECT_SHIPS = 2;
@@ -236,6 +236,10 @@ public class GLDisplay implements GLEventListener, Display
 	    fleets[ship.getFleet().getFleetIndex()].ships.add(disShip);
 	}
 
+	for (int i = 0; i < fleets.length; i++) {
+	    fleets[i].ships.trimToSize();
+	}
+
 	while (frameQueue.size() > MAX_QUEUED_TICKS || (Debug.isSlowGraphics() && frameQueue.size()>0)) {
 	    try {
 		Thread.sleep(1000/FRAMES_PER_SECOND+1);
@@ -430,7 +434,7 @@ public class GLDisplay implements GLEventListener, Display
 	for (int i = 0; i < displayFrame.fleets.length; i++) {
 	    gl.glColor4f(displayFrame.fleets[i].red, displayFrame.fleets[i].green, displayFrame.fleets[i].blue, 0.8f);
 	    float x = displayFrame.fleets[i].team.index * (drawable.getWidth() / displayFrame.teams.length);
-	    float y = 12 + 24 * displayFrame.fleets[i].indexInTeam;
+	    float y = 12 + 12 * 5 * displayFrame.fleets[i].indexInTeam;
 
 	    gl.glVertex2f(3 + x, 3 + y);
 	    gl.glVertex2f(3 + x, 9 + y);
@@ -452,8 +456,13 @@ public class GLDisplay implements GLEventListener, Display
 			   0, 24);
 	plainRenderer.draw("Ticks in Queue: " + frameQueue.size(),
 			   0, 12);
-	//	plainRenderer.draw("Ship Count: " + displayFrame.ships.size(),
-	//			   0, 0);
+
+	int totalShips = 0;
+	for (int i = 0; i < displayFrame.fleets.length; i++) {
+	    totalShips += displayFrame.fleets[i].ships.size();
+	}
+	plainRenderer.draw("Ship Count: " + totalShips,
+			   0, 0);
 	plainRenderer.endRendering();
     }
 
