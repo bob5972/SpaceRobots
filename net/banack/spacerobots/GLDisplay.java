@@ -22,6 +22,7 @@ import com.sun.opengl.util.j2d.*;
 public class GLDisplay implements GLEventListener, Display
 {
     private static final float SHIP_TRANSPARENCY = .5f;
+    private static final float SENSOR_TRANSPARENCY = .2f;
     private static final int MAX_QUEUED_TICKS = 4000;
     private static final int FRAMES_PER_SECOND = 60;
 
@@ -121,7 +122,10 @@ public class GLDisplay implements GLEventListener, Display
     private void createFrame(int width, int height)
     {
 	frame = new JFrame("Space Robots");
-	canvas = new GLCanvas();
+	GLCapabilities caps = new GLCapabilities();
+	caps.setStencilBits(8);
+
+	canvas = new GLCanvas(caps);
 		
 	canvas.addGLEventListener(this);
 	frame.add(canvas);
@@ -288,6 +292,7 @@ public class GLDisplay implements GLEventListener, Display
  	}
 		
  	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
  	if (frameQueue.isEmpty()) {
  	    displayFrame = lastFrame;
  	} else {
@@ -313,6 +318,16 @@ public class GLDisplay implements GLEventListener, Display
     private void renderFleetObjects(GLAutoDrawable drawable,
 				    DisplayFleet fleet,
 				    int type) {
+ 	GL gl = drawable.getGL();
+
+	if (type == OBJECT_SENSOR_ARCS) {
+	    gl.glClearStencil(0);
+	    gl.glClear(GL.GL_STENCIL_BUFFER_BIT);
+	    gl.glEnable(GL.GL_STENCIL_TEST);
+	    gl.glStencilFunc(GL.GL_NEVER, 1, 0xffff);
+	    gl.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
+	}
+
 	for (int i = 0; i < fleet.ships.size(); i++) {
 	    DisplayShip ship = fleet.ships.get(i);
 	    double xOffset;
@@ -332,6 +347,9 @@ public class GLDisplay implements GLEventListener, Display
 	    switch (type) {
 	    case OBJECT_SENSOR_ARCS:
 		renderSensorArc(drawable, ship, 0, 0);
+		renderSensorArc(drawable, ship, 0, yOffset);
+		renderSensorArc(drawable, ship, xOffset, yOffset);
+		renderSensorArc(drawable, ship, xOffset, 0);
 		break;
 	    case OBJECT_SHIPS:
 		renderShip(drawable, ship, 0, 0);
@@ -340,6 +358,21 @@ public class GLDisplay implements GLEventListener, Display
 		renderShip(drawable, ship, xOffset, 0);
 		break;
 	    }
+	}
+
+	if (type == OBJECT_SENSOR_ARCS) {
+	    gl.glStencilFunc(GL.GL_EQUAL, 1, 0xffff);
+	    gl.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+	    gl.glColor4f(fleet.red, fleet.green, fleet.blue,
+			 SENSOR_TRANSPARENCY);
+	    gl.glBegin(GL.GL_QUADS);
+	    gl.glVertex2f(0, 0);
+	    gl.glVertex2f(0, (float) battleWidth);
+	    gl.glVertex2f((float) battleHeight, (float) battleWidth);
+	    gl.glVertex2f((float) battleHeight, 0);
+	    gl.glEnd();
+
+	    gl.glDisable(GL.GL_STENCIL_TEST);
 	}
     }
 
@@ -434,14 +467,6 @@ public class GLDisplay implements GLEventListener, Display
 	gl.glColor4f(ship.fleet.red/5, ship.fleet.green/5, ship.fleet.blue/5, 1f);
 	gl.glVertex2f((float) (ship.scanner.getCenter().getX() + xOffset),
 		      (float) (ship.scanner.getCenter().getY() + yOffset));
-	gl.glVertex2f((float) (ship.scanner.getCenter().getX() +
-			       Math.cos(ship.scanner.getAngleStart()) *
-			       ship.scanner.getRadius()
-			       + xOffset),
-		      (float) (ship.scanner.getCenter().getY() +
-			       Math.sin(ship.scanner.getAngleStart()) *
-			       ship.scanner.getRadius()
-			       + yOffset));
 	for (int i = 0; i <= SENSOR_ARC_POINTS; i++) {
 	    float angle = ((SENSOR_ARC_POINTS - i) *
 			   (float) ship.scanner.getAngleStart() +
