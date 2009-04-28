@@ -1,0 +1,21 @@
+<project name="SpaceRobots" default="compile" basedir="."> 
+
+<target name="init">
+  <mkdir dir="bin"/>
+</target>
+
+<target name="compile" depends="init" >
+  <javac srcdir="." destdir="bin"/>
+</target>
+
+<target name="jar" depends="compile" >
+  <delete file="bin/SpaceRobots.jar"/>
+  <jar jarfile="bin/SpaceRobots.jar" basedir="bin"/>
+</target>
+ 
+<target name="clean" > 
+  <delete dir="bin"/>
+  <mkdir dir="bin"/>
+</target> 
+
+</project>
