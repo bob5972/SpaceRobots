@@ -54,7 +54,7 @@ public class BattleCruiserFleet extends AIFleet
 		
 	
 	
-	public Iterator<ShipAction> runTick(int tick, ContactList c)
+	public Iterator<ShipAction> runTick(ContactList c)
 	{
 		if(stateTimer > 0)
 			stateTimer--;
@@ -76,7 +76,7 @@ public class BattleCruiserFleet extends AIFleet
 			case STATE_IDLE:
 				myTarget=null;
 				if(tick % 400 == 0)
-					myCruiser.setHeading(myRandom.nextGaussian()-0.5+myCruiser.getHeading());
+					myCruiser.setHeading(random.nextGaussian()-0.5+myCruiser.getHeading());
 				myCruiser.setScannerHeading(myCruiser.getScannerHeading()+CRUISER.getScannerAngleSpan());
 			break;
 			case STATE_ATTACK:

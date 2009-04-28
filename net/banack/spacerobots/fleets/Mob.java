@@ -62,12 +62,12 @@ public class Mob extends AIFleet
 	super.initBattle(fleetID, teamID, startingCredits, s, teams, f, w, h);
 
 	center = myCruiser.getPosition();
-	destination = new DPoint(myRandom.nextDouble() * 300,
-				 myRandom.nextDouble() * 300);
+	destination = new DPoint(random.nextDouble() * 300,
+				 random.nextDouble() * 300);
 	timeOutTick = 500;
     }
 
-    public Iterator<ShipAction> runTick(int tick, ContactList c) {
+    public Iterator<ShipAction> runTick(ContactList c) {
 	double fighterAngleStep = Math.PI * 2 * 2 / myShips.size();
 
 	if (c.size() > 0) {
@@ -89,8 +89,8 @@ public class Mob extends AIFleet
 	if (((Math.abs(myCruiser.getPosition().getX() - destination.getX()) < 10) &&
 	     (Math.abs(myCruiser.getPosition().getY() - destination.getY()) < 10))  || tick > timeOutTick) {
 	    
-	    destination = new DPoint(myRandom.nextDouble() * battleHeight,
-				     myRandom.nextDouble() * battleHeight);
+	    destination = new DPoint(random.nextDouble() * battleHeight,
+				     random.nextDouble() * battleHeight);
 	    timeOutTick = tick + 1000;
 	}
 
@@ -123,8 +123,8 @@ public class Mob extends AIFleet
 							target.getPosition()));
 
 		    if ((distance < 20) && cur.isReadyToLaunch() &&
-			myCredits > DefaultShipTypeDefinitions.ROCKET.getCost()) {
-			myCredits -= DefaultShipTypeDefinitions.ROCKET.getCost();
+			credits > DefaultShipTypeDefinitions.ROCKET.getCost()) {
+			credits -= DefaultShipTypeDefinitions.ROCKET.getCost();
 			cur.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
 		    }
 		}
@@ -154,8 +154,8 @@ public class Mob extends AIFleet
 		    amountToSave = 150;
 		}	    
 
-		if (myCredits > DefaultShipTypeDefinitions.FIGHTER.getCost() + amountToSave) {
-		    myCredits -= DefaultShipTypeDefinitions.FIGHTER.getCost();
+		if (credits > DefaultShipTypeDefinitions.FIGHTER.getCost() + amountToSave) {
+		    credits -= DefaultShipTypeDefinitions.FIGHTER.getCost();
 		    myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
 		}
 	    }
@@ -166,8 +166,8 @@ public class Mob extends AIFleet
 							     target.getPosition()));
 
 	    if (myCruiser.readyToLaunch()) {
-		if (myCredits > DefaultShipTypeDefinitions.MISSILE.getCost()) {
-		    myCredits -= DefaultShipTypeDefinitions.MISSILE.getCost();
+		if (credits > DefaultShipTypeDefinitions.MISSILE.getCost()) {
+		    credits -= DefaultShipTypeDefinitions.MISSILE.getCost();
 		    myCruiser.setLaunchWhat(DefaultShipTypeDefinitions.MISSILE_ID);
 		}
 	    }

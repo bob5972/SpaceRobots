@@ -22,12 +22,12 @@ public class SimpleFleet extends AIFleet
 {		
 	public SimpleFleet()
 	{
-		myRandom = new Random();
+		super();
 	}
 	
 	public SimpleFleet(long seed)
 	{
-		myRandom = new Random(seed);
+		super(seed);
 	}
 	
 	
@@ -41,7 +41,7 @@ public class SimpleFleet extends AIFleet
 		return "1.1";
 	}
 	
-	public Iterator<ShipAction> runTick(int tick, ContactList c)
+	public Iterator<ShipAction> runTick(ContactList c)
 	{		
 		Iterator<AIShip> i = myShips.getAliveIterator();
 		
@@ -60,9 +60,9 @@ public class SimpleFleet extends AIFleet
 			}
 			else if(ship.getTypeID() == DefaultShipTypeDefinitions.CRUISER_ID)
 			{
-				if(ship.readyToLaunch() &&  myCredits > DefaultShipTypeDefinitions.FIGHTER.getCost()*(1+myRandom.nextDouble()))
+				if(ship.readyToLaunch() &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*(1+random.nextDouble()))
 				{
-					myCredits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
+					credits-=DefaultShipTypeDefinitions.FIGHTER.getCost();
 					ship.setLaunchWhat(DefaultShipTypeDefinitions.FIGHTER_ID);
 				}
 			}
@@ -83,9 +83,9 @@ public class SimpleFleet extends AIFleet
 			while(spotI.hasNext())
 			{			
 				AIShip a = myShips.get(spotI.next());
-				if(a != null && !cantSpawn.contains(a.getShipID()) && myCredits > DefaultShipTypeDefinitions.ROCKET.getCost())
+				if(a != null && !cantSpawn.contains(a.getShipID()) && credits > DefaultShipTypeDefinitions.ROCKET.getCost())
 				{
-					myCredits-=DefaultShipTypeDefinitions.ROCKET.getCost();
+					credits-=DefaultShipTypeDefinitions.ROCKET.getCost();
 					a.setLaunchWhat(DefaultShipTypeDefinitions.ROCKET_ID);
 				}
 			}

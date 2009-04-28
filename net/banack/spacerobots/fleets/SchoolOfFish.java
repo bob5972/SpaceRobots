@@ -56,7 +56,7 @@ public class SchoolOfFish extends AIFleet
 		groupHeading=0;
 	}
 
-	public Iterator<ShipAction> runTick(int tick, ContactList c)
+	public Iterator<ShipAction> runTick(ContactList c)
 	{		
 		Iterator<AIShip> i;
 		
@@ -67,7 +67,7 @@ public class SchoolOfFish extends AIFleet
 			nextMove = tick+50;
 			adjTick=true;
 			
-			if(myRandom.nextInt(10) < 4)
+			if(random.nextInt(10) < 4)
 			{
 				double ax= 0;
 				double ay= 0;
@@ -86,7 +86,7 @@ public class SchoolOfFish extends AIFleet
 			}
 			else
 			{
-				groupHeading += (myRandom.nextDouble())*Math.PI*2;
+				groupHeading += (random.nextDouble())*Math.PI*2;
 				groupHeading = SpaceMath.wrapHeading(groupHeading);
 			}
 		}
@@ -99,7 +99,7 @@ public class SchoolOfFish extends AIFleet
 				public void run(AIShip s)
 				{
 					AIShip t = (AIShip) s;
-					if(myRandom.nextInt(10) < 3)
+					if(random.nextInt(10) < 3)
 					{
 						t.intercept(myCruiser);
 					}
@@ -130,7 +130,7 @@ public class SchoolOfFish extends AIFleet
 		
 		if(myCruiser.isAlive())
 		{
-			if(myCruiser.readyToLaunch() &&  myCredits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
+			if(myCruiser.canLaunch(FIGHTER) &&  credits > DefaultShipTypeDefinitions.FIGHTER.getCost()*2)
 			{
 				myCruiser.launch(FIGHTER);
 			}
@@ -140,7 +140,7 @@ public class SchoolOfFish extends AIFleet
 			if(tick % 100 == 0)
 			{
 				double h = myCruiser.curHeading();
-				h += myRandom.nextDouble();
+				h += random.nextDouble();
 				myCruiser.setHeading(h);
 			}
 		}

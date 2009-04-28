@@ -51,7 +51,7 @@ public class AIShip extends BasicAIShip
 	
 	public boolean canLaunch(ShipType t)
 	{
-		return canLaunch() && myFleet.myCredits >= t.getCost();
+		return canLaunch() && myFleet.credits >= t.getCost();
 	}
 	
 	public double getDistanceFrom(DPoint p)
@@ -105,6 +105,6 @@ public class AIShip extends BasicAIShip
 	public void launch(ShipType t)
 	{
 		setLaunchWhat(t.getID());
-		myFleet.myCredits-=t.getCost();
+		myFleet.credits-=t.getCost();
 	}
 }

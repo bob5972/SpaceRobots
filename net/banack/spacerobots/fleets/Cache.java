@@ -39,7 +39,7 @@ public class Cache extends AIFleet
 		return "1.0";
 	}
 	
-	public Iterator<ShipAction> runTick(int tick, ContactList c)
+	public Iterator<ShipAction> runTick(ContactList c)
 	{
 		
 		Iterator<AIShip> i;
@@ -59,14 +59,14 @@ public class Cache extends AIFleet
 		
 		if(myCruiser.isAlive())
 		{
-			if(myCruiser.canLaunch(FIGHTER) && myCredits >= FIGHTER.getCost()*2)
+			if(myCruiser.canLaunch(FIGHTER) && credits >= FIGHTER.getCost()*2)
 				myCruiser.launch(FIGHTER);
 			
 			myCruiser.setScannerHeading(myCruiser.projHeading());			
 			
 			if(tick % 100 == 0)
 			{
-				double h = myRandom.nextDouble();
+				double h = random.nextDouble();
 				myCruiser.setHeading(h);
 			}
 		}
