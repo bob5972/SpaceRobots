@@ -33,12 +33,13 @@ public class GLDisplay implements GLEventListener, Display
 	
     private boolean simulationFinished = false;
     private JFrame frame;
-    private GLCanvas canvas;
     private TextRenderer plainRenderer;
     private TextRenderer boldRenderer;
     private DisplayFrame lastFrame;
     private double battleWidth;
     private double battleHeight;
+
+    private boolean drawSensorArcs = true;
 
     private AbstractQueue<DisplayFrame> frameQueue;
 	
@@ -122,17 +123,34 @@ public class GLDisplay implements GLEventListener, Display
     private void createFrame(int width, int height)
     {
 	frame = new JFrame("Space Robots");
+	frame.getContentPane().setLayout(new BorderLayout());
+
+
 	GLCapabilities caps = new GLCapabilities();
 	caps.setStencilBits(8);
 
-	canvas = new GLCanvas(caps);
-		
-	canvas.addGLEventListener(this);
-	frame.add(canvas);
-	animator = new FPSAnimator(canvas, FRAMES_PER_SECOND);
-		
-	canvas.setSize(width, height);
-	frame.pack();
+	GLCanvas battleCanvas;
+	battleCanvas = new GLCanvas(caps);
+	battleCanvas.addGLEventListener(this);
+	battleCanvas.setMinimumSize(new Dimension(width, height));
+
+	frame.getContentPane().add(battleCanvas, BorderLayout.CENTER);
+
+	JPanel controlsPanel = new JPanel();
+
+	frame.add(controlsPanel, BorderLayout.SOUTH);
+	controlsPanel.setLayout(new FlowLayout());
+	final JCheckBox sensorCheckBox= new JCheckBox("Sensor Arcs", true);
+	controlsPanel.add(sensorCheckBox);
+	sensorCheckBox.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+		    drawSensorArcs = sensorCheckBox.isSelected();
+		}
+	    });
+
+	animator = new FPSAnimator(battleCanvas, FRAMES_PER_SECOND);
+
+	frame.setSize(width,height);
 		
 	frame.addWindowListener(new WindowAdapter() {
 		public void windowClosing(WindowEvent e) {
@@ -308,8 +326,10 @@ public class GLDisplay implements GLEventListener, Display
  	    return;
  	}
 
-	for (int i = 0; i < displayFrame.fleets.length; i++) {
-	    renderFleetObjects(drawable, displayFrame.fleets[i], OBJECT_SENSOR_ARCS);
+	if (drawSensorArcs) {
+	    for (int i = 0; i < displayFrame.fleets.length; i++) {
+		renderFleetObjects(drawable, displayFrame.fleets[i], OBJECT_SENSOR_ARCS);
+	    }
 	}
 	for (int i = 0; i < displayFrame.fleets.length; i++) {
 	    renderFleetObjects(drawable, displayFrame.fleets[i], OBJECT_SHIPS);
