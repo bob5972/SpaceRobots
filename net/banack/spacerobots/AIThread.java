@@ -3,8 +3,8 @@ package net.banack.spacerobots;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import net.banack.spacerobots.ai.AIClientProtocol;
-import net.banack.spacerobots.ai.ClientProtocolFactory;
+import net.banack.spacerobots.comm.ClientAIProtocol;
+import net.banack.spacerobots.comm.ClientProtocolFactory;
 
 public class AIThread extends Thread
 {
@@ -24,7 +24,7 @@ public class AIThread extends Thread
 	public void run()
 	{
 		Debug.info("Thread starting...");
-		AIClientProtocol p = ClientProtocolFactory.doHandshake(myAI,myInp,myOup);
+		ClientAIProtocol p = ClientProtocolFactory.doHandshake(myAI,myInp,myOup);
 		p.start();
 		Debug.info("Thread ending...");
 	}

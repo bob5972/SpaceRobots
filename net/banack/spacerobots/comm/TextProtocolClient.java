@@ -1,4 +1,4 @@
-package net.banack.spacerobots.ai;
+package net.banack.spacerobots.comm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import java.util.Iterator;
 
 import net.banack.geometry.DPoint;
 import net.banack.spacerobots.Debug;
+import net.banack.spacerobots.ai.AIFleet;
+import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Fleet;
@@ -20,7 +22,7 @@ import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
 import net.banack.util.MethodNotImplementedException;
 
-public class TextProtocol implements AIClientProtocol
+public class TextProtocolClient implements ClientAIProtocol
 {
 	private AIFleet myAI;
 	private SpaceText sIn;
@@ -28,7 +30,7 @@ public class TextProtocol implements AIClientProtocol
 	private int curLevel;
 	private AIShipList myShips;
 	
-	public TextProtocol(AIFleet ai, BufferedReader sIn, PrintWriter sOut)
+	public TextProtocolClient(AIFleet ai, BufferedReader sIn, PrintWriter sOut)
 	{
 		myAI = ai;
 		this.sIn = new SpaceText(sIn);

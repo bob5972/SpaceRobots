@@ -4,19 +4,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import net.banack.util.MethodNotImplementedException;
+import net.banack.spacerobots.comm.ServerProtocolFactory;
+import net.banack.spacerobots.comm.ServerAIProtocol;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 
 public class FleetAI
 {
-	private AIProtocol myCom;
+	private ServerAIProtocol myCom;
 
 	private String myAuthor;
 	private String myVersion;
 	private String myName;
 	
 	//must loadInfo prior to using
-	public FleetAI(AIProtocol p)
+	public FleetAI(ServerAIProtocol p)
 	{
 		myCom = p;
 	}
@@ -24,7 +26,7 @@ public class FleetAI
 	//must loadInfo prior to using
 	public FleetAI(InputStream inp,OutputStream oup)
 	{
-		myCom = ProtocolFactory.doHandshake(inp,oup);	
+		myCom = ServerProtocolFactory.doHandshake(inp,oup);	
 	}
 	
 	//returns an array of the form {name, author, version}

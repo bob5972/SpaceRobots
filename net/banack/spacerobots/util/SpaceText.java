@@ -216,6 +216,8 @@ public class SpaceText extends Parser
 		
 		oup.append(s.getID());
 		oup.append(" ");
+		oup.append(s.getParentID());
+		oup.append(" ");
 		oup.append(s.getTypeID());
 		oup.append(" ");
 		oup.append(((int)s.getX()));
@@ -284,19 +286,20 @@ public class SpaceText extends Parser
 	public static Ship parseShip(String[] words)
 	{
 		//>		SHIP iD type xPos yPos heading scannerHeading creationTick life deltaLife launchDelay
-		int id = parseInt(words[0]);
-		int type = parseInt(words[1]);
-		double x = parseInt(words[2]);
-		double y = parseInt(words[3]);
-		double heading = SpaceMath.degToRad(parseInt(words[4]));
-		double scannerHeading = SpaceMath.degToRad(parseInt(words[5]));
-		int creationTick = parseInt(words[6]);
-		int life = parseInt(words[7]);
-		int deltaLife = parseInt(words[8]);
-		int firingDelay = parseInt(words[9]);
+		int i=0;
+		int id = parseInt(words[i++]);
+		int parentID = parseInt(words[i++]);
+		int type = parseInt(words[i++]);
+		double x = parseInt(words[i++]);
+		double y = parseInt(words[i++]);
+		double heading = SpaceMath.degToRad(parseInt(words[i++]));
+		double scannerHeading = SpaceMath.degToRad(parseInt(words[i++]));
+		int creationTick = parseInt(words[i++]);
+		int life = parseInt(words[i++]);
+		int deltaLife = parseInt(words[i++]);
+		int firingDelay = parseInt(words[i++]);
 		
-		Ship s = new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,creationTick,life,deltaLife);
-		s.setLaunchDelay(firingDelay);
+		Ship s = new Ship(id,parentID, type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,creationTick,life,deltaLife,firingDelay);
 		return s;
 	}
 	

@@ -1,4 +1,4 @@
-package net.banack.spacerobots.ai;
+package net.banack.spacerobots.comm;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import net.banack.spacerobots.ServerTeam;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 
-public interface AIClientProtocol
+public interface ClientAIProtocol
 {
 	public void start();
 	

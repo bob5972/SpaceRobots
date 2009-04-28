@@ -9,8 +9,10 @@ import java.util.Random;
 import net.banack.geometry.DArc;
 import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
-import net.banack.spacerobots.ai.ClientProtocolFactory;
 import net.banack.spacerobots.ai.AIFleet;
+import net.banack.spacerobots.comm.ClientProtocolFactory;
+import net.banack.spacerobots.comm.ServerProtocolFactory;
+import net.banack.spacerobots.comm.ServerAIProtocol;
 import net.banack.spacerobots.fleets.*;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
@@ -36,7 +38,7 @@ public class SpaceRobots
 		Debug.STD_ERR_MESSAGES_WARN=true;
 		Debug.STD_ERR_MESSAGES_ERROR=true;		
 		Debug.setShowAIWarnings(true);
-		Debug.setShowComLog(false);
+		Debug.setShowComLog(true);
 		Debug.setSlowGraphics(false);
 		final boolean USE_CONSOLE_DISPLAY = false;
 		
@@ -67,8 +69,8 @@ public class SpaceRobots
 		Debug.info("Initializing AI's...");
 		AIFleet ai[] = {
 			new BattleCruiserFleet(r.nextLong()),
-			new Cache(r.nextLong()),
-			new Mob(r.nextLong()),
+			//new Cache(r.nextLong()),
+			//new Mob(r.nextLong()),
 			new Mob(r.nextLong()),
 		};
 		addAIFleets(b,ai);
@@ -155,7 +157,7 @@ public class SpaceRobots
 				Debug.info("Starting background thread #"+x);
 				background.start();
 				Debug.info("Handshaking...");
-				AIProtocol aip = ProtocolFactory.doHandshake(sIn,sOut);
+				ServerAIProtocol aip = ServerProtocolFactory.doHandshake(sIn,sOut);
 				b.addFleet("Fleet "+x, new FleetAI(aip), tID[x],STARTING_CREDITS,CREDIT_INCREMENT);
 			}
 		}

@@ -1,4 +1,4 @@
-package net.banack.spacerobots.ai;
+package net.banack.spacerobots.comm;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -11,13 +11,14 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.banack.spacerobots.Debug;
+import net.banack.spacerobots.ai.AIFleet;
 import net.banack.util.Stack;
 
 public class ClientProtocolFactory
 {
 	private static final String PROGRAM_NAME = "SpaceRobots Java Protocol Server version 1";
 	
-	public static AIClientProtocol doHandshake(AIFleet ai, InputStream inp, OutputStream oup)
+	public static ClientAIProtocol doHandshake(AIFleet ai, InputStream inp, OutputStream oup)
 	{
 		DataInputStream sIn = new DataInputStream(inp);
 		DataOutputStream sOut = new DataOutputStream(oup);
@@ -81,11 +82,11 @@ public class ClientProtocolFactory
 				if(Pattern.matches("ACK_PROTOCOL BINARY_1",temp))
 				{
 					sOut.flush();
-					return new BinaryProtocol(ai,sIn,sOut);
+					return new BinaryProtocolClient(ai,sIn,sOut);
 				}
 				else if(Pattern.matches("ACK_PROTOCOL TEXT_1",temp))
 				{
-					return new TextProtocol(ai,new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
+					return new TextProtocolClient(ai,new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
 				}
 				
 				Debug.crash("Server does not accept protocols.");
@@ -93,7 +94,7 @@ public class ClientProtocolFactory
 			else
 			{
 				sOut.flush();
-				return new BinaryProtocol(ai,sIn,sOut);
+				return new BinaryProtocolClient(ai,sIn,sOut);
 			}
 		}
 		catch(IOException e)

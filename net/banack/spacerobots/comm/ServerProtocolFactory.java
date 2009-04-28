@@ -1,4 +1,4 @@
-package net.banack.spacerobots;
+package net.banack.spacerobots.comm;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -11,14 +11,15 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.banack.spacerobots.Debug;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.util.Stack;
 
-public class ProtocolFactory
+public class ServerProtocolFactory
 {
 	private static final String PROGRAM_NAME = "SpaceRobots Server version 1";
 	
-	public static AIProtocol doHandshake(InputStream inp, OutputStream oup)
+	public static ServerAIProtocol doHandshake(InputStream inp, OutputStream oup)
 	{
 		DataInputStream sIn = new DataInputStream(inp);
 		DataOutputStream sOut = new DataOutputStream(oup);
@@ -70,7 +71,7 @@ public class ProtocolFactory
 			}
 			
 			temp = m.group(1);
-			AIProtocol ai = matchProtocol(temp,sIn,sOut);
+			ServerAIProtocol ai = matchProtocol(temp,sIn,sOut);
 			
 			if(ai != null)
 				return ai;
@@ -119,21 +120,21 @@ public class ProtocolFactory
 		}
 	}
 		
-	private static AIProtocol matchProtocol(String p,DataInputStream sIn, DataOutputStream sOut) throws IOException
+	private static ServerAIProtocol matchProtocol(String p,DataInputStream sIn, DataOutputStream sOut) throws IOException
 	{
 		if(p.equals("TEXT_1"))
 		{
 			//>ACK_PROTOCOL TEXT_1
 			sOut.writeChars("ACK_PROTOCOL TEXT_1\n");
 			Debug.info("Using Protocol TEXT_1");
-			return new TextProtocol(new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
+			return new TextProtocolServer(new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
 		}
 		else if(p.equals("BINARY_1"))
 		{
 			sOut.writeChars("ACK_PROTOCOL BINARY_1\n");
 			sOut.flush();
 			Debug.info("Using Protocol BINARY_1");
-			return new BinaryProtocol(sIn,sOut);
+			return new BinaryProtocolServer(sIn,sOut);
 		}
 		
 		return null;

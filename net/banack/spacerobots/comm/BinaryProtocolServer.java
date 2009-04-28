@@ -1,4 +1,4 @@
-package net.banack.spacerobots;
+package net.banack.spacerobots.comm;
 
 import java.io.IOException;
 import java.io.DataInputStream;
@@ -9,35 +9,39 @@ import java.util.Iterator;
 import java.util.Set;
 
 import net.banack.geometry.DPoint;
+import net.banack.spacerobots.Debug;
+import net.banack.spacerobots.ServerFleet;
+import net.banack.spacerobots.ServerShip;
+import net.banack.spacerobots.ServerTeam;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ShipAction;
 import net.banack.spacerobots.util.SpaceText;
 
-public class BinaryProtocol implements AIProtocol
+public class BinaryProtocolServer implements ServerAIProtocol
 {
 	private DataInputStream sIn;
 	private DataOutputStream sOut;
 	
-	public static final int REQUEST_INFO = net.banack.spacerobots.ai.BinaryProtocol.REQUEST_INFO;
-	public static final int BEGIN_INFO = net.banack.spacerobots.ai.BinaryProtocol.BEGIN_INFO;
-	public static final int BEGIN_BATTLE = net.banack.spacerobots.ai.BinaryProtocol.BEGIN_BATTLE;
-	public static final int BATTLE_READY_BEGIN = net.banack.spacerobots.ai.BinaryProtocol.BATTLE_READY_BEGIN;
-	public static final int BATTLE_STATUS_UPDATE = net.banack.spacerobots.ai.BinaryProtocol.BATTLE_STATUS_UPDATE;
-	public static final int BEGIN_FLEET_ACTIONS = net.banack.spacerobots.ai.BinaryProtocol.BEGIN_FLEET_ACTIONS;
-	public static final int BEGIN_FLEET_STATUS = net.banack.spacerobots.ai.BinaryProtocol.BEGIN_FLEET_STATUS;
-	public static final int BEGIN_BATTLE_OUTCOME = net.banack.spacerobots.ai.BinaryProtocol.BEGIN_BATTLE_OUTCOME;
-	public static final int END_BATTLE = net.banack.spacerobots.ai.BinaryProtocol.END_BATTLE;
-	public static final int BATTLE_READY_END = net.banack.spacerobots.ai.BinaryProtocol.BATTLE_READY_END;
+	public static final int REQUEST_INFO = net.banack.spacerobots.comm.BinaryProtocolClient.REQUEST_INFO;
+	public static final int BEGIN_INFO = net.banack.spacerobots.comm.BinaryProtocolClient.BEGIN_INFO;
+	public static final int BEGIN_BATTLE = net.banack.spacerobots.comm.BinaryProtocolClient.BEGIN_BATTLE;
+	public static final int BATTLE_READY_BEGIN = net.banack.spacerobots.comm.BinaryProtocolClient.BATTLE_READY_BEGIN;
+	public static final int BATTLE_STATUS_UPDATE = net.banack.spacerobots.comm.BinaryProtocolClient.BATTLE_STATUS_UPDATE;
+	public static final int BEGIN_FLEET_ACTIONS = net.banack.spacerobots.comm.BinaryProtocolClient.BEGIN_FLEET_ACTIONS;
+	public static final int BEGIN_FLEET_STATUS = net.banack.spacerobots.comm.BinaryProtocolClient.BEGIN_FLEET_STATUS;
+	public static final int BEGIN_BATTLE_OUTCOME = net.banack.spacerobots.comm.BinaryProtocolClient.BEGIN_BATTLE_OUTCOME;
+	public static final int END_BATTLE = net.banack.spacerobots.comm.BinaryProtocolClient.END_BATTLE;
+	public static final int BATTLE_READY_END = net.banack.spacerobots.comm.BinaryProtocolClient.BATTLE_READY_END;
 	
-	public static final int SHIPACTION_ID = net.banack.spacerobots.ai.BinaryProtocol.SHIPACTION_ID;
-	public static final int CONTACT_ID = net.banack.spacerobots.ai.BinaryProtocol.CONTACT_ID;
-	public static final int SHIP_ID = net.banack.spacerobots.ai.BinaryProtocol.SHIP_ID;
-	public static final int FLEET_ID = net.banack.spacerobots.ai.BinaryProtocol.FLEET_ID;
-	public static final int TEAM_ID = net.banack.spacerobots.ai.BinaryProtocol.TEAM_ID;
+	public static final int SHIPACTION_ID = net.banack.spacerobots.comm.BinaryProtocolClient.SHIPACTION_ID;
+	public static final int CONTACT_ID = net.banack.spacerobots.comm.BinaryProtocolClient.CONTACT_ID;
+	public static final int SHIP_ID = net.banack.spacerobots.comm.BinaryProtocolClient.SHIP_ID;
+	public static final int FLEET_ID = net.banack.spacerobots.comm.BinaryProtocolClient.FLEET_ID;
+	public static final int TEAM_ID = net.banack.spacerobots.comm.BinaryProtocolClient.TEAM_ID;
 	
-	public BinaryProtocol(DataInputStream in, DataOutputStream out)
+	public BinaryProtocolServer(DataInputStream in, DataOutputStream out)
 	{
 		sIn = in;
 		sOut = out;
@@ -185,6 +189,7 @@ public class BinaryProtocol implements AIProtocol
 		sOut.writeInt(SHIP_ID);
 		
 		sOut.writeInt(s.getID());
+		sOut.writeInt(s.getParentID());
 		sOut.writeInt(s.getTypeID());
 		sOut.writeDouble(s.getXPos());
 		sOut.writeDouble(s.getYPos());

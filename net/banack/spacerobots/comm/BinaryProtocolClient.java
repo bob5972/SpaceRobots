@@ -1,4 +1,4 @@
-package net.banack.spacerobots.ai;
+package net.banack.spacerobots.comm;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import net.banack.spacerobots.Debug;
+import net.banack.spacerobots.ai.AIFleet;
+import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -21,7 +23,7 @@ import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
 
-public class BinaryProtocol implements AIClientProtocol
+public class BinaryProtocolClient implements ClientAIProtocol
 {
 	private AIFleet myAI;
 	private DataInputStream sIn;
@@ -46,7 +48,7 @@ public class BinaryProtocol implements AIClientProtocol
 	public static final int TEAM_ID = 500;
 	
 	
-	public BinaryProtocol(AIFleet ai, DataInputStream sIn, DataOutputStream sOut)
+	public BinaryProtocolClient(AIFleet ai, DataInputStream sIn, DataOutputStream sOut)
 	{
 		myAI = ai;
 		this.sIn = sIn;
@@ -270,6 +272,7 @@ public class BinaryProtocol implements AIClientProtocol
 		if(cmd != SHIP_ID)
 			Debug.crash("Bad Server Response: Expected SHIP_ID ("+SHIP_ID+"), received "+cmd);
 		int id = sIn.readInt();
+		int parentID = sIn.readInt();
 		int type = sIn.readInt();
 		double x = sIn.readDouble();
 		double y = sIn.readDouble();
@@ -280,8 +283,7 @@ public class BinaryProtocol implements AIClientProtocol
 		int deltaLife = sIn.readInt();
 		int firingDelay = sIn.readInt();
 
-		Ship s = new Ship(id,type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,creationTick,life,deltaLife);
-		s.setLaunchDelay(firingDelay);
+		Ship s = new Ship(id,parentID, type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,creationTick,life,deltaLife,firingDelay);
 		return s;
 	}
 	

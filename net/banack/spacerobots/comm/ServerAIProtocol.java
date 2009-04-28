@@ -1,12 +1,15 @@
-package net.banack.spacerobots;
+package net.banack.spacerobots.comm;
 
 import java.io.IOException;
 
+import net.banack.spacerobots.ServerFleet;
+import net.banack.spacerobots.ServerShip;
+import net.banack.spacerobots.ServerTeam;
 import net.banack.spacerobots.util.ActionList;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.spacerobots.util.ContactList;
 
-public interface AIProtocol
+public interface ServerAIProtocol
 {
 	//Returns {name, author,version}
 	String[] loadInfo() throws IOException;

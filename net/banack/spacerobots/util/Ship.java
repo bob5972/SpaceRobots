@@ -18,10 +18,12 @@ public class Ship implements ShipStatus
 	private ShipType myType;
 	private boolean willMove;
 	private int myLaunchDelay;//number of ticks until the ship can fire again
+	private int myParentID;//ID of the ship that spawned it
 
-	public Ship(int id, int type,ShipType t, DPoint pos, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
+	public Ship(int id, int parentID, int type,ShipType t, DPoint pos, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
 	{
 		myID=id;
+		myParentID = parentID;
 		myTypeID = type;
 		myPosition = pos;
 		myLife = life;
@@ -36,34 +38,25 @@ public class Ship implements ShipStatus
 	
 	public Ship(Ship s)
 	{
-		this(s.myID,s.myTypeID,s.myType,s.myPosition,s.myHeading,s.myScannerHeading,s.myCreationTick,s.myLife,s.myDeltaLife,s.myLaunchDelay);
+		this(s.myID,s.myParentID, s.myTypeID,s.myType,s.myPosition,s.myHeading,s.myScannerHeading,s.myCreationTick,s.myLife,s.myDeltaLife,s.myLaunchDelay);
 		this.willMove=s.willMove;
 	}
 	
-	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
+	public Ship(int id, int parentID, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
 	{
-		this(id,type,t,new DPoint(x,y),heading,scannerH,tick,life,deltalife,firingDelay);
-	}
-	
-	public Ship(int id, int type,ShipType t, double x, double y,int tick, int life, int deltalife)
-	{
-		this(id,type,t,x,y,0,0,tick,life,deltalife,0);
-	}
-	
-	public Ship(int id, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife)
-	{
-		this(id,type,t,x,y,heading,scannerH,tick,life,deltalife,0);
+		this(id,parentID, type,t,new DPoint(x,y),heading,scannerH,tick,life,deltalife,firingDelay);
 	}
 	
 	public Ship(int id, int type,ShipType t, double x, double y, int tick, int life)
 	{
-		this(id,type,t,x,y,0,0,tick,life,0,0);
+		this(id,-1,type,t,x,y,0,0,tick,life,0,0);
 	}
 	
 	//clobbers this ship with the contents of s
 	public void update(Ship s)
 	{
 		myID=s.myID;
+		myParentID = s.myParentID;
 		myTypeID = s.myTypeID;
 		myPosition = s.myPosition;
 		myLife = s.myLife;
@@ -74,6 +67,11 @@ public class Ship implements ShipStatus
 		myCreationTick = s.myCreationTick;
 		myDeltaLife = s.myDeltaLife;
 		myLaunchDelay = s.myLaunchDelay;
+	}
+	
+	public int getParentID()
+	{
+		return myParentID;
 	}
 	
 	public int getLaunchDelay()
