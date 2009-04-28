@@ -25,12 +25,12 @@ public class SpaceMath
 		return (a.subtract(b)).getRadius();
 	}
 	
-	public static double interceptHeading(Ship s, Ship target, double battleWidth, double battleHeight)
+	public static double interceptHeading(ShipStatus s, ShipStatus target, double battleWidth, double battleHeight)
 	{
 		return interceptHeading(s,target.getPosition(),target.getHeading(),target.getMaxSpeed(),battleWidth,battleHeight);
 	}
 	
-	public static double interceptHeading(Ship s, DPoint target, double targetHeading, double targetSpeed, double battleWidth, double battleHeight)
+	public static double interceptHeading(ShipStatus s, DPoint target, double targetHeading, double targetSpeed, double battleWidth, double battleHeight)
 	{
 		DPoint sPos = s.getPosition();
 		DPoint tPos = target;

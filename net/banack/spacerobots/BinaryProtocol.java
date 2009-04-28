@@ -165,6 +165,7 @@ public class BinaryProtocol implements AIProtocol
 			sOut.writeDouble(sc.getPosition().getX());
 			sOut.writeDouble(sc.getPosition().getY());
 			sOut.writeDouble(sc.getHeading());
+			sOut.writeInt(sc.getLife());
 			
 			Set<Integer> spot = c.getSpotters(sc.getID());
 			sOut.writeInt(spot.size());

@@ -233,7 +233,7 @@ public class BinaryProtocol implements AIClientProtocol
 		sOut.writeBoolean(a.willMove());
 		sOut.writeDouble(a.getHeading());
 		sOut.writeDouble(a.getScannerHeading());
-		sOut.writeInt(a.getLaunch());	
+		sOut.writeInt(a.getLaunchWhat());	
 	}
 	
 	private void readContact(ContactList c) throws IOException
@@ -248,9 +248,10 @@ public class BinaryProtocol implements AIClientProtocol
 		double x = sIn.readDouble();
 		double y = sIn.readDouble();
 		double heading = sIn.readDouble();
+		int life = sIn.readInt();
 		int numSpotters = sIn.readInt();
 		
-		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading);
+		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading,life);
 		
 		HashSet<Integer> spotters = new HashSet<Integer>();
 		

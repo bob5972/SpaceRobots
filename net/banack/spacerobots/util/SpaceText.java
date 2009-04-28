@@ -186,7 +186,7 @@ public class SpaceText extends Parser
 		oup.append(" ");
 		oup.append((int)SpaceMath.radToDeg(a.getScannerHeading()));
 		oup.append(" ");
-		oup.append(a.getLaunch());
+		oup.append(a.getLaunchWhat());
 		return oup.toString();		
 	}
 	

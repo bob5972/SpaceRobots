@@ -6,6 +6,7 @@ import net.banack.geometry.DPoint;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Ship;
+import net.banack.spacerobots.util.ShipStatus;
 import net.banack.spacerobots.util.ShipType;
 import net.banack.spacerobots.util.SpaceMath;
 
@@ -60,7 +61,7 @@ public class AIShip extends BasicAIShip
 		return SpaceMath.getRawDistance(loc,wrap(p));
 	}
 	
-	public double intercept(Ship target)
+	public double intercept(ShipStatus target)
 	{
 		double oup = SpaceMath.interceptHeading(this,target,myFleet.battleWidth,myFleet.battleHeight);
 		setHeading(oup);

@@ -274,6 +274,8 @@ public class TextProtocol implements AIProtocol
 			cmd.append(" ");
 			cmd.append(((int)ghost.getHeading()));
 			cmd.append(" ");
+			cmd.append(ghost.getLife());
+			cmd.append(" ");
 			Set<Integer> spot = c.getSpotters(eID);
 			cmd.append(spot.size());
 			cmd.append(" ( ");

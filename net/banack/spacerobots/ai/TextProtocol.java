@@ -107,9 +107,10 @@ public class TextProtocol implements AIClientProtocol
 		double x = sIn.readInt();
 		double y = sIn.readInt();
 		double heading = SpaceMath.degToRad(sIn.readInt());
+		int life = sIn.readInt();
 		int numSpotters = sIn.readInt();
 		
-		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading);
+		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading,life);
 		
 		HashSet<Integer> spotters = new HashSet<Integer>();
 		
@@ -117,7 +118,7 @@ public class TextProtocol implements AIClientProtocol
 		if(dummy != '(')
 		{
 			String msg = "";
-			msg+="eid="+eID+" fleetID="+fleetID+" typeID="+typeID+" x="+x+" y="+y+" heading="+heading+" numSpotters="+numSpotters;
+			msg+="eid="+eID+" fleetID="+fleetID+" typeID="+typeID+" x="+x+" y="+y+" heading="+heading+" life="+life+" numSpotters="+numSpotters;
 			Debug.crash("Bad Server Response: Expected (, received "+dummy+"\nline="+msg);
 		}
 		

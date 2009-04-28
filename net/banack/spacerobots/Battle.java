@@ -436,7 +436,7 @@ public class Battle
 	private boolean canSpawn(ShipAction a)
 	{
 		int sID = a.getShipID();
-		int launchType = a.getLaunch();
+		int launchType = a.getLaunchWhat();
 		ServerShip s = myShips.get(sID);
 		if(!s.isAlive())
 			return false;
@@ -488,7 +488,7 @@ public class Battle
 		ServerShip cur = myShips.get(a.getShipID());
 		
 		
-		int launchType = a.getLaunch();
+		int launchType = a.getLaunchWhat();
 		ShipType newType = myShipTypes.get(launchType);
 		ServerFleet f = cur.getFleet();
 		cur.setLaunchDelay(getLaunchDelay(cur,newType));

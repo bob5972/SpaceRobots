@@ -45,6 +45,39 @@ public class ShipType
 		this.scannerRadius = scannerRadius;
 	}
 	
+	public boolean equals(Object rhs)
+	{
+		if(!(rhs instanceof ShipType))
+			return false;
+		if(rhs == this)
+			return true;
+		
+		ShipType t = (ShipType)rhs;
+		
+		if(     this.name.equals(t.name) &&
+				this.typeID == t.typeID &&
+				this.cost == t.cost &&
+				this.maxLife == t.maxLife &&
+				this.width == t.width &&
+				this.height == t.height &&
+				this.maxSpeed == t.maxSpeed &&
+				this.canStop == t.canStop &&
+				this.hasAI == t.hasAI &&
+				this.isShip == t.isShip &&
+				this.maxTurningRate == t.maxTurningRate &&
+				this.canMoveScanner == t.canMoveScanner &&
+				this.hasScanner == t.hasScanner &&
+				this.scannerRadius == t.scannerRadius &&
+				this.scannerAngleSpan == t.scannerAngleSpan &&
+				this.maxTickCount == t.maxTickCount
+		){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	
 	//maxTickCount of 0 means no expiry
 	public int getMaxTickCount()
 	{

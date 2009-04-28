@@ -95,24 +95,14 @@ public class BasicAIShip extends Ship
 		return super.getScannerHeading();
 	}
 	
-	public int getLaunch()
+	public int getLaunchWhat()
 	{
-		return myAction.getLaunch();
-	}
-	
-	public final int getLaunchWhat()
-	{
-		return getLaunch();
+		return myAction.getLaunchWhat();
 	}
 	
 	public void setLaunchWhat(int t)
 	{
 		myAction.setLaunchWhat(t);
-	}
-	
-	public final void setLaunch(int t)
-	{
-		setLaunchWhat(t);
 	}
 	
 	public void setHeading(double h)

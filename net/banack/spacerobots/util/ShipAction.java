@@ -73,14 +73,9 @@ public class ShipAction
 		return newScannerHeading;
 	}
 	
-	public int getLaunch()
+	public int getLaunchWhat()
 	{
 		return launchWhat;
-	}
-	
-	public final int getLaunchWhat()
-	{
-		return getLaunch();
 	}
 	
 	public int hashCode()
@@ -98,11 +93,6 @@ public class ShipAction
 	public void setLaunchWhat(int t)
 	{
 		launchWhat = t;
-	}
-	
-	public final void setLaunch(int t)
-	{
-		setLaunchWhat(t);
 	}
 	
 	public void setHeading(double h)

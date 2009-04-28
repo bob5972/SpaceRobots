@@ -5,7 +5,7 @@ import net.banack.geometry.DDimension;
 import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 
-public class Ship
+public class Ship implements ShipStatus
 {	
 	private int myID;
 	private DPoint myPosition;
