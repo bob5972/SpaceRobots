@@ -5,7 +5,7 @@
 </target>
 
 <target name="compile" depends="init" >
-  <javac srcdir="." destdir="bin"/>
+  <javac srcdir="." destdir="bin" excludes="net/banack/spacerobots/test/TestSpaceMath.java"/>
 </target>
 
 <target name="jar" depends="compile" >
