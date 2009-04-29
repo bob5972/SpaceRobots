@@ -129,11 +129,9 @@ public class SpaceText extends Parser
 		sbTemp.deleteCharAt(sbTemp.length()-1);
 		String aiVersion = sbTemp.toString();
 		
-		boolean isAlive = parseInt(words[ePos+1])!=0;
-		boolean winOrLose = parseInt(words[ePos+2])!=0;
+		boolean isAlive = parseInt(words[ePos+1])!=0;		
 		
-		
-		return new Fleet(fleetID,teamID,fName,aiName, aiAuthor, aiVersion,isAlive,winOrLose);
+		return new Fleet(fleetID,teamID,fName,aiName, aiAuthor, aiVersion,isAlive);
 	}
 	
 	public ShipAction readAction() throws IOException

@@ -33,17 +33,6 @@ public class Fleet
 		myAIVersion = aiVersion;
 	}
 	
-	public Fleet(int fleetID,int teamID,String fleetName, String aiName, String aiAuthor, String aiVersion,boolean alive, boolean won)
-	{
-		myFleetID = fleetID;
-		myTeamID = teamID;
-		isAlive=alive;
-		myFleetName = fleetName;
-		myAIName = aiName;
-		myAIAuthor = aiAuthor;
-		myAIVersion = aiVersion;
-	}
-	
 	public String getFleetName()
 	{
 		return myFleetName;

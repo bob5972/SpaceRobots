@@ -31,7 +31,7 @@ public class ClientProtocolFactory
 		// Greetings
 		try{
 			//>SERVER_HELLO from PROGRAM_NAME
-			Debug.info("Waiting for SERVER_HELLO");
+			Debug.verbose("Waiting for SERVER_HELLO");
 			b.setLength(0);
 			c = sIn.readChar();
 			while(c!= '\n')
@@ -40,11 +40,11 @@ public class ClientProtocolFactory
 				c=sIn.readChar();
 			}
 			temp = b.toString();
-			Debug.info("Got something...");
+			Debug.verbose("\tGot something...");
 			
 			if(!Pattern.matches("\\s*SERVER_HELLO\\s+.*",temp))
 				Debug.crash("Invalid Server Response: Expected SERVER_HELLO, got "+temp);
-			Debug.info("Found SERVER_HELLO");
+			Debug.verbose("Found SERVER_HELLO");
 			
 			//<CLIENT_HELLO from AI_NAME
 			sOut.writeChars("CLIENT_HELLO "+PROGRAM_NAME+"\n");
@@ -63,7 +63,7 @@ public class ClientProtocolFactory
 			}
 			temp = b.toString();
 			
-			if(!Pattern.matches("ACK_PROTOCOL BINARY_1",temp))
+			if(!Pattern.matches("ACK_PROTOCOL\\s+.*",temp))
 			{
 				if(Pattern.matches("LIST_PROTOCOLS",temp))
 				{
@@ -78,24 +78,19 @@ public class ClientProtocolFactory
 					c=sIn.readChar();
 				}
 				temp = b.toString();
-				
-				if(Pattern.matches("ACK_PROTOCOL BINARY_1",temp))
-				{
-					sOut.flush();
-					return new BinaryProtocolClient(ai,sIn,sOut);
-				}
-				else if(Pattern.matches("ACK_PROTOCOL TEXT_1",temp))
-				{
-					return new TextProtocolClient(ai,new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
-				}
-				
-				Debug.crash("Server does not accept protocols.");
 			}
-			else
+				
+			if(Pattern.matches("\\s*ACK_PROTOCOL\\s+BINARY_1",temp))
 			{
 				sOut.flush();
 				return new BinaryProtocolClient(ai,sIn,sOut);
 			}
+			else if(Pattern.matches("\\s*ACK_PROTOCOL\\s+TEXT_1",temp))
+			{
+				return new TextProtocolClient(ai,new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
+			}
+			
+			Debug.crash("Server does not accept protocols.");
 		}
 		catch(IOException e)
 		{

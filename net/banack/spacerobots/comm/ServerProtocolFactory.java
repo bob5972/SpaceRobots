@@ -122,10 +122,12 @@ public class ServerProtocolFactory
 		
 	private static ServerAIProtocol matchProtocol(String p,DataInputStream sIn, DataOutputStream sOut) throws IOException
 	{
+		Debug.verbose("Server Matching protocol "+p);
 		if(p.equals("TEXT_1"))
 		{
 			//>ACK_PROTOCOL TEXT_1
 			sOut.writeChars("ACK_PROTOCOL TEXT_1\n");
+			sOut.flush();
 			Debug.info("Using Protocol TEXT_1");
 			return new TextProtocolServer(new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
 		}
