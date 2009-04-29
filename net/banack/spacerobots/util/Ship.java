@@ -47,9 +47,9 @@ public class Ship implements ShipStatus
 		this(id,parentID, type,t,new DPoint(x,y),heading,scannerH,tick,life,deltalife,firingDelay);
 	}
 	
-	public Ship(int id, int type,ShipType t, double x, double y, int tick, int life)
+	public Ship(int id, int parentID, int type,ShipType t, double x, double y, int tick, int life)
 	{
-		this(id,-1,type,t,x,y,0,0,tick,life,0,0);
+		this(id,parentID,type,t,x,y,0,0,tick,life,0,0);
 	}
 	
 	//clobbers this ship with the contents of s

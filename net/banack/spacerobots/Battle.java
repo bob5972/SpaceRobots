@@ -134,7 +134,7 @@ public class Battle
 			double x = Math.rint(myRandom.nextDouble()*myWidth);
 			double y = Math.rint(myRandom.nextDouble()*myHeight);
 			double heading = myRandom.nextDouble()*Math.PI*2;
-			ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), x,y, heading,myTick, getDefaultLife(launchType));
+			ServerShip oup = new ServerShip(f,getNewID(), INVALID_ID, launchType, myShipTypes.get(launchType), x,y, heading,myTick, getDefaultLife(launchType));
 			myShips.add(oup);
 			f.setNumShips(f.getNumShips()+1);
 			f.setCredits(0);
@@ -350,18 +350,20 @@ public class Battle
 			while(inner.hasNext())
 			{
 				ServerShip shi = (ServerShip)inner.next();
-				if(toDie.contains(shi))
-					continue;
 				
 				int iTeam = shi.getFleet().getTeamID();
 				int iType = shi.getTypeID();
-				
 				
 				//generate sensor contacts
 				if(oTeam != iTeam)
 				{						
 					if(canScan(sho,shi))
 						contacts.addContact(shi,sho);
+					
+					//we want to notify clients of death if they scan him while dying
+					// but we dont' want to collision check against ammo again
+					if(toDie.contains(shi))
+						continue;
 					
 					//check collisions
 					if(oType == TYPE_ROCKET || oType == TYPE_MISSILE)
@@ -493,7 +495,7 @@ public class Battle
 		ServerFleet f = cur.getFleet();
 		cur.setLaunchDelay(getLaunchDelay(cur,newType));
 		
-		ServerShip oup = new ServerShip(f,getNewID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), myTick, getDefaultLife(launchType));
+		ServerShip oup = new ServerShip(f,getNewID(), s.getID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), myTick, getDefaultLife(launchType));
 		oup.setHeading(s.getHeading());
 		myShips.add(oup);
 		

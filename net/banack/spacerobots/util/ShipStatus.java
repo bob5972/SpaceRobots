@@ -29,5 +29,4 @@ public interface ShipStatus
 	public int getMaxTickCount();
 	public boolean getCanMoveScanner();	
 	public int getCost();
-	
 }

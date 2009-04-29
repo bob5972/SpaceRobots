@@ -56,7 +56,7 @@ public class SchoolOfFish extends AIFleet
 		groupHeading=0;
 	}
 
-	public Iterator<ShipAction> runTick(ContactList c)
+	public Iterator<ShipAction> runTick()
 	{		
 		Iterator<AIShip> i;
 		
@@ -111,7 +111,7 @@ public class SchoolOfFish extends AIFleet
 			});
 		}
 		
-		if(c.size() > 0)
+		if(myContacts.size() > 0)
 		{
 			govna.insert(new AIGovernor(){
 				public void run(AIShip s)

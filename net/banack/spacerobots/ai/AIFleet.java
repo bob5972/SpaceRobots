@@ -1,8 +1,10 @@
 package net.banack.spacerobots.ai;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -33,20 +35,25 @@ public abstract class AIFleet implements AIShipFactory
 	protected int tick;
 	protected AIShipList myShips;
 	protected AIShip myCruiser;
+	protected ContactList myContacts;
 	protected Random random;
 	
 	protected double battleWidth,battleHeight;
 	protected Fleet[] battleFleets;
 	protected Team[] battleTeams;
 	
+	protected HashMap<Integer,AIShip> myNewSpawns;
+	
 	public AIFleet()
 	{
 		random = new Random();
+		myNewSpawns = new HashMap<Integer,AIShip>();
 	}
 	
 	public AIFleet(long seed)
 	{
 		random = new Random(seed);
+		myNewSpawns = new HashMap<Integer,AIShip>();
 	}
 
 	public abstract String getAuthor();
@@ -64,9 +71,32 @@ public abstract class AIFleet implements AIShipFactory
 	{
 		return "0";
 	}
+	
+	public void queueSpawnAI(AIShip s, int parentID)
+	{
+		myNewSpawns.put(parentID,s);
+	}
+	
+	public void runShipAI()
+	{
+		Iterator<AIShip> i = myShips.iterator();		
+		while(i.hasNext())
+		{
+			AIShip cur = i.next();
+			cur.run();
+		}
+	}
 
 	public AIShip createShip(Ship s)
 	{
+		AIShip oup = myNewSpawns.get(s.getParentID());
+		if(oup != null)
+		{
+			myNewSpawns.remove(s.getParentID());
+			oup.update(s);
+			return oup;
+		}
+		
 		return new AIShip(s,this);
 	}
 	
@@ -94,12 +124,12 @@ public abstract class AIFleet implements AIShipFactory
 		battleWidth = width;
 		battleHeight = height;
 		
-		myShips = s;
+		myShips = s;		
 		
 		Iterator<AIShip> i = myShips.iterator();		
 		while(i.hasNext())
 		{
-			BasicAIShip cur = i.next();
+			AIShip cur = i.next();
 			if(cur.getTypeID() == CRUISER_ID)
 			{
 				myCruiser= (AIShip) cur;
@@ -117,12 +147,21 @@ public abstract class AIFleet implements AIShipFactory
 		myShips=s;
 		this.tick = tick;
 		
-		//Do other stuff (like processing ContactList
+		//wipe this every tick, so that if a spawn doesn't happen, you don't accidentally assign the ship later
+		//(this /should/ be empty anyway, barring a stupid fleet, but if not...)
+		if(!myNewSpawns.isEmpty())
+		{
+			Debug.aiwarn(getName()+": myNewSpawns had size "+myNewSpawns.size()+" on tick "+tick);
+			myNewSpawns.clear();
+		}
 		
-		return runTick(c);
+		//Do other stuff (like processing ContactList)
+		myContacts = c;
+		
+		return runTick();
 	}
 	
-	public abstract Iterator<ShipAction> runTick(ContactList c);
+	public abstract Iterator<ShipAction> runTick();
 	
 	public void endBattle(Fleet me, Team[] t, Fleet[] f)
 	{

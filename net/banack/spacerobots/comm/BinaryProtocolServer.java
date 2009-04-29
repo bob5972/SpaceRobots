@@ -65,7 +65,7 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		String author;
 		String version;
 		
-		Debug.info("Server sending REQUEST_INFO");
+		Debug.verbose("Server sending REQUEST_INFO");
 		sOut.writeInt(REQUEST_INFO);
 		sOut.flush();
 		

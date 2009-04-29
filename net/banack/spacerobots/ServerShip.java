@@ -15,15 +15,15 @@ public class ServerShip extends Ship
 	
 	private ServerFleet myFleet;
 	
-	public ServerShip(ServerFleet f, int id, int type,ShipType t, double x, double y, int tick, int life)
+	public ServerShip(ServerFleet f, int id, int parentID, int type,ShipType t, double x, double y, int tick, int life)
 	{
-		super(id,type,t,x,y,tick,life);
+		super(id,parentID, type,t,x,y,tick,life);
 		myFleet=f;
 	}
 	
-	public ServerShip(ServerFleet f, int id, int type,ShipType t, double x, double y, double heading, int tick, int life)
+	public ServerShip(ServerFleet f, int id, int parentID, int type,ShipType t, double x, double y, double heading, int tick, int life)
 	{
-		super(id,type,t,x,y,tick,life);
+		super(id,parentID, type,t,x,y,tick,life);
 		myFleet=f;
 	}
 	

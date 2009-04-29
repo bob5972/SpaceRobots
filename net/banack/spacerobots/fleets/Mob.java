@@ -67,14 +67,14 @@ public class Mob extends AIFleet
 	timeOutTick = 500;
     }
 
-    public Iterator<ShipAction> runTick(ContactList c) {
+    public Iterator<ShipAction> runTick() {
 	double fighterAngleStep = Math.PI * 2 * 2 / myShips.size();
 
-	if (c.size() > 0) {
-	    Iterator<Integer> ei = c.enemyIterator();
-	    target = c.getContact(ei.next());
+	if (myContacts.size() > 0) {
+	    Iterator<Integer> ei = myContacts.enemyIterator();
+	    target = myContacts.getContact(ei.next());
 	    while(ei.hasNext() && (target == null || isAmmo(target.getTypeID()))) {
-		target = c.getContact(ei.next());
+		target = myContacts.getContact(ei.next());
 	    }
 	} else {
 	    target = null;
@@ -110,7 +110,7 @@ public class Mob extends AIFleet
 
 	    if (cur.getTypeID() == FIGHTER_ID ||
 		cur.getTypeID() == DESTROYER_ID) {
-		if (c.size() == 0) {
+		if (myContacts.size() == 0) {
 		    DPoint heading;
 		    heading = center.add(DPoint.newPolar
 					 (radius, curShipIndex * fighterAngleStep));

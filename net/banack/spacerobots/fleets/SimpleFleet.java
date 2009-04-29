@@ -41,7 +41,7 @@ public class SimpleFleet extends AIFleet
 		return "1.1";
 	}
 	
-	public Iterator<ShipAction> runTick(ContactList c)
+	public Iterator<ShipAction> runTick()
 	{		
 		Iterator<AIShip> i = myShips.getAliveIterator();
 		
@@ -72,12 +72,12 @@ public class SimpleFleet extends AIFleet
 			}
 		}
 		
-		Iterator<Integer> ci = c.enemyIterator();
+		Iterator<Integer> ci = myContacts.enemyIterator();
 		
 		while(ci.hasNext())
 		{
 			int eID = ci.next().intValue();
-			Set<Integer> spot = c.getSpotters(eID);
+			Set<Integer> spot = myContacts.getSpotters(eID);
 			
 			Iterator<Integer> spotI = spot.iterator();
 			while(spotI.hasNext())

@@ -29,7 +29,7 @@ public class Debug extends net.banack.debug.Debug
 	public static void aiwarn(String msg)
 	{
 		if(showAIWarnings())
-			warn("AI Warning: "+msg);
+			print("AI Warning: "+msg);
 	}
 	
 	public static void comLog(String msg)

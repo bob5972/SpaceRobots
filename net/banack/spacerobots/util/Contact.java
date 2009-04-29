@@ -14,6 +14,7 @@ public class Contact implements ShipStatus
 	private DPoint enemyPosition;
 	private double enemyHeading;
 	private ShipType enemyType;
+	private int scanTick;//the tick the scan was last made at
 	
 	public static final int INVALID_FLEET_ID = net.banack.spacerobots.Battle.INVALID_ID;
 	
@@ -33,12 +34,22 @@ public class Contact implements ShipStatus
 		this(enemyID,fleetID,type,new DPoint(x,y),heading,life);
 	}
 	
-	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading,int life)
+	public Contact(int enemyID, int fleetID, int type, double x, double y, double heading, int life, int tick)
 	{
-		this(enemyID,fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position,heading,life);
+		this(enemyID,fleetID,type,new DPoint(x,y),heading,life,tick);
 	}
 	
-	public Contact(int enemyID, int fleetID, ShipType type, DPoint position, double heading,int life)
+	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading,int life)
+	{
+		this(enemyID,fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position,heading,life,-1);
+	}
+	
+	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading,int life, int tick)
+	{
+		this(enemyID,fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position,heading,life,tick);
+	}
+	
+	public Contact(int enemyID, int fleetID, ShipType type, DPoint position, double heading,int life,int tick)
 	{
 		this.enemyID = enemyID;
 		this.enemyFleetID = fleetID;
@@ -47,6 +58,34 @@ public class Contact implements ShipStatus
 		this.enemyHeading = heading;
 		this.enemyType = type;
 		this.enemyLife = life;
+		this.scanTick = tick;
+	}
+	
+	public Contact(Contact c)
+	{
+		this.enemyID = c.enemyID;
+		this.enemyFleetID = c.enemyFleetID;
+		this.enemyTypeID = c.enemyTypeID;
+		this.enemyPosition = c.enemyPosition;
+		this.enemyHeading = c.enemyHeading;
+		this.enemyType = c.enemyType;
+		this.enemyLife = c.enemyLife;
+		this.scanTick = c.scanTick;
+	}
+	
+	public void update(Contact c)
+	{
+		if(this.enemyID != c.enemyID)
+			throw new IllegalArgumentException("Updating with a bad ID!");
+		
+		this.enemyID = c.enemyID;
+		this.enemyFleetID = c.enemyFleetID;
+		this.enemyTypeID = c.enemyTypeID;
+		this.enemyPosition = c.enemyPosition;
+		this.enemyHeading = c.enemyHeading;
+		this.enemyType = c.enemyType;
+		this.enemyLife = c.enemyLife;
+		this.scanTick = c.scanTick;
 	}
 	
 	public final int getID()
@@ -89,6 +128,11 @@ public class Contact implements ShipStatus
 	public ShipType getType()
 	{
 		return enemyType;
+	}
+	
+	public int getScanTick()
+	{
+		return scanTick;
 	}
 		
 	public double getX()

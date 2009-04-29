@@ -1,21 +1,26 @@
 <project name="SpaceRobots" default="compile" basedir="."> 
 
 <target name="init">
-  <mkdir dir="bin"/>
+	<mkdir dir="bin"/>
 </target>
 
 <target name="compile" depends="init" >
-  <javac srcdir="." destdir="bin" excludes="net/banack/spacerobots/test/TestSpaceMath.java"/>
+	<javac srcdir="." destdir="bin" excludes="net/banack/spacerobots/test/TestSpaceMath.java"/>
 </target>
 
 <target name="jar" depends="compile" >
-  <delete file="bin/SpaceRobots.jar"/>
-  <jar jarfile="bin/SpaceRobots.jar" basedir="bin"/>
+	<delete file="bin/SpaceRobots.jar"/>
+	<jar jarfile="bin/SpaceRobots.jar" basedir="bin">
+	<manifest>
+		<attribute name="Main-Class" value="net.banack.spacerobots.SpaceRobots"/>
+	</manifest>
+	</jar>
+
 </target>
  
 <target name="clean" > 
-  <delete dir="bin"/>
-  <mkdir dir="bin"/>
+	<delete dir="bin"/>
+	<mkdir dir="bin"/>
 </target> 
 
 </project>

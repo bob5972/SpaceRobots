@@ -39,7 +39,7 @@ public class Cache extends AIFleet
 		return "1.0";
 	}
 	
-	public Iterator<ShipAction> runTick(ContactList c)
+	public Iterator<ShipAction> runTick()
 	{
 		
 		Iterator<AIShip> i;
@@ -71,11 +71,11 @@ public class Cache extends AIFleet
 			}
 		}
 		
-		Iterator<Integer> ci = c.enemyIterator();
+		Iterator<Integer> ci = myContacts.enemyIterator();
 		while(ci.hasNext())
 		{
 			Integer eid = ci.next();
-			Iterator<Integer> si = c.getSpotters(eid).iterator();
+			Iterator<Integer> si = myContacts.getSpotters(eid).iterator();
 			while(si.hasNext())
 			{
 				AIShip s = (AIShip) myShips.get(si.next());

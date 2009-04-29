@@ -39,7 +39,7 @@ public class DummyFleet extends AIFleet
 		return "1.2";
 	}
 	
-	public Iterator<ShipAction> runTick(ContactList c)
+	public Iterator<ShipAction> runTick()
 	{		
 		Iterator<AIShip> i = myShips.getAliveIterator();
 		

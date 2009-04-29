@@ -28,6 +28,12 @@ public class AIShip extends BasicAIShip
 	
 	protected AIFleet myFleet;
 	
+	public AIShip(AIFleet f)
+	{
+		super(-1);
+		myFleet = f;
+	}
+	
 	public AIShip(Ship s)
 	{
 		super(s);
@@ -38,6 +44,11 @@ public class AIShip extends BasicAIShip
 	{
 		super(s);
 		myFleet = f;
+	}
+	
+	public void run()
+	{
+		return;
 	}
 	
 	public boolean canLaunch()
@@ -87,6 +98,11 @@ public class AIShip extends BasicAIShip
 		setScannerHeading(SpaceMath.getAngle(loc,wrap(p)));
 	}
 	
+	public void setScannerHeading(ShipStatus p)
+	{
+		setScannerHeading(p.getPosition());
+	}
+	
 	public DPoint wrap(DPoint p)
 	{
 		DPoint loc = getPosition();
@@ -108,4 +124,10 @@ public class AIShip extends BasicAIShip
 		setLaunchWhat(t.getID());
 		myFleet.credits-=t.getCost();
 	}
+	
+	public void launchMissile(ShipStatus target)
+	{
+		launch(MISSILE);
+		myFleet.queueSpawnAI(new BasicMissile(myFleet,target),this.getID());
+	} 
 }

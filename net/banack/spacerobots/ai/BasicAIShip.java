@@ -18,7 +18,7 @@ public class BasicAIShip extends Ship
 	
 	public BasicAIShip(int id)
 	{
-		super(id,ShipTypeDefinitions.TYPE_INVALID,null,-1,-1,-1,-1);
+		super(id,-1,ShipTypeDefinitions.TYPE_INVALID,null,-1,-1,-1,-1);
 		myAction = new ShipAction(id);
 	}
 	
@@ -37,7 +37,7 @@ public class BasicAIShip extends Ship
 	
 	public void update(Ship s)
 	{
-		if(getID() != s.getID())
+		if(getID() != -1 && getID() != s.getID())
 			throw new IllegalArgumentException("Updating with a bad ID!");
 		double desiredHeading = myAction.getHeading();
 		super.update(s);

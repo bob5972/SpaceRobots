@@ -263,6 +263,14 @@ public class SpaceText extends Parser
 		return oup.toString();		
 	}
 	
+	public static String prettyPrint(Contact c)
+	{
+		StringBuffer oup = new StringBuffer();
+		oup.append("CONTACT eid="+c.getID()+" type="+prettyPrintType(c.getTypeID()));
+		
+		return oup.toString();
+	}
+	
 	public static String prettyPrintType(int t)
 	{
 		switch(t)

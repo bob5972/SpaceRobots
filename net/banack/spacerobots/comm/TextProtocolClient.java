@@ -29,6 +29,7 @@ public class TextProtocolClient implements ClientAIProtocol
 	private PrintWriter sOut;
 	private int curLevel;
 	private AIShipList myShips;
+	private ContactList myContacts;
 	
 	public TextProtocolClient(AIFleet ai, BufferedReader sIn, PrintWriter sOut)
 	{
@@ -37,6 +38,7 @@ public class TextProtocolClient implements ClientAIProtocol
 		this.sOut = sOut;
 		curLevel=0;
 		myShips=new AIShipList();
+		myContacts = new ContactList();
 	}
 	
 	public void send(String message)
@@ -291,10 +293,10 @@ public class TextProtocolClient implements ClientAIProtocol
 				curLevel++;
 				
 				//read contacts
-				ContactList c = new ContactList();
+				myContacts.resetForTick();
 				for(int x=0;x<numContacts;x++)
 				{
-					readContact(c);
+					readContact(myContacts);
 				}		
 				
 				curLevel--;
@@ -315,7 +317,7 @@ public class TextProtocolClient implements ClientAIProtocol
 				read("END_FLEET_STATUS");
 				curLevel--;
 				
-				Iterator<ShipAction> i = myAI.runTick(tick, credits, c, myShips);
+				Iterator<ShipAction> i = myAI.runTick(tick, credits, myContacts, myShips);
 				
 				send("BEGIN_FLEET_ACTIONS");
 				send("TICK "+tick);

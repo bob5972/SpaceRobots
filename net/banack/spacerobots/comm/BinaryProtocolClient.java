@@ -29,6 +29,8 @@ public class BinaryProtocolClient implements ClientAIProtocol
 	private DataInputStream sIn;
 	private DataOutputStream sOut;
 	private AIShipList myShips;
+	private ContactList myContacts;
+	private int currentTick;
 	
 	public static final int REQUEST_INFO = 10;
 	public static final int BEGIN_INFO = 11;
@@ -54,6 +56,7 @@ public class BinaryProtocolClient implements ClientAIProtocol
 		this.sIn = sIn;
 		this.sOut = sOut;
 		myShips=new AIShipList();
+		myContacts = new ContactList();
 	}
 	
 	public void start()
@@ -152,18 +155,18 @@ public class BinaryProtocolClient implements ClientAIProtocol
 				break;
 				case BEGIN_FLEET_STATUS:
 				{
-					int tick = sIn.readInt();
+					currentTick = sIn.readInt();
 					
 					int credits = sIn.readInt();
 					
 					int numContacts = sIn.readInt();
 					
 					//read contacts
-					ContactList c = new ContactList();
+					myContacts.resetForTick();
 					for(int x=0;x<numContacts;x++)
 					{
-						readContact(c);
-					}		
+						readContact(myContacts);
+					}
 					
 					int numShips = sIn.readInt();
 					for(int x=0;x<numShips;x++)
@@ -172,10 +175,10 @@ public class BinaryProtocolClient implements ClientAIProtocol
 						myShips.update(s,myAI);
 					}
 					
-					Iterator<ShipAction> i = myAI.runTick(tick, credits, c, myShips);
+					Iterator<ShipAction> i = myAI.runTick(currentTick, credits, myContacts, myShips);
 					
 					sOut.writeInt(BEGIN_FLEET_ACTIONS);
-					sOut.writeInt(tick);
+					sOut.writeInt(currentTick);
 					
 					net.banack.util.Queue<ShipAction> qa = new net.banack.util.Queue<ShipAction>(); 
 					while(i.hasNext())
@@ -253,7 +256,7 @@ public class BinaryProtocolClient implements ClientAIProtocol
 		int life = sIn.readInt();
 		int numSpotters = sIn.readInt();
 		
-		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading,life);
+		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading,life,currentTick);
 		
 		HashSet<Integer> spotters = new HashSet<Integer>();
 		
