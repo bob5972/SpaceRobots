@@ -34,6 +34,13 @@ public class ContactList
 		myMasterContacts = new HashMap<Integer,Contact>();
 		myContacts = new HashMap<Integer,Contact>();
 		mySpotters = new HashMap<Integer, Set<Integer> >();
+		mySize=0;
+		
+		byPos = null;//will be initialized on first use
+	}
+	
+	private void initByPos()
+	{
 		byPos = new SkipList<Contact>(new Comparator<Contact>() {
 			public int compare(Contact lhs, Contact rhs)
 			{
@@ -42,7 +49,12 @@ public class ContactList
 				return (int)(rx - lx);
 			}
 		});
-		mySize=0;
+		
+		Iterator<Contact> i = myContacts.values().iterator();
+		while(i.hasNext())
+		{
+			byPos.add(i.next());
+		}
 	}
 		
 
@@ -57,7 +69,7 @@ public class ContactList
 	{
 		myContacts.clear();
 		mySpotters.clear();
-		byPos.clear();
+		byPos = null;
 		mySize=0;
 	}
 		
@@ -81,13 +93,20 @@ public class ContactList
 		}
 		
 		if(!myContacts.containsKey(eID))
+		{
 			mySize++;
+		}
 		else
-			byPos.remove(old);
+		{
+			if(byPos != null)
+				byPos.remove(old);
+		}
 		
 		old.update(e);
 		myContacts.put(eID,old);
-		byPos.add(old);
+		
+		if(byPos != null)
+			byPos.add(old);
 
 		if(mySpotters.containsKey(eID))
 		{
@@ -122,13 +141,20 @@ public class ContactList
 		}
 		
 		if(!myContacts.containsKey(eID))
+		{
 			mySize++;
+		}
 		else
-			byPos.remove(old);
+		{
+			if(byPos != null)
+				byPos.remove(old);
+		}
 		
 		old.update(e);
 		myContacts.put(eID,old);
-		byPos.add(old);
+		
+		if(byPos != null)
+			byPos.add(old);
 		
 		if(mySpotters.containsKey(eID))
 		{
@@ -220,6 +246,9 @@ public class ContactList
 	
 	public Iterator<Contact> getRange(DPoint bottomLeft, DPoint topRight)
 	{
+		if(byPos == null)
+			initByPos();
+		
 		Collection<Contact> oup = byPos.subCollection(new Contact(-1,-1,-1,bottomLeft.getX(),-1,0,0),new Contact(-1,-1,-1,topRight.getX(),-1,0,0));
 		return new YLimitedIterator(oup,bottomLeft.getY(),topRight.getY());		
 	}

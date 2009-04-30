@@ -19,6 +19,7 @@ import net.banack.spacerobots.util.ShipStatus;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.SpaceText;
 import net.banack.spacerobots.util.Team;
+import net.banack.util.Pile;
 import net.banack.util.Queue;
 import net.banack.util.Stack;
 
@@ -31,7 +32,7 @@ public class BattleCruiserFleet extends AIFleet
 	private int myState;
 	private int stateTimer;
 	
-	private Queue<Contact> myTargets;
+	private Pile<Contact> myTargets;
 	
 	public BattleCruiserFleet()
 	{
@@ -56,7 +57,7 @@ public class BattleCruiserFleet extends AIFleet
 	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
 		super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
-		myTargets = new Queue<Contact>();
+		myTargets = new Stack<Contact>();
 		myState = 1;
 	}
 	
@@ -99,7 +100,7 @@ public class BattleCruiserFleet extends AIFleet
 		{
 			cur = myContacts.get(ei.next());
 			if(!isAmmo(cur))
-				myTargets.enqueue(cur);
+				myTargets.add(cur);
 			
 			if(cur.getTypeID() == CRUISER_ID)
 				myCruiser.setScannerHeading(cur);
@@ -116,7 +117,7 @@ public class BattleCruiserFleet extends AIFleet
 			case STATE_RETREAT:
 					if(!myTargets.isEmpty())
 					{
-						myCruiser.setHeading(myTargets.front().getPosition());
+						myCruiser.setHeading(myTargets.peek().getPosition());
 						myCruiser.setHeading(myCruiser.getHeading()+Math.PI);
 					}
 					if(myCruiser.canLaunch(MISSILE))
@@ -148,13 +149,13 @@ public class BattleCruiserFleet extends AIFleet
 		
 	public Contact getTarget()
 	{
-		while(!myTargets.isEmpty() && myTargets.front().getScanTick() < tick-10)
-			myTargets.dequeue();
+		while(!myTargets.isEmpty() && myTargets.peek().getScanTick() < tick-10)
+			myTargets.next();
 	
 		if(myTargets.isEmpty())
 			return null;
 		
-		return myTargets.dequeue();
+		return myTargets.next();
 	}
 	
 	
