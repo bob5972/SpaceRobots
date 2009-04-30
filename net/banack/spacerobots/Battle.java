@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import net.banack.util.MethodNotImplementedException;
 import net.banack.geometry.DArc;
@@ -13,6 +15,7 @@ import net.banack.geometry.DQuad;
 import net.banack.spacerobots.util.ActionList;
 import java.util.Iterator;
 
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
@@ -198,7 +201,19 @@ public class Battle
 				f.incrementCredits(credit);
 				
 				//Write ships to AI sockets
-				ai.beginFleetStatusUpdate(myTick,f.getCredits(),contacts.getFleetList(f),f.getNumShips());
+				Map<Integer, Set<Integer> > fleetContacts = contacts.getFleetList(f);
+				ContactList c = new ContactList();
+				if(fleetContacts != null)
+				{
+				 	Iterator<Integer> i = fleetContacts.keySet().iterator();
+				 	while(i.hasNext())
+				 	{
+				 		Integer eid = i.next();
+				 		c.addContact(new Contact(myShips.get(eid)),fleetContacts.get(eid));
+				 	}
+				}
+				
+				ai.beginFleetStatusUpdate(myTick,f.getCredits(),c,f.getNumShips());
 			}
 		}
 		
@@ -372,6 +387,8 @@ public class Battle
 						{
 							if(isCollision(sho,shi))
 							{
+								//generate scan
+								contacts.addContact(shi,sho);//confirm  your kills
 								//	do damage
 								markForDeath(sho);
 								toDie.add(sho);//the rocket blows up
@@ -380,7 +397,7 @@ public class Battle
 								{
 									//mark stuff to be blown up
 									markForDeath(shi);
-								}
+								}								
 							}
 						}
 					}
@@ -503,11 +520,9 @@ public class Battle
 		f.decrementCredits(oup.getCost());
 	}
 	
-	//this needs to be communicated to AI's some how (either statically in documentation, or dynamically)
 	private static int getLaunchDelay(ServerShip s, ShipType t)
 	{
-		//These numbers are just made up and need to be balanced.
-		return 2*(5+(int)(t.getCost()/20.0));		
+		return s.getType().getStdLaunchDelay()+t.getExtraLaunchCost();		
 	}
 	
 	static private int getNewID()

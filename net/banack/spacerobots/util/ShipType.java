@@ -20,12 +20,15 @@ public class ShipType
 	private double scannerRadius;
 	private double scannerAngleSpan;
 	private int maxTickCount;
+	private int stdLaunchDelay;//the standard launch delay after this ship fires
+	private int extraLaunchCost;//the extra delay after launching a ship of this type
 	
 	public ShipType(String name, int id, 
 			int cost, int life, double width, double height, 
 			boolean canStop, double maxTurningRate, double maxSpeed, 
 			boolean hasScanner, boolean canMoveScanner, double scannerRadius, double scannerAngleSpan,
-			boolean hasAI, boolean isShip, int maxTickCount)
+			boolean hasAI, boolean isShip, int maxTickCount,
+			int launchDelay, int launchCost)
 	{
 		this.name = name;
 		typeID = id;
@@ -33,6 +36,8 @@ public class ShipType
 		this.width = width;
 		this.height = height;
 		this.cost = cost;
+		this.stdLaunchDelay = launchDelay;
+		this.extraLaunchCost = launchCost;
 		this.canStop = canStop;
 		this.hasAI = hasAI;
 		this.isShip = isShip;
@@ -57,6 +62,8 @@ public class ShipType
 		if(     this.name.equals(t.name) &&
 				this.typeID == t.typeID &&
 				this.cost == t.cost &&
+				this.stdLaunchDelay == t.stdLaunchDelay &&
+				this.extraLaunchCost == t.extraLaunchCost &&
 				this.maxLife == t.maxLife &&
 				this.width == t.width &&
 				this.height == t.height &&
@@ -76,6 +83,16 @@ public class ShipType
 		return false;
 	}
 	
+	public int getStdLaunchDelay()
+	{
+		return stdLaunchDelay;
+	}
+	
+	
+	public int getExtraLaunchCost()
+	{
+		return extraLaunchCost;
+	}
 	
 	
 	//maxTickCount of 0 means no expiry

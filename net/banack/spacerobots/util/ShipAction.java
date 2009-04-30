@@ -97,7 +97,7 @@ public class ShipAction
 	
 	public void setHeading(double h)
 	{
-		newHeading = h;
+		newHeading = SpaceMath.wrapHeading(h);
 	}
 	
 	public void setScannerHeading(double h)

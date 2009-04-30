@@ -177,7 +177,7 @@ public class Contact implements ShipStatus
 	
 	public boolean isAlive()
 	{
-		return getLife() == 0;
+		return getLife() > 0;
 	}
 	
 	public final boolean isDead()

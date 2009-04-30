@@ -14,14 +14,16 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 //			int cost, int life, double width, double height, 
 //			boolean canStop, double maxTurningRate, double maxSpeed, 
 //			boolean hasScanner, boolean canMoveScanner, double scannerRadius, double scannerAngleSpan,
-//			boolean hasAI, boolean isShip, int maxTickCount)
+//			boolean hasAI, boolean isShip, int maxTickCount,
+//			int launchDelay, int launchCost)
 	
 	public final static ShipType ROCKET = new ShipType(
 			"Rocket",ROCKET_ID,
 			5,1,2, 2,
 			false, 0, 1.5,
 			false, false, 0,0,
-			false, false,20
+			false, false,20,
+			-1, 0
 	);
 	
 	public final static ShipType MISSILE = new ShipType(
@@ -29,7 +31,8 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 			10,1,2,2,
 			true, 1, 1.5,
 			false, false,0,0,
-			true, false,40
+			true, false,40,
+			-1, 0
 	);
 	
 	public final static ShipType FIGHTER = new ShipType(
@@ -37,7 +40,8 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 			100, 1, 5, 5,
 			false, 0.1, 0.5,
 			true, false,20,0.7,
-			true,true,0
+			true,true,0,
+			10, 10
 	);
 	
 	public final static ShipType DESTROYER = new ShipType(
@@ -45,7 +49,8 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 			400,5,10,10,
 			true, 0.05, .2,
 			true, true,30,0.7,
-			true,true,0
+			true,true,0,
+			10, 20
 	);
 	
 	public final static ShipType CRUISER = new ShipType(
@@ -53,7 +58,8 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 			1000,10,30,20,
 			true, 0.01, 0.3,
 			true, true,60,0.7,
-			true,true,0
+			true,true,0,
+			10, 30
 	);
 	
 	private final static ShipType[] myTypes={ROCKET,MISSILE,FIGHTER,DESTROYER,CRUISER};

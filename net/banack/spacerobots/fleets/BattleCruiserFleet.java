@@ -51,24 +51,26 @@ public class BattleCruiserFleet extends AIFleet
 	
 	public String getVersion()
 	{
-		return "1.0";
+		return "1.1";
 	}
 	
 	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
 		super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
-		myTargets = new Stack<Contact>();
+		myTargets = new Queue<Contact>();
 		myState = 1;
 	}
 	
 	public AIShip createShip(Ship s)
 	{
-		AIShip oup;
 		if(s.getTypeID() == MISSILE_ID)
 		{
+			BasicMissile oup;
 			Contact target = getTarget();
 			oup = new BasicMissile(this,target);
 			oup.update(s);
+			if(target == null)
+				oup.setHeading(myCruiser.getScannerHeading()+(MISSILE.getMaxTickCount()-5)*myCruiser.getScannerAngleSpan());
 			return oup;
 		}
 		
@@ -85,7 +87,7 @@ public class BattleCruiserFleet extends AIFleet
 		else if(myContacts.size() > 0 && myState == STATE_IDLE)
 			myState = STATE_ATTACK;
 				
-		if(myContacts.size() > 5)
+		if(myContacts.size() > 3)
 		{
 			myState=STATE_RETREAT;
 			stateTimer=100;
@@ -100,7 +102,9 @@ public class BattleCruiserFleet extends AIFleet
 		{
 			cur = myContacts.get(ei.next());
 			if(!isAmmo(cur))
-				myTargets.add(cur);
+			{
+					myTargets.add(cur);
+			}
 			
 			if(cur.getTypeID() == CRUISER_ID)
 				myCruiser.setScannerHeading(cur);
@@ -120,12 +124,10 @@ public class BattleCruiserFleet extends AIFleet
 						myCruiser.setHeading(myTargets.peek().getPosition());
 						myCruiser.setHeading(myCruiser.getHeading()+Math.PI);
 					}
-					if(myCruiser.canLaunch(MISSILE))
-						myCruiser.launch(MISSILE);
 			break;
 		}
 		
-		if(myTargets.size() >0 && myCruiser.canLaunch(MISSILE))
+		if(myCruiser.canLaunch(MISSILE))
 			myCruiser.launch(MISSILE);
 		
 		myShips.apply(AIFilter.MISSILES, new AIGovernor() {
@@ -134,12 +136,12 @@ public class BattleCruiserFleet extends AIFleet
 				if(s instanceof BasicMissile)
 				{
 					BasicMissile t = (BasicMissile) s;
-					if(!t.hasTarget() || isAmmo(t.getTarget()))
+					if(!t.hasTarget())
 					{
 						t.setTarget(getTarget());
 					}
 				}
-				s.run();								
+				s.run();
 			}
 		});
 		
@@ -149,11 +151,16 @@ public class BattleCruiserFleet extends AIFleet
 		
 	public Contact getTarget()
 	{
-		while(!myTargets.isEmpty() && myTargets.peek().getScanTick() < tick-10)
+		while(!myTargets.isEmpty() && (myTargets.peek().isDead() || myTargets.peek().getScanTick() < tick-11))
+		{
 			myTargets.next();
+		}
 	
 		if(myTargets.isEmpty())
 			return null;
+		
+		if(myTargets.size() == 1)
+			return myTargets.peek();
 		
 		return myTargets.next();
 	}

@@ -285,6 +285,11 @@ public class Ship implements ShipStatus
 		return oup;
 	}
 	
+	public double getScannerAngleSpan()
+	{
+		return myType.getScannerAngleSpan();
+	}
+	
 	public String toString()
 	{
 		return SpaceText.toString(this);

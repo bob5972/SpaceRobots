@@ -15,16 +15,12 @@ import net.banack.spacerobots.util.ContactList;
 
 public class FleetContactList
 {
-	//HashMap of enemyID's to SensorContacts
-	private HashMap<Integer,Contact> myContacts;
-	//HashMap of fleetID's to (HashMap's of enemyID's to (HashSets of spotterID's))	
-	private HashMap<Integer, Map<Integer, Set<Integer> > > mySpotters;
-	private IntMap myFleetSize;
-	
+	//Map of fleetID's to (HashMap's of enemyID's to (HashSets of spotterID's))	
+	private Map<Integer, Map<Integer, Set<Integer> > > mySpotters;
+	private IntMap myFleetSize;	
 	
 	public FleetContactList()
 	{
-		myContacts = new HashMap<Integer,Contact>();
 		mySpotters = new HashMap<Integer, Map<Integer, Set<Integer> > >();
 		myFleetSize = new IntMap();
 	}
@@ -32,7 +28,6 @@ public class FleetContactList
 
 	public void makeEmpty()
 	{
-		myContacts.clear();
 		mySpotters.clear();
 		myFleetSize.makeEmpty();
 	}
@@ -46,9 +41,6 @@ public class FleetContactList
 		Integer eID = new Integer(enemy.getID());
 		Integer sID = new Integer(spotter.getID());
 		Integer sFID = new Integer(spotter.getFleetID());
-		
-		if(!myContacts.containsKey(eID))
-			myContacts.put(eID,new Contact(enemy));
 		
 		if(mySpotters.containsKey(sFID))
 		{
@@ -78,27 +70,11 @@ public class FleetContactList
 	//returns a new contact list that is linked to this one
 	//ie, any additions or deletions will be reflected in the master list
 	//  (but don't add anything from a different fleet...)
-	public ContactList getFleetList(ServerFleet f)
+	public Map<Integer,Set<Integer>> getFleetList(ServerFleet f)
 	{
 		int fid = f.getFleetID();
 		Integer ifid = new Integer(fid);
-		ContactList oup = new ContactList();
 		
-		if(!mySpotters.containsKey(ifid))
-			return oup;
-		
-		Map<Integer, Set<Integer> > eMap = mySpotters.get(ifid);
-		
-		Iterator<Integer> i = eMap.keySet().iterator();
-		
-		while(i.hasNext())
-		{
-			Integer eid = (Integer)i.next();
-			Contact c = (Contact)myContacts.get(eid);
-			
-			oup.addContact(c,eMap.get(eid));			
-		}
-		
-		return oup;
+		return mySpotters.get(ifid);
 	}
 }
