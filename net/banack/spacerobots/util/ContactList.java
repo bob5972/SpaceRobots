@@ -24,10 +24,7 @@ public class ContactList
 	//number of enemyID's in this list
 	private int mySize;
 	//ie all the references we've ever given out
-	private HashMap<Integer,Contact> myMasterContacts;
-	//contacts sorted by xPos
-	private SkipList<Contact> byPos;
-	
+	private HashMap<Integer,Contact> myMasterContacts;	
 	
 	public ContactList()
 	{
@@ -35,29 +32,8 @@ public class ContactList
 		myContacts = new HashMap<Integer,Contact>();
 		mySpotters = new HashMap<Integer, Set<Integer> >();
 		mySize=0;
-		
-		byPos = null;//will be initialized on first use
 	}
 	
-	private void initByPos()
-	{
-		byPos = new SkipList<Contact>(new Comparator<Contact>() {
-			public int compare(Contact lhs, Contact rhs)
-			{
-				double rx = rhs.getX();
-				double lx = lhs.getX();
-				return (int)(rx - lx);
-			}
-		});
-		
-		Iterator<Contact> i = myContacts.values().iterator();
-		while(i.hasNext())
-		{
-			byPos.add(i.next());
-		}
-	}
-		
-
 	public void makeEmpty()
 	{
 		myContacts.clear();
@@ -69,7 +45,6 @@ public class ContactList
 	{
 		myContacts.clear();
 		mySpotters.clear();
-		byPos = null;
 		mySize=0;
 	}
 		
@@ -93,21 +68,11 @@ public class ContactList
 		}
 		
 		if(!myContacts.containsKey(eID))
-		{
 			mySize++;
-		}
-		else
-		{
-			if(byPos != null)
-				byPos.remove(old);
-		}
 		
 		old.update(e);
 		myContacts.put(eID,old);
 		
-		if(byPos != null)
-			byPos.add(old);
-
 		if(mySpotters.containsKey(eID))
 		{
 			sSet = mySpotters.get(eID);
@@ -141,20 +106,10 @@ public class ContactList
 		}
 		
 		if(!myContacts.containsKey(eID))
-		{
 			mySize++;
-		}
-		else
-		{
-			if(byPos != null)
-				byPos.remove(old);
-		}
 		
 		old.update(e);
 		myContacts.put(eID,old);
-		
-		if(byPos != null)
-			byPos.add(old);
 		
 		if(mySpotters.containsKey(eID))
 		{
@@ -168,6 +123,19 @@ public class ContactList
 		
 		sSet.addAll(spotters);
 	}
+	
+	//You probably really shouldn't be modifying this...I miss constant reference
+	public Collection<Contact> getContacts()
+	{
+		return myContacts.values();
+	}
+	
+	//includes active ones...
+	public Collection<Contact> getOldContacts()
+	{
+		return myMasterContacts.values();
+	}
+	
 	
 	
 	//Iterator over Integers of enemyID's
@@ -242,69 +210,5 @@ public class ContactList
 				return true;
 		}
 		return false;
-	}
-	
-	public Iterator<Contact> getRange(DPoint bottomLeft, DPoint topRight)
-	{
-		if(byPos == null)
-			initByPos();
-		
-		Collection<Contact> oup = byPos.subCollection(new Contact(-1,-1,-1,bottomLeft.getX(),-1,0,0),new Contact(-1,-1,-1,topRight.getX(),-1,0,0));
-		return new YLimitedIterator(oup,bottomLeft.getY(),topRight.getY());		
-	}
-	
-	private class YLimitedIterator implements Iterator<Contact>
-	{
-		private Contact nextContact;
-		private Iterator<Contact> myIt;
-		private double ymin,ymax;
-		
-		public YLimitedIterator(Collection<Contact> list, double ymin,double ymax)
-		{
-			myIt = list.iterator();
-			this.ymin = ymin;
-			this.ymax = ymax;
-			
-			findNext();
-		}
-		
-		private void findNext()
-		{
-			Contact c;
-			while(myIt.hasNext())
-			{
-				c = myIt.next();
-				if(ymin <= c.getY() && c.getY() <= ymax)
-				{
-					nextContact = c;
-					return;
-				}
-			}
-			nextContact = null;
-		}
-
-		@Override
-		public boolean hasNext()
-		{
-			return nextContact != null;
-		}
-
-		@Override
-		public Contact next()
-		{
-			Contact oup = nextContact;
-			if(oup == null)
-				throw new NoSuchElementException();
-			findNext();
-			return oup;
-		}
-
-		@Override
-		public void remove()
-		{
-			throw new UnsupportedOperationException();			
-		}		
-	}
-	
-	
+	}	
 }
