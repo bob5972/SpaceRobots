@@ -14,6 +14,16 @@ public class ConsoleDisplay implements Display
 		
 	}
 	
+	public void initDisplay(Battle b)
+	{
+		return;
+	}
+	
+	public void closeDisplay(Battle b)
+	{
+		return;
+	}
+	
 	public void updateDisplay(Battle b)
 	{
 		int cruiser,fighter,destroyer,total;

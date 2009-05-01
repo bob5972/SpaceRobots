@@ -278,6 +278,11 @@ public class Ship implements ShipStatus
 		return SpaceMath.getDQuad(myPosition,myType.getWidth(),myType.getHeight(),myHeading);
 	}
 	
+	public boolean canMoveScanner()
+	{
+		return myType.canMoveScanner();
+	}
+	
 	public DArc getScannerArc()
 	{
 		DArc oup = new DArc(myPosition, myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());

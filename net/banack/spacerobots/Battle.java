@@ -49,7 +49,8 @@ public class Battle
 	private FleetContactList contacts;
 	
 	//this is actually used between ticks
-	private HashSet<ServerShip> toDie;	
+	private HashSet<ServerShip> toDie;
+	private HashSet<ServerShip> toBirth;
 	private Random myRandom;
 	
 	private double myWidth;
@@ -78,6 +79,7 @@ public class Battle
 		myRandom = new Random();
 		toDie = new HashSet<ServerShip>();
 		myNextFleetIndex=0;
+		toBirth = new HashSet<ServerShip>();
 	}
 	
 	public void seedRandom(long x)
@@ -139,6 +141,7 @@ public class Battle
 			double heading = myRandom.nextDouble()*Math.PI*2;
 			ServerShip oup = new ServerShip(f,getNewID(), INVALID_ID, launchType, myShipTypes.get(launchType), x,y, heading,myTick, getDefaultLife(launchType));
 			myShips.add(oup);
+			toBirth.add(oup);
 			f.setNumShips(f.getNumShips()+1);
 			f.setCredits(0);
 			
@@ -268,8 +271,9 @@ public class Battle
 			}			
 		}
 		
-		//reset the kill list
-		toDie.clear();
+		toDie.clear();//reset the kill list
+		toBirth.clear();//reset the birth list
+		
 		si = myShips.iterator();
 		while(si.hasNext())
 		{
@@ -515,6 +519,7 @@ public class Battle
 		ServerShip oup = new ServerShip(f,getNewID(), s.getID(), launchType, myShipTypes.get(launchType), cur.getXPos(), cur.getYPos(), myTick, getDefaultLife(launchType));
 		oup.setHeading(s.getHeading());
 		myShips.add(oup);
+		toBirth.add(oup);
 		
 		f.setNumShips(f.getNumShips()+1);
 		f.decrementCredits(oup.getCost());
@@ -569,14 +574,34 @@ public class Battle
 	{
 		return myShips.size();
 	}
+	
+	public int getNumShipsBorn()
+	{
+		return toBirth.size();
+	}
+	
+	public int getNumShipsDied()
+	{
+		return toDie.size();
+	}
 
-        public int getNumTeams()
-        {
-	        return myTeams.size();
-        }
+    public int getNumTeams()
+    {
+        return myTeams.size();
+    }
 
-        public int getNumFleets()
-        {
-	        return myFleets.size();
-        }
+    public int getNumFleets()
+    {
+        return myFleets.size();
+    }
+    
+    public Iterator<ServerShip> deathIterator()
+    {
+    	return toDie.iterator();
+    }
+    
+    public Iterator<ServerShip> birthIterator()
+    {
+    	return toBirth.iterator();
+    }
 }

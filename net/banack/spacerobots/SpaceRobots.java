@@ -1,6 +1,10 @@
 package net.banack.spacerobots;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.Iterator;
@@ -27,6 +31,10 @@ public class SpaceRobots
 	public static final int CREDIT_INCREMENT=1;
 	public static long RANDOM_SEED=0;//0 for random
 	
+	public static final String RECORD_FILE = "battle.srb";
+	public static boolean RECORD_BATTLE = true;
+	public static boolean USE_CONSOLE_DISPLAY = false;
+	
 	public static void main(String[] args)
 	{
 		//Debug INIT
@@ -40,9 +48,9 @@ public class SpaceRobots
 		Debug.setShowAIWarnings(true);
 		Debug.setShowComLog(false);//only works for TextProtocol
 		Debug.setSlowGraphics(false);
-		final boolean USE_CONSOLE_DISPLAY = false;
 		
 		Random r;
+		OutputStream recordFile = null;
 		
 		if(RANDOM_SEED ==0)
 		{
@@ -59,6 +67,19 @@ public class SpaceRobots
 		//SETUP
 		Debug.info("Initializing Display...");
 		Display d = (USE_CONSOLE_DISPLAY? new ConsoleDisplay(): new GLDisplay());
+		
+		if(RECORD_BATTLE)
+		{
+			try
+			{
+				recordFile = new FileOutputStream(new File(RECORD_FILE));
+				d = new JoinDisplay(d,new RecordingDisplay(recordFile));
+			}
+			catch (FileNotFoundException e1)
+			{
+				Debug.crash(e1,"Unable to initialize recordfile.");
+			}
+		}
 		
 		//setup initial battle state
 		Debug.info("Initializing Battle...");
@@ -81,6 +102,7 @@ public class SpaceRobots
 		Debug.info("Calling Battle.initialize()");
 		try {
 			b.initialize();
+			d.initDisplay(b);
 		}
 		catch(java.io.IOException e)
 		{
@@ -93,13 +115,12 @@ public class SpaceRobots
 		{
 			try{
 				b.runTick();
+				d.updateDisplay(b);
 			}
 			catch(java.io.IOException e)
 			{
 				Debug.crash(e,"Error running tick!");
 			}
-			d.updateDisplay(b);
-			Debug.verbose("tick #"+b.getTick());
 		}
 		
 		Debug.info("Battle over!");
@@ -125,9 +146,11 @@ public class SpaceRobots
 		
 		// cleanup
 		try {
-			
-			
 			b.cleanup();
+			d.closeDisplay(b);
+			
+			if(RECORD_BATTLE && recordFile != null)
+				recordFile.close();
 		}
 		catch(java.io.IOException e)
 		{

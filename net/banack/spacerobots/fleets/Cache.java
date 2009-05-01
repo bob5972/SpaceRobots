@@ -41,6 +41,7 @@ public class Cache extends AIFleet
 	}
 	
 	private Contact myTarget;
+	private boolean launchFighter = true;
 	
 	public Iterator<ShipAction> runTick()
 	{
@@ -66,6 +67,9 @@ public class Cache extends AIFleet
 		{
 			AIShip cur = (AIShip) i.next();
 			
+			if(cur.canMoveScanner())
+				cur.advanceScannerHeading();
+			
 			if(cur == myCruiser)
 				continue;
 			
@@ -78,6 +82,7 @@ public class Cache extends AIFleet
 				if(tick % 40 == 0)
 					cur.intercept(myCruiser);
 			}
+			
 		}
 		
 		if(myTarget != null && myTarget.getScanTick() < tick - 10)
@@ -86,10 +91,12 @@ public class Cache extends AIFleet
 		
 		if(myCruiser.isAlive())
 		{
-			if(myCruiser.canLaunch(FIGHTER) && credits >= FIGHTER.getCost()*2)
-				myCruiser.launch(FIGHTER);
-			
-			myCruiser.advanceScannerHeading();			
+			ShipType toLaunch = (launchFighter? FIGHTER: DESTROYER);
+			if(myCruiser.canLaunch(toLaunch) && credits >= toLaunch.getCost()+MISSILE.getCost()*10)
+			{
+				myCruiser.launch(toLaunch);
+				//launchFighter = !launchFighter;
+			}	
 			
 			if(tick % 100 == 0)
 			{

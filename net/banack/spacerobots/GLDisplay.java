@@ -162,6 +162,16 @@ public class GLDisplay implements GLEventListener, Display
 	frame.setVisible(true);
 	animator.start();
     }
+    
+	public void initDisplay(Battle b)
+	{
+		return;
+	}
+	
+	public void closeDisplay(Battle b)
+	{
+		return;
+	}
 	
     public void closeAndExit()
     {

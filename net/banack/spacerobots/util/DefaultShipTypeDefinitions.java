@@ -47,8 +47,8 @@ public class DefaultShipTypeDefinitions implements ShipTypeDefinitions
 	public final static ShipType DESTROYER = new ShipType(
 			"Destroyer",DESTROYER_ID,
 			400,5,10,10,
-			true, 0.05, .2,
-			true, true,30,0.7,
+			true, 0.05, 0.35,
+			true, true,30,0.6,
 			true,true,0,
 			10, 20
 	);
