@@ -103,6 +103,16 @@ public class AIShip extends BasicAIShip
 		setScannerHeading(p.getPosition());
 	}
 	
+	public void advanceScannerHeading()
+	{
+		setScannerHeading(getScannerHeading()+getScannerAngleSpan());
+	}
+	
+	public void advanceScannerHeading(double h)
+	{
+		setScannerHeading(getScannerHeading()+h);
+	}
+	
 	public DPoint wrap(DPoint p)
 	{
 		DPoint loc = getPosition();

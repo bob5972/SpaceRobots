@@ -190,10 +190,5 @@ public class BattleCruiserFleet extends AIFleet
 		
 		return myShips.getActionIterator();
 	}
-		
-	public boolean isAmmo(ShipStatus s)
-	{
-		return s.getTypeID() == ROCKET_ID || s.getTypeID() == MISSILE_ID;
-	}
 	
 }

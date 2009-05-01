@@ -8,6 +8,7 @@ import net.banack.geometry.DPoint;
 import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.ai.AIFleet;
 import net.banack.spacerobots.ai.AIShip;
+import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
@@ -36,13 +37,29 @@ public class Cache extends AIFleet
 	
 	public String getVersion()
 	{
-		return "1.0";
+		return "1.2";
 	}
+	
+	private Contact myTarget;
 	
 	public Iterator<ShipAction> runTick()
 	{
 		
 		Iterator<AIShip> i;
+		
+		Iterator<Integer> ci;
+		
+		ci = myContacts.enemyIterator();
+		while(ci.hasNext())
+		{
+			Contact enemy = myContacts.get(ci.next());
+			if(!isAmmo(enemy))
+			{
+				myTarget = enemy;
+				break;
+			}
+		}
+		
 		
 		i = myShips.getAliveIterator();
 		while(i.hasNext())
@@ -52,9 +69,19 @@ public class Cache extends AIFleet
 			if(cur == myCruiser)
 				continue;
 			
-			if(tick % 20 == 0)
-				cur.intercept(myCruiser);
+			if(myTarget != null)
+			{
+				cur.intercept(myTarget);
+			}
+			else
+			{
+				if(tick % 40 == 0)
+					cur.intercept(myCruiser);
+			}
 		}
+		
+		if(myTarget != null && myTarget.getScanTick() < tick - 10)
+			myTarget = null;
 		
 		
 		if(myCruiser.isAlive())
@@ -62,7 +89,7 @@ public class Cache extends AIFleet
 			if(myCruiser.canLaunch(FIGHTER) && credits >= FIGHTER.getCost()*2)
 				myCruiser.launch(FIGHTER);
 			
-			myCruiser.setScannerHeading(myCruiser.projHeading());			
+			myCruiser.advanceScannerHeading();			
 			
 			if(tick % 100 == 0)
 			{
@@ -71,7 +98,7 @@ public class Cache extends AIFleet
 			}
 		}
 		
-		Iterator<Integer> ci = myContacts.enemyIterator();
+		ci = myContacts.enemyIterator();
 		while(ci.hasNext())
 		{
 			Integer eid = ci.next();
@@ -79,12 +106,24 @@ public class Cache extends AIFleet
 			while(si.hasNext())
 			{
 				AIShip s = (AIShip) myShips.get(si.next());
-				if(s.canLaunch(ROCKET))
-					s.launch(ROCKET);
+				if(s.getTypeID() != FIGHTER_ID)
+				{
+					Contact enemy = myContacts.get(eid);
+					s.setScannerHeading(enemy);
+					if(s.canLaunch(MISSILE))
+						s.launchMissile(enemy);
+				}
+				else
+				{
+					if(s.canLaunch(ROCKET))
+						s.launch(ROCKET);
+				}
 			}
 		}
 		
 		return myShips.getActionIterator();
 	}
+	
+	
 	
 }

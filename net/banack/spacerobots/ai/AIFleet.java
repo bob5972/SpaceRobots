@@ -10,6 +10,7 @@ import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
 import net.banack.spacerobots.util.Fleet;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
+import net.banack.spacerobots.util.ShipStatus;
 import net.banack.spacerobots.util.ShipType;
 import net.banack.spacerobots.util.Team;
 
@@ -188,5 +189,10 @@ public abstract class AIFleet implements AIShipFactory
 	public boolean isAmmo(int type)
 	{
 		return (type == MISSILE_ID) || (type == ROCKET_ID);
-	}	
+	}
+	
+	public boolean isAmmo(ShipStatus s)
+	{
+		return isAmmo(s.getTypeID());
+	}
 }
