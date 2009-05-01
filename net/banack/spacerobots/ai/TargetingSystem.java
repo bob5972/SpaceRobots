@@ -222,26 +222,35 @@ public class TargetingSystem
 	}
 	
 	//Please don't modify this!  (Actually, I'm not sure if you can...)
-	public Collection<Contact> getContactsInRange(DPoint bl, DPoint tr)
+	private Collection<Contact> getContactsInRange(double left, double right)
 	{
 		initialize();
-		Contact left = new Contact(-1,-1,-1,bl,-1,-1);
-		Contact right = new Contact(-1,-1,-1,tr,-1,-1);
+		DPoint bl = new DPoint(left,0);
+		DPoint tr = new DPoint(right,0);
 		
-		if(left.getX() > right.getX())
+		Contact leftC = new Contact(-1,-1,-1,bl,-1,-1);
+		Contact rightC = new Contact(-1,-1,-1,tr,-1,-1);
+		
+		if(leftC.getX() > rightC.getX())
 		{
-			Contact temp = left;
-			left = right;
-			right = temp;
+			Contact temp = leftC;
+			leftC = rightC;
+			rightC = temp;
 		}
 		
-		return byPos.subCollection(left,right);
+		return byPos.subCollection(leftC,rightC);
+	}
+	
+	private Iterator<Contact> getContactRangeIterator(DPoint bl, DPoint tr)
+	{
+		Collection<Contact> list = getContactsInRange(bl.getX(),tr.getX());
+		Iterator<Contact> i = list.iterator();
+		return new FilteredIterator<Contact>(i,new RangeFilter(bl,tr));
 	}
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr)
 	{
-		Collection<Contact> list = getContactsInRange(bl,tr);
-		Iterator<Contact> i = list.iterator();
+		Iterator<Contact> i = getContactRangeIterator(bl,tr);
 		
 		if(!i.hasNext())
 			return null;
@@ -266,7 +275,7 @@ public class TargetingSystem
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr, Filter<Contact> f, Comparator<Contact> p)
 	{
-		Iterator<Contact> i = new FilteredIterator<Contact>(getContactsInRange(bl,tr).iterator(),f);
+		Iterator<Contact> i = new FilteredIterator<Contact>(getContactRangeIterator(bl,tr),f);
 		if(!i.hasNext())
 			return null;
 		
@@ -283,7 +292,7 @@ public class TargetingSystem
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr, Filter<Contact> f)
 	{
-		Iterator<Contact> i = new FilteredIterator<Contact>(getContactsInRange(bl,tr).iterator(),f);
+		Iterator<Contact> i = new FilteredIterator<Contact>(getContactRangeIterator(bl,tr),f);
 		if(!i.hasNext())
 			return null;
 		return i.next();
@@ -309,8 +318,7 @@ public class TargetingSystem
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr, Comparator<Contact> p)
 	{	
-		Collection<Contact> list = getContactsInRange(bl,tr);
-		Iterator<Contact> i = list.iterator();
+		Iterator<Contact> i = getContactRangeIterator(bl,tr);
 		
 		if(!i.hasNext())
 			return null;
