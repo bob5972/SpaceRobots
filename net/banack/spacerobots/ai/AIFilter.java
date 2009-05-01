@@ -1,8 +1,9 @@
 package net.banack.spacerobots.ai;
 
 import net.banack.spacerobots.util.DefaultShipTypeDefinitions;
+import net.banack.util.Filter;
 
-public abstract class AIFilter
+public abstract class AIFilter implements Filter<AIShip>
 {
 	public static AIFilter FIGHTERS = new AIFilter(){
 		public boolean test(AIShip s)

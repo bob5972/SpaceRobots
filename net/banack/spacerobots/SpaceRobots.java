@@ -38,7 +38,7 @@ public class SpaceRobots
 		Debug.STD_ERR_MESSAGES_WARN=true;
 		Debug.STD_ERR_MESSAGES_ERROR=true;		
 		Debug.setShowAIWarnings(true);
-		Debug.setShowComLog(true);
+		Debug.setShowComLog(false);//only works for TextProtocol
 		Debug.setSlowGraphics(false);
 		final boolean USE_CONSOLE_DISPLAY = false;
 		
@@ -69,8 +69,8 @@ public class SpaceRobots
 		Debug.info("Initializing AI's...");
 		AIFleet ai[] = {
 			new BattleCruiserFleet(r.nextLong()),
-			new DummyFleet(r.nextLong()),
-			new DummyFleet(r.nextLong()),
+			new BattleCruiserFleet(r.nextLong()),
+			new Mob(r.nextLong()),
 			new Mob(r.nextLong()),
 		};
 		addAIFleets(b,ai);

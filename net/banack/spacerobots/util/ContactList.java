@@ -24,7 +24,7 @@ public class ContactList
 	//number of enemyID's in this list
 	private int mySize;
 	//ie all the references we've ever given out
-	private HashMap<Integer,Contact> myMasterContacts;	
+	private HashMap<Integer,Contact> myMasterContacts;
 	
 	public ContactList()
 	{
@@ -154,9 +154,19 @@ public class ContactList
 		return getContact(enemyID);
 	}
 	
-	public Contact getContact(int enemyID)
+	public final Contact getOld(int enemyID)
 	{
-		return myContacts.get(new Integer(enemyID));
+		return getOldContact(new Integer(enemyID));
+	}
+	
+	public final Contact getOld(Integer enemyID)
+	{
+		return getOldContact(enemyID);
+	}
+	
+	public final Contact getContact(int enemyID)
+	{
+		return getContact(new Integer(enemyID));
 	}
 	
 	public Contact getContact(Integer enemyID)
@@ -164,7 +174,7 @@ public class ContactList
 		return myContacts.get(enemyID);
 	}
 	
-	public Contact getOldContact(int enemyID)
+	public final Contact getOldContact(int enemyID)
 	{
 		return getOldContact(new Integer(enemyID));
 	}
@@ -198,6 +208,11 @@ public class ContactList
 	public Set<Integer> getSpotters(Integer eID)
 	{
 		return mySpotters.get(eID);
+	}
+	
+	public Set<Integer> getIDSet()
+	{
+		return myContacts.keySet();
 	}
 	
 	public boolean contains(int eID, int sID)

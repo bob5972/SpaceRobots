@@ -285,6 +285,11 @@ public class Ship implements ShipStatus
 		return oup;
 	}
 	
+	public double getScannerRadius()
+	{
+		return myType.getScannerRadius();
+	}
+	
 	public double getScannerAngleSpan()
 	{
 		return myType.getScannerAngleSpan();

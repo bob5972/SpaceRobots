@@ -25,6 +25,13 @@ public class SpaceMath
 		return (a.subtract(b)).getRadius();
 	}
 	
+	public static double getDistance(DPoint a, DPoint b, double battleWidth, double battleHeight)
+	{
+		DPoint center = a;
+		b = wrap(b,center,battleWidth,battleHeight);
+		return getRawDistance(center,b);
+	}
+	
 	public static double interceptHeading(ShipStatus s, ShipStatus target, double battleWidth, double battleHeight)
 	{
 		return interceptHeading(s,target.getPosition(),target.getHeading(),target.getMaxSpeed(),battleWidth,battleHeight);

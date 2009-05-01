@@ -8,6 +8,11 @@ public class BasicMissile extends AIShip
 	private ShipStatus myTarget;
 	
 	
+	public BasicMissile(AIFleet f)
+	{
+		super(f);
+	}
+	
 	public BasicMissile(AIFleet f, ShipStatus target)
 	{
 		super(f);

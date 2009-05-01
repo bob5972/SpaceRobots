@@ -53,7 +53,7 @@ public class Contact implements ShipStatus
 	{
 		this.enemyID = enemyID;
 		this.enemyFleetID = fleetID;
-		this.enemyTypeID = type.getID();
+		this.enemyTypeID = type == null? ShipTypeDefinitions.TYPE_INVALID: type.getID();
 		this.enemyPosition = position;
 		this.enemyHeading = heading;
 		this.enemyType = type;

@@ -158,7 +158,15 @@ public abstract class AIFleet implements AIShipFactory
 		//Do other stuff (like processing ContactList)
 		myContacts = c;
 		
+		//let the children init stuff (this way they can get some polymorphism going)
+		initTick();
+		
 		return runTick();
+	}
+	
+	public void initTick()
+	{
+		return;
 	}
 	
 	public abstract Iterator<ShipAction> runTick();

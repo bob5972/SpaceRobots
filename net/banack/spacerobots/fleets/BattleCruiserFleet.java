@@ -1,8 +1,10 @@
 package net.banack.spacerobots.fleets;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import net.banack.debug.Debug;
+import net.banack.geometry.DPoint;
 import net.banack.spacerobots.ai.AIFilter;
 import net.banack.spacerobots.ai.AIGovernor;
 import net.banack.spacerobots.ai.BasicAIShip;
@@ -10,6 +12,8 @@ import net.banack.spacerobots.ai.AIShipList;
 import net.banack.spacerobots.ai.AIFleet;
 import net.banack.spacerobots.ai.AIShip;
 import net.banack.spacerobots.ai.BasicMissile;
+import net.banack.spacerobots.ai.ContactFilter;
+import net.banack.spacerobots.ai.TargetingSystem;
 import net.banack.spacerobots.util.Contact;
 import net.banack.spacerobots.util.ContactList;
 import net.banack.spacerobots.util.Fleet;
@@ -31,8 +35,7 @@ public class BattleCruiserFleet extends AIFleet
 	
 	private int myState;
 	private int stateTimer;
-	
-	private Pile<Contact> myTargets;
+	protected TargetingSystem myTargets;
 	
 	public BattleCruiserFleet()
 	{
@@ -57,7 +60,28 @@ public class BattleCruiserFleet extends AIFleet
 	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
 	{
 		super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
-		myTargets = new Queue<Contact>();
+		myTargets = new TargetingSystem(this);
+		myTargets.setDefaultMissilePriority(new Comparator<Contact>() {
+			public int compare(Contact lhs, Contact rhs)
+			{
+				int ltype = lhs.getTypeID();
+				int rtype = rhs.getTypeID();
+				
+				int left = myTargets.getAllocationCount(lhs);
+				int right = myTargets.getAllocationCount(rhs);
+				
+				if(ltype == CRUISER_ID && rtype != CRUISER_ID)
+					return -1;
+				if(rtype == CRUISER_ID && ltype != CRUISER_ID)
+					return 1;
+				if(left < right)
+					return -1;
+				if(left > right)
+					return 1;
+				return 0;
+			}
+		});
+		
 		myState = 1;
 	}
 	
@@ -66,19 +90,28 @@ public class BattleCruiserFleet extends AIFleet
 		if(s.getTypeID() == MISSILE_ID)
 		{
 			BasicMissile oup;
-			Contact target = getTarget();
-			oup = new BasicMissile(this,target);
+			oup = new BasicMissile(this);
 			oup.update(s);
+			Contact target = myTargets.getMissileTarget(oup);
+			oup.setTarget(target);
+			myTargets.allocate(target);
 			if(target == null)
 				oup.setHeading(myCruiser.getScannerHeading()+(MISSILE.getMaxTickCount()-5)*myCruiser.getScannerAngleSpan());
 			return oup;
 		}
 		
 		return new AIShip(s,this);
-	}	
+	}
+	
+	public void initTick()
+	{
+		myTargets.update();
+	}
 	
 	public Iterator<ShipAction> runTick()
-	{		
+	{
+		Contact target;
+		
 		if(stateTimer > 0)
 			stateTimer--;
 		
@@ -93,21 +126,21 @@ public class BattleCruiserFleet extends AIFleet
 			stateTimer=100;
 		}
 		
-		Iterator<Integer> ei = myContacts.enemyIterator();
-		Contact cur;
-		
 		myCruiser.setScannerHeading(myCruiser.getScannerHeading()+CRUISER.getScannerAngleSpan());
 		
-		while(ei.hasNext())
-		{
-			cur = myContacts.get(ei.next());
-			if(!isAmmo(cur))
+		
+		
+		target = myTargets.getMissileTarget(myCruiser, new ContactFilter(){
+			public boolean test(Contact c)
 			{
-					myTargets.add(cur);
+				return c.getTypeID() == CRUISER_ID;
 			}
-			
-			if(cur.getTypeID() == CRUISER_ID)
-				myCruiser.setScannerHeading(cur);
+		});
+		
+		if(target != null)
+		{
+			myCruiser.setScannerHeading(target);
+			myState = STATE_RETREAT;
 		}
 		
 		
@@ -119,11 +152,12 @@ public class BattleCruiserFleet extends AIFleet
 					myCruiser.setHeading(random.nextGaussian()-0.5+myCruiser.getHeading());
 			break;				
 			case STATE_RETREAT:
-					if(!myTargets.isEmpty())
-					{
-						myCruiser.setHeading(myTargets.peek().getPosition());
-						myCruiser.setHeading(myCruiser.getHeading()+Math.PI);
-					}
+				target = (target != null)? target : myTargets.getClosestTarget(myCruiser,myCruiser.getScannerRadius());
+				if(target != null)
+				{
+					myCruiser.setHeading(target.getPosition());
+					myCruiser.setHeading(myCruiser.getHeading()+Math.PI);
+				}
 			break;
 		}
 		
@@ -136,9 +170,17 @@ public class BattleCruiserFleet extends AIFleet
 				if(s instanceof BasicMissile)
 				{
 					BasicMissile t = (BasicMissile) s;
-					if(!t.hasTarget())
+					if(t.isDead())
 					{
-						t.setTarget(getTarget());
+						//this should only run once, the tick after the missile dies
+						myTargets.deallocate(t.getTarget());
+					}
+					else
+					{
+						if(!t.hasTarget())
+						{
+							t.setTarget(myTargets.getMissileTarget(t));
+						}
 					}
 				}
 				s.run();
@@ -149,23 +191,6 @@ public class BattleCruiserFleet extends AIFleet
 		return myShips.getActionIterator();
 	}
 		
-	public Contact getTarget()
-	{
-		while(!myTargets.isEmpty() && (myTargets.peek().isDead() || myTargets.peek().getScanTick() < tick-11))
-		{
-			myTargets.next();
-		}
-	
-		if(myTargets.isEmpty())
-			return null;
-		
-		if(myTargets.size() == 1)
-			return myTargets.peek();
-		
-		return myTargets.next();
-	}
-	
-	
 	public boolean isAmmo(ShipStatus s)
 	{
 		return s.getTypeID() == ROCKET_ID || s.getTypeID() == MISSILE_ID;
