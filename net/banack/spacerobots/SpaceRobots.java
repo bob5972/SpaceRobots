@@ -32,7 +32,7 @@ public class SpaceRobots
 	public static long RANDOM_SEED=0;//0 for random
 	
 	public static final String RECORD_FILE = "battle.srb";
-	public static boolean RECORD_BATTLE = true;
+	public static boolean RECORD_BATTLE = false;
 	public static boolean USE_CONSOLE_DISPLAY = false;
 	
 	public static void main(String[] args)
@@ -93,6 +93,7 @@ public class SpaceRobots
 			new Cache(r.nextLong()),
 			new DummyFleet(r.nextLong()),
 			new Mob(r.nextLong()),
+			new SimpleFleet(r.nextLong()),
 		};
 		addAIFleets(b,ai);
 		

@@ -40,6 +40,7 @@ public class GLDisplay implements GLEventListener, Display
     private double battleHeight;
 
     private boolean drawSensorArcs = true;
+    private boolean showColorWarning = Debug.showWarnings();
 
     private AbstractQueue<DisplayFrame> frameQueue;
 	
@@ -237,8 +238,11 @@ public class GLDisplay implements GLEventListener, Display
 		disFleet.blue = .8f;
 		break;
 	    default:
-		Debug.info("GLDisplay: To many fleets, using default" +
-			   " fleet color");
+		if(showColorWarning)
+		{
+			Debug.warn("GLDisplay: To many fleets, using default" + " fleet color");
+			showColorWarning=false;
+		}
 		disFleet.red = 1f;
 		disFleet.green = 1f;
 		disFleet.blue = 1f;

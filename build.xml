@@ -18,7 +18,8 @@
 
 </target>
  
-<target name="clean" > 
+<target name="clean" >
+	<delete file="battle.srb"/>
 	<delete dir="bin"/>
 	<mkdir dir="bin"/>
 </target> 
