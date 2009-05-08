@@ -91,9 +91,8 @@ public class SpaceRobots
 		AIFleet ai[] = {
 			new BattleCruiserFleet(r.nextLong()),
 			new Cache(r.nextLong()),
-			new DummyFleet(r.nextLong()),
 			new Mob(r.nextLong()),
-			new SimpleFleet(r.nextLong()),
+			new Fortress(r.nextLong()),
 		};
 		addAIFleets(b,ai);
 		
