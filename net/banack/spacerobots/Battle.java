@@ -390,6 +390,9 @@ public class Battle
 			Iterator<ServerShip> inner = myShips.iterator();
 			while(inner.hasNext())
 			{
+				if(toDie.contains(sho))
+					break;//ie, if the outer ship blew up already
+				
 				ServerShip shi = (ServerShip)inner.next();
 				
 				int iTeam = shi.getFleet().getTeamID();

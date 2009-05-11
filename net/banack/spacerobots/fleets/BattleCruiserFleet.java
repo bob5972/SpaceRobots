@@ -53,6 +53,9 @@ public class BattleCruiserFleet extends AIFleet
 	
 	private int myState;
 	private int stateTimer;
+	private double scannerStart;
+	private int myShipCount;
+	private int shootCounter;
 	protected TargetingSystem myTargets;
 	
 	public BattleCruiserFleet()
@@ -72,7 +75,7 @@ public class BattleCruiserFleet extends AIFleet
 	
 	public String getVersion()
 	{
-		return "1.1";
+		return "2.0";
 	}
 	
 	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
@@ -100,6 +103,7 @@ public class BattleCruiserFleet extends AIFleet
 			}
 		});
 		
+		myShipCount= 1;
 		myState = 1;
 	}
 	
@@ -117,6 +121,8 @@ public class BattleCruiserFleet extends AIFleet
 				oup.setHeading(myCruiser.getScannerHeading()+(MISSILE.getMaxTickCount()-5)*myCruiser.getScannerAngleSpan());
 			return oup;
 		}
+		if(s.getTypeID() == CRUISER_ID)
+			myShipCount++;
 		
 		return new AIShip(s,this);
 	}
@@ -127,50 +133,71 @@ public class BattleCruiserFleet extends AIFleet
 	}
 	
 	public Iterator<ShipAction> runTick()
-	{
-		Contact target;
-		
+	{		
 		if(stateTimer > 0)
 			stateTimer--;
 		
 		if(myContacts.size() == 0 && stateTimer <= 0)
 			myState = STATE_IDLE;
-		else if(myContacts.size() > 0 && myState == STATE_IDLE)
-			myState = STATE_ATTACK;
+		
+		Iterator<Integer> ci = myContacts.enemyIterator();
+		shootCounter = 0;
+		while(ci.hasNext())
+		{
+			int eID = ci.next();
+			Contact enemy = myContacts.get(eID);
+			if(enemy.isAmmo())
+				continue;
+			int alloc = myTargets.getAllocationCount(eID);
+			int life = enemy.getLife();
+			if(alloc < life)
+			{
+				shootCounter+=life - alloc;
+			}
+		}
+		if(shootCounter > 0)
+			shootCounter++;//one more for good luck
 				
-		if(myContacts.size() > 3)
+		if(myContacts.size() > 3*myShipCount)
 		{
 			myState=STATE_RETREAT;
 			stateTimer=100;
 		}
 		
-		myCruiser.setScannerHeading(myCruiser.getScannerHeading()+CRUISER.getScannerAngleSpan());
-		
-		
-		
-		target = myTargets.getMissileTarget(myCruiser, new ContactFilter(){
-			public boolean test(Contact c)
+		myCruiser.advanceScannerHeading();
+		scannerStart = myCruiser.curScannerHeading();
+		myShipCount=0;
+		myShips.apply(AIFilter.CRUISERS, new AIGovernor() {
+			public void run(AIShip s)
 			{
-				return c.getTypeID() == CRUISER_ID;
+				if(!myCruiser.isAlive())
+					myCruiser=s;
+				myShipCount++;//I'm too lazy to update this on deaths
+				
+				if(s != myCruiser)
+				{
+					s.intercept(myCruiser);
+					scannerStart += (Math.PI*2)/myShipCount;
+					s.setScannerHeading(scannerStart);
+					if(shootCounter > 0 && s.canLaunch(MISSILE))
+					{
+						shootCounter--;
+						s.launch(MISSILE);
+					}
+				}
 			}
 		});
-		
-		if(target != null)
-		{
-			myCruiser.setScannerHeading(target);
-			myState = STATE_RETREAT;
-		}
-		
-		
 		
 		switch(myState)
 		{
 			case STATE_IDLE:
 				if(tick % 400 == 0)
 					myCruiser.setHeading(random.nextGaussian()-0.5+myCruiser.getHeading());
+				if(myCruiser.canLaunch(CRUISER) && credits > CRUISER.getCost()+50*myShipCount)
+					myCruiser.launch(CRUISER);
 			break;				
 			case STATE_RETREAT:
-				target = (target != null)? target : myTargets.getClosestTarget(myCruiser,myCruiser.getScannerRadius());
+				Contact target = myTargets.getClosestTarget(myCruiser,myCruiser.getScannerRadius());
 				if(target != null)
 				{
 					myCruiser.setHeading(target.getPosition());
@@ -179,8 +206,11 @@ public class BattleCruiserFleet extends AIFleet
 			break;
 		}
 		
-		if(myCruiser.canLaunch(MISSILE))
+		if((shootCounter > 0)&& myCruiser.canLaunch(MISSILE))
+		{
 			myCruiser.launch(MISSILE);
+			shootCounter--;
+		}
 		
 		myShips.apply(AIFilter.MISSILES, new AIGovernor() {
 			public void run(AIShip s)
