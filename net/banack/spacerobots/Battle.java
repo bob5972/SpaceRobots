@@ -45,6 +45,8 @@ import net.banack.spacerobots.util.SpaceText;
 
 public class Battle
 {
+	public static final double KILL_BONUS = 0.33;
+	
 	private ShipList myShips;
 	private FleetList myFleets;
 	private TeamList myTeams;
@@ -220,6 +222,7 @@ public class Battle
 				//add credits to fleets
 				int credit = f.getCreditIncrement();
 				f.incrementCredits(credit);
+				f.incrementCredits(f.getNextBonus());//automatically clears it too
 				
 				//Write ships to AI sockets
 				Map<Integer, HashSet<Integer> > fleetContacts = contacts.getFleetList(f);
@@ -419,6 +422,7 @@ public class Battle
 								{
 									//mark stuff to be blown up
 									markForDeath(shi);
+									trackKills(sho,shi);
 								}								
 							}
 						}
@@ -426,6 +430,13 @@ public class Battle
 				}
 			}
 		} 
+	}
+	
+	private void trackKills(ServerShip shooter, ServerShip dead)
+	{
+		ServerFleet f = shooter.getFleet();
+		f.addKill(dead);
+		f.addBonus((int)(dead.getCost()*KILL_BONUS));		
 	}
 	
 	private void markForDeath(ServerShip s)

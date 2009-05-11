@@ -28,9 +28,11 @@ public class ServerFleet extends Fleet
 	private FleetAI myAI;
 	private int myCredits;
 	private int myCreditIncrement;
+	private int myNextCreditBonus;
 	private int myNumShips;
 	private int myFleetIndex;
 	private ServerTeam myTeam;
+	private FleetStats myStats;
 
 	
 	public ServerFleet(int fleetID,int fleetIndex,int teamID, ServerTeam t, FleetAI ai)
@@ -40,6 +42,8 @@ public class ServerFleet extends Fleet
 		myAI = ai;
 		setAlive(true);
 		myTeam =t;
+		myStats=new FleetStats();
+		myNextCreditBonus = 0;
 	}
 	
 	public ServerFleet(String name, int fleetID, int fleetIndex, int teamID, ServerTeam t, FleetAI ai)
@@ -49,6 +53,8 @@ public class ServerFleet extends Fleet
 		myAI = ai;
 		setAlive(true);
 		myTeam=t;
+		myStats=new FleetStats();
+		myNextCreditBonus = 0;
 	}
 	
 	
@@ -133,5 +139,27 @@ public class ServerFleet extends Fleet
 	public void setNumShips(int n)
 	{
 		myNumShips = n;
+	}
+
+	public void addKill(ServerShip dead)
+	{
+		myStats.add(dead);		
+	}
+	
+	public FleetStats getStats()
+	{
+		return myStats;
+	}
+
+	public void addBonus(int d)
+	{
+		myNextCreditBonus += d;		
+	}
+	
+	public int getNextBonus()
+	{
+		int oup = myNextCreditBonus;
+		myNextCreditBonus = 0;
+		return oup;
 	}
 }
