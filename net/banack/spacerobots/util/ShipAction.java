@@ -1,8 +1,27 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots.util;
 
 import net.banack.spacerobots.Debug;
 import net.banack.util.MethodNotImplementedException;
 
+/** Represents the assigned actions a ship will take next tick.*/
 public class ShipAction
 {
 	private int myShipID;
@@ -11,6 +30,7 @@ public class ShipAction
 	private double newScannerHeading;
 	private int launchWhat;
 	
+	/** Copies all the current status of the Ship. */
 	public ShipAction(Ship s)
 	{
 		myShipID = s.getID();
@@ -20,6 +40,7 @@ public class ShipAction
 		launchWhat = ShipTypeDefinitions.TYPE_INVALID;
 	}
 	
+	/** Constructs a ShipAction with the specified data.*/
 	public ShipAction(int id, boolean move, double heading, double scannerHeading, int launch)
 	{
 		myShipID = id;
@@ -29,6 +50,7 @@ public class ShipAction
 		launchWhat=launch;
 	}
 	
+	/** Constructs an empty ShipAction with the specified ID. */
 	public ShipAction(int id)
 	{
 		myShipID=id;
@@ -43,21 +65,35 @@ public class ShipAction
 		return myShipID;
 	}
 	
+	/**
+	 * 
+	 * @return true if the ship is attempting to launch something.
+	 */
 	public boolean isSpawn()
 	{
 		return launchWhat != ShipTypeDefinitions.TYPE_INVALID;
 	}
 	
+	/**
+	 * 
+	 * @return true if the ship is trying to move next tick.
+	 * @see setWillMove(boolean)
+	 */
 	public boolean willMove()
 	{
 		return willMove;
 	}
 	
+	/** Same as willMove().*/
 	public final boolean getWillMove()
 	{
 		return willMove();
 	}
-	
+
+	/**
+	 * Sets whether the ship will attempt to move next tick.
+	 * <p>WARNING: This does not check if the ship type is actually capable of stopping.
+	 */
 	public void setWillMove(boolean b)
 	{
 		willMove = b;
@@ -83,6 +119,7 @@ public class ShipAction
 		return myShipID;
 	}
 	
+	/** Checks if the ID's are equal.*/
 	public boolean equals(Object rhs)
 	{
 		if(!(rhs instanceof ShipAction))

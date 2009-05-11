@@ -1,3 +1,21 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots.util;
 
 import net.banack.geometry.DArc;
@@ -5,6 +23,7 @@ import net.banack.geometry.DDimension;
 import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 
+/** Stores all pertinent information about a ship. */
 public class Ship implements ShipStatus
 {	
 	private int myID;
@@ -52,7 +71,7 @@ public class Ship implements ShipStatus
 		this(id,parentID,type,t,x,y,0,0,tick,life,0,0);
 	}
 	
-	//clobbers this ship with the contents of s
+	/** Clobbers this ship with the contents of s. */
 	public void update(Ship s)
 	{
 		myID=s.myID;
@@ -69,11 +88,13 @@ public class Ship implements ShipStatus
 		myLaunchDelay = s.myLaunchDelay;
 	}
 	
+	/** Returns the ID of the ship that spawned this ship. */
 	public int getParentID()
 	{
 		return myParentID;
 	}
 	
+	/** Number of ticks until the ship can fire again. */
 	public int getLaunchDelay()
 	{
 		return myLaunchDelay;
@@ -138,6 +159,7 @@ public class Ship implements ShipStatus
 		this.willMove = willMove;
 	}
 	
+	/** The change in life from last tick. */
 	public int getDeltaLife()
 	{
 		return myDeltaLife;
@@ -273,6 +295,7 @@ public class Ship implements ShipStatus
 		return new DDimension(myType.getWidth(),myType.getHeight());
 	}
 	
+	/** The perhaps poorly named way to get the rectangle of the ships location. */
 	public DQuad getLocation()
 	{
 		return SpaceMath.getDQuad(myPosition,myType.getWidth(),myType.getHeight(),myHeading);
@@ -303,5 +326,10 @@ public class Ship implements ShipStatus
 	public String toString()
 	{
 		return SpaceText.toString(this);
+	}
+	
+	public boolean isAmmo()
+	{
+		return myType.isAmmo();
 	}
 }

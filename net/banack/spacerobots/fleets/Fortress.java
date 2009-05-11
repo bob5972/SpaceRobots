@@ -1,3 +1,7 @@
+/*
+ * Copyright (c)2009 Mark Sheldon
+ */
+
 package net.banack.spacerobots.fleets;
 
 import java.util.HashSet;
@@ -21,7 +25,11 @@ import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.SpaceMath;
 import net.banack.spacerobots.util.Team;
 
-
+/**
+ * Sample fleet.
+ * @author Mark Sheldon
+ *
+ */
 public class Fortress extends AIFleet
 {
     private DPoint center;

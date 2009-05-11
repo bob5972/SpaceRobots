@@ -1,3 +1,21 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots;
 
 import net.banack.util.MethodNotImplementedException;
@@ -16,12 +34,12 @@ import net.banack.spacerobots.util.ContactList;
 public class FleetContactList
 {
 	//Map of fleetID's to (HashMap's of enemyID's to (HashSets of spotterID's))	
-	private Map<Integer, Map<Integer, Set<Integer> > > mySpotters;
+	private Map<Integer, Map<Integer, HashSet<Integer> > > mySpotters;
 	private IntMap myFleetSize;	
 	
 	public FleetContactList()
 	{
-		mySpotters = new HashMap<Integer, Map<Integer, Set<Integer> > >();
+		mySpotters = new HashMap<Integer, Map<Integer, HashSet<Integer> > >();
 		myFleetSize = new IntMap();
 	}
 	
@@ -34,7 +52,7 @@ public class FleetContactList
 	
 	public void addContact(ServerShip enemy, ServerShip spotter)
 	{
-		Map<Integer, Set<Integer> > eMap;
+		Map<Integer, HashSet<Integer> > eMap;
 		
 		
 		
@@ -48,11 +66,11 @@ public class FleetContactList
 		}
 		else
 		{
-			eMap = new HashMap<Integer, Set<Integer> >();
+			eMap = new HashMap<Integer, HashSet<Integer> >();
 			mySpotters.put(sFID,eMap);
 		}
 		
-		Set<Integer> sSet;
+		HashSet<Integer> sSet;
 		if(eMap.containsKey(eID))
 		{
 			sSet = eMap.get(eID);
@@ -70,7 +88,7 @@ public class FleetContactList
 	//returns a new contact list that is linked to this one
 	//ie, any additions or deletions will be reflected in the master list
 	//  (but don't add anything from a different fleet...)
-	public Map<Integer,Set<Integer>> getFleetList(ServerFleet f)
+	public Map<Integer,HashSet<Integer>> getFleetList(ServerFleet f)
 	{
 		int fid = f.getFleetID();
 		Integer ifid = new Integer(fid);

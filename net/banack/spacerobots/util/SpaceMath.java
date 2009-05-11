@@ -1,3 +1,21 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots.util;
 
 import java.util.Iterator;
@@ -10,21 +28,35 @@ import net.banack.spacerobots.Debug;
 import net.banack.spacerobots.ai.BasicAIShip;
 import net.banack.util.MethodNotImplementedException;
 
+/**
+ * Utility functions and math-related stuff.
+ * @author Michael Banack <bob5972@banack.net>
+ */
 public class SpaceMath
 {
 	public static final double HEADING_WRAP = 2*Math.PI;
 	public static final DPoint ORIGIN = DPoint.ORIGIN;
 	
+	/**
+	 * Returns the angle between the specified points.
+	 * <p>In other words, pretend <code>origin</code> is the origin, and get the polar angle to <code>target</code>.
+	 */
 	public static double getAngle(DPoint origin, DPoint target)
 	{
 		return (target.subtract(origin)).getTheta();
 	}
 	
+	/**
+	 * Returns the raw (Euclidean) distance between <code>a</code> and <code>b</code>.
+	 */
 	public static double getRawDistance(DPoint a, DPoint b)
 	{
 		return (a.subtract(b)).getRadius();
 	}
 	
+	/**
+	 * Returns the wrapped distance between <code>a</code> and <code>b</code>.
+	 */
 	public static double getDistance(DPoint a, DPoint b, double battleWidth, double battleHeight)
 	{
 		DPoint center = a;
@@ -32,11 +64,31 @@ public class SpaceMath
 		return getRawDistance(center,b);
 	}
 	
+	/**
+	 * Calculates the heading to intercept the target ship.
+	 * <p> Depending on the speeds of the involved ships, and their current headings, this may be impossible...
+	 * @param s The pursuing ship that wishes to intercept.
+	 * @param target The target ship.
+	 * @param battleWidth The width of the battle.
+	 * @param battleHeight The height of the battle.
+	 * @return The angle heading in radians that <code>s</code> should set.
+	 */
 	public static double interceptHeading(ShipStatus s, ShipStatus target, double battleWidth, double battleHeight)
 	{
 		return interceptHeading(s,target.getPosition(),target.getHeading(),target.getMaxSpeed(),battleWidth,battleHeight);
 	}
 	
+	/**
+	 * Calculates the heading required to intercept a ship with the specified position, speed, and heading.
+	 * <p> Depending on the speeds of the involved ships, and their current headings, this may be impossible...
+	 * @param s The pursuing ship.
+	 * @param target The current position of the target ship to intercept.
+	 * @param targetHeading The current heading of the target ship.
+	 * @param targetSpeed The current speed of the target ship.
+	 * @param battleWidth The width of the battle.
+	 * @param battleHeight The height of the battle
+	 * @return The angle heading in radians that <code>s</code> should set.
+	 */
 	public static double interceptHeading(ShipStatus s, DPoint target, double targetHeading, double targetSpeed, double battleWidth, double battleHeight)
 	{
 		DPoint sPos = s.getPosition();
@@ -50,6 +102,15 @@ public class SpaceMath
 		return h;
 	}
 	
+	/**
+	 * Returns the apparent mirror-image of the target point that is closest to the original point, after wrapping.
+	 * <p> In other words, determine whether it is closer to reach target directly, or by wrapping over the edge of the map.
+	 * @param orig The starting point.
+	 * @param target The target point.
+	 * @param width The battle width.
+	 * @param height The battle height.
+	 * @return The point closest to <code>orig</code> after wrapping.
+	 */
 	public static DPoint getClosestMirror(DPoint orig, DPoint target, double width, double height)
 	{
 		DPoint sPos = orig;
@@ -90,7 +151,14 @@ public class SpaceMath
 		return m[index];		
 	}
 	
-	//figures out the new heading for a ship, taking into account how far a ship can turn
+	/**
+	 * Figures out the new heading for a ship, taking into account how far a ship can turn and where it is trying to turn to.
+	 * 
+	 * @param curHeading The current ship  heading.
+	 * @param desiredHeading The heading the ship is trying to reach.
+	 * @param maxTurningRate How fast the ship can turn (in radians/tick).
+	 * @return The new ship heading.
+	 */
 	public static double calculateAdjustedHeading(double curHeading, double desiredHeading, double maxTurningRate)
 	{
 		double angle = desiredHeading-curHeading;
@@ -112,13 +180,19 @@ public class SpaceMath
 			return curHeading-maxTurningRate;		
 	}
 	
+	/** Wraps a heading to be within allowed values ie the range [0..2 Pi).*/
 	public static double wrapHeading(double h)
 	{
 		return wrap(h,HEADING_WRAP);
 	}
 	
 	
-	
+	/** Wraps a double value within the specified range.
+	 * <p> If value = range*q + r, where q is an integer, and r is a real number between [0,range), return r.
+	 * @param value The value to be wrapped
+	 * @param range The range for it to be wrapped within.
+	 * @return the new wrapped value
+	 */
 	public static double wrap(double value, double range)
 	{
 		value -= Math.floor(value/range)*range;
@@ -131,6 +205,11 @@ public class SpaceMath
 		return value;
 	}
 	
+	/**
+	 * Wraps a double value about a center point.
+	 * <p> Returns value wrapped to an interval [center-range/2,center+range/2).
+	 * @see wrap(double value,double range).
+	 */
 	public static double wrap(double value, double range, double center)
 	{
 		double oup =  wrap(value,range);
@@ -147,18 +226,23 @@ public class SpaceMath
 		return oup;
 	}
 	
+	/**
+	 * Wraps the X and Y values of a point to the specified width and height.
+	 */
 	public static DPoint wrap(DPoint p, double width, double height)
 	{
 		DPoint oup = new DPoint(wrap(p.getX(),width),wrap(p.getY(),height));
 		return oup;
 	}
 	
+	/** Wraps a point to the specified width and height, into a centered region.*/
 	public static DPoint wrap(DPoint p, DPoint center, double width, double height)
 	{
 		DPoint oup = new DPoint(wrap(p.getX(),width,center.getX()),wrap(p.getY(),height,center.getY()));
 		return oup;
 	}
 	
+	/** Wraps the center of a DQuad, and adjusts the other points accordingly. */
 	public static DQuad wrap(DQuad r, DPoint center, double width,double height)
 	{
 		DPoint rc = r.getCenter();
@@ -172,39 +256,50 @@ public class SpaceMath
 		return new DQuad(p1,p2,p3,p4);
 	}
 	
-	//does no wrapping
+	/** Calculates the new position of a ship with initial position, heading and speed.
+	 * <p> Does no wrapping.
+	 */
 	public static DPoint calculateNewPos(DPoint orig, double heading, double speed)
 	{
 		return orig.add(calculateOffset(heading,speed));
 	}
 	
+	/**
+	 * Determines the offset of a ship with specified heading and speed.
+	 * @return a DPoint containing the X and Y offset.
+	 */
 	public static DPoint calculateOffset(double heading, double speed)
 	{
 		return new DPoint(calculateXOffset(heading,speed), calculateYOffset(heading,speed));
 	}
 	
+	/** Determines the X offset only.
+	 */
 	public static double calculateXOffset(double heading, double speed)
 	{
 		return (Math.cos(heading)*speed);
 	}
-	
+
+	/** Determines the Y offset only.
+	 */
 	public static double calculateYOffset(double heading,double speed)
 	{
 		return (Math.sin(heading)*speed);
 	}
 	
+	/** Converts degrees to radians.*/
 	public static double degToRad(double d)
 	{
 		return (d/360)*2*Math.PI;
 	}
 	
+	/** Converts radians to degrees.*/
 	public static double radToDeg(double r)
 	{
 		return (r/(2*Math.PI))*360;
 	}
 	
-	
-	
+	/** Rotates a point about a center by a specified number of radians.*/
 	public static DPoint rotate(DPoint p, DPoint center, double r)
 	{
 		if(r == 0 || p.equals(center))
@@ -221,13 +316,15 @@ public class SpaceMath
 		return oup;	
 	}
 	
+	/** Calculates the center (average) of the specified points. */
 	public static DPoint findCenter(DPoint a, DPoint b, DPoint c, DPoint d)
 	{
 		DPoint oup = new DPoint((a.getX()+b.getX()+c.getX()+d.getX())/4 , (a.getY()+b.getY()+c.getY()+d.getY())/4);
 		return oup;
 	}
 	
-	//rotates a DQuad around it's center point
+	
+	/** Rotates a DQuad about its center point. */
 	public static DQuad rotate(DQuad q, double r)
 	{
 		if(r==0)
@@ -246,6 +343,7 @@ public class SpaceMath
 		return new DQuad(ul,ur,br,bl);		
 	}
 	
+	/** Rotates a DQuad about the specified center point.*/
 	public static DQuad rotate(DQuad q, DPoint c, double r)
 	{
 		if(r==0)
@@ -264,7 +362,7 @@ public class SpaceMath
 	}
 	
 	
-	
+	/** Returns a DQuad with the specified center, width, height, and rotation. */
 	public static DQuad getDQuad(DPoint center, double width, double height, double heading)
 	{
 		DPoint c=center;
@@ -278,8 +376,7 @@ public class SpaceMath
 		return rotate(r,c,heading);
 	}
 	
-	//returns the normal bounding rectangle for the given quad
-	//  (ie the bounding rectangle parallel to the axes)
+	/** Returns the normal (parallel to the axes) bounding rectangle for the specified DQuad.*/
 	public static DQuad getNormalBounds(DQuad r)
 	{
 		DPoint ul,ur,bl,br,p;
@@ -309,17 +406,10 @@ public class SpaceMath
 		return new DQuad(ul,ur,br,bl);		
 	}
 	
-	//reorders the points so that P1 is the upper-left, and proceeding clockwise
-	public static DQuad reorderToNormal(DQuad r)
-	{
-		//Write a unit test whenever this gets done.
-		throw new MethodNotImplementedException();
-		//Obviously, this method is not being used, so I may never finish it.
-		//I don't even remember why I wanted it...
-	}
-	
-	//test if the interval [a1,a2] intersects the interval [b1,b2]
-	//Precondition: a1 <= a2, b1<= b2
+	/**
+	 * Test if the interval [a1,a2] intersects the interval [b1,b2] on the real line.
+	 * <p> Precondition: a1 <= a2, b1<= b2
+	 */
 	public static boolean isIntersection(double a1, double a2, double b1, double b2)
 	{
 		if(a1 <= b1 && b1 <= a2)
@@ -333,7 +423,7 @@ public class SpaceMath
 		return false;
 	}
 	
-	//returns true iff p is in [a1,a2]
+	/** Returns true iff p is contined in [a1,a2].*/
 	public static boolean containsPoint(double p, double a1, double a2)
 	{
 		if(a1 <= p && p <= a2)
@@ -341,7 +431,7 @@ public class SpaceMath
 		return false;
 	}
 	
-	//test if the line segments Seg[a1,a2] intersects Seg[b1,b2]
+	/** Test if the line segments Seg[a1,a2] intersects Seg[b1,b2]. */
 	public static boolean isIntersection(DPoint a1, DPoint a2, DPoint b1, DPoint b2)
 	{
 		DPoint offset = a2.subtract(a1);
@@ -411,6 +501,7 @@ public class SpaceMath
 		return false;
 	}
 	
+	/** Returns the minimum of a and b. */
 	public static double min(double a, double b)
 	{
 		if(a < b)
@@ -418,6 +509,7 @@ public class SpaceMath
 		return b;
 	}
 	
+	/** Returns the maximum of a and b.*/
 	public static double max(double a, double b)
 	{
 		if(a> b)
@@ -425,6 +517,7 @@ public class SpaceMath
 		return b;
 	}
 	
+	/** Returns true if the specified point is contained within the DQuad. */
 	public static boolean containsPoint(DPoint p,DQuad r)
 	{
 		DPoint ul, br, bl;
@@ -445,6 +538,7 @@ public class SpaceMath
 		return true;		
 	}	
 	
+	/** Returns true iff the DQuad's intersect. */
 	public static boolean isCollision(DQuad r, DQuad s)
 	{		
 		DPoint center = s.getP4();
@@ -567,6 +661,7 @@ public class SpaceMath
 		return false;
 	}
 	
+	/** Returns true if the DArc intersects the DQuad. */
 	public static boolean isCollision(DArc arc, DQuad r)
 	{		
 		//Debug.print("Entering isCollision: arc="+arc+", r="+r);
@@ -752,9 +847,14 @@ public class SpaceMath
 		return false;		
 	}
 	
-	//collision checks rectangles that have sides parallel to the axes
-	// abl,aur = a bottom left, a upper right
-	// bbl,bur = b bottom left, b upper right
+	/** 
+	 * Collision checks rectangles that have sides parallel to the axes.
+	 *
+	 * @param abl Bottom left point of retangle a
+	 * @param aur Upper right point of rectangle a
+	 * @param bbl Bottom left point of rectangle b
+	 * @param bur Upper Right point of rectangle b
+	 */
 	public static boolean isBoundedCollision(DPoint abl, DPoint aur,DPoint bbl, DPoint bur)
 	{
 		if(bbl.getY() > aur.getY())
@@ -769,15 +869,27 @@ public class SpaceMath
 		return true;
 	}
 	
-	//collision checks rectangles that have sides parallel to the axes
-	// a => (-radius,-radius) to (radius,radius)
-	// bbl,bur = b bottom left, b upper right
+	/**
+	 * Checks if a rectangle that have sides parallel to the axes is within a square of the given radius.
+	 * <p> The square goes from bottom left (-radius,-radius) to upper right (radius,radius).
+	 * @param radius The radius of the square
+	 * @param bbl The bottom left point of the rectangle
+	 * @param bur The upper right point of the rectangle
+	 */
 	public static boolean isBoundedCollision(double radius,DPoint bbl, DPoint bur)
 	{
 		return isBoundedCollision(radius,bbl.getX(),bur.getX(),bbl.getY(),bur.getY());
 	}
 	
-	//collision checks bounding rectangle defined by radius and (left,right,top,bottom)
+	/**
+	 * Collision checks a square of the given radius and a normal rectangle defined by (left,right,top,bottom).
+	 * @param radius The radius of the square, (ie half the side length).
+	 * @param left The leftmost X-value of the rectangle.
+	 * @param right The rightmost X-value of the rectangle.
+	 * @param bottom The lowermost Y-value of the rectangle.
+	 * @param top The uppermost Y-value of the rectangle.
+	 * @return true iff they intersect.
+	 */
 	public static boolean isBoundedCollision(double radius,double left, double right, double bottom, double top)
 	{
 		if(bottom > radius)
@@ -792,16 +904,19 @@ public class SpaceMath
 		return true;
 	}
 	
+	/** Returns true iff the given point is within a square of the given radius centered at the origin.*/
 	public static boolean isBoundedCollision(double radius,DPoint p)
 	{
 		return isBoundedCollision(radius,p.getX(),p.getY());
 	}
 	
+	/** Returns true iff the given point (x,y) is within a square of the given radius centered at the origin. */
 	public static boolean isBoundedCollision(double radius, double x, double y)
 	{
 		return (x >= -radius) && (x <= radius) && (y >= -radius) && (y <= radius);
 	}
 	
+	/** Returns true iff the given point is contained within a normal rectangle with given extrema, centered at the origin. */
 	public static boolean isBoundedCollision(DPoint p, double left, double right, double bottom, double top)
 	{
 		double x = p.getX();
@@ -810,6 +925,7 @@ public class SpaceMath
 		return (x >= left) && (x <= right) && (y >= bottom) && (y <= top);
 	}
 	
+	/** Returns true of the point is contained within the arc.*/
 	public static boolean containsPoint(DPoint p, DArc a)
 	{
 		DPoint offset = p.subtract(a.getCenter());

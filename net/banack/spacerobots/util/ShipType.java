@@ -1,5 +1,24 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots.util;
 
+/** All of the constant information about a given type of ship. */
 public class ShipType
 {
 	public final static int TYPE_INVALID = ShipTypeDefinitions.TYPE_INVALID;
@@ -31,8 +50,8 @@ public class ShipType
 			int launchDelay, int launchCost)
 	{
 		this.name = name;
-		typeID = id;
-		maxLife = life;
+		this.typeID = id;
+		this.maxLife = life;
 		this.width = width;
 		this.height = height;
 		this.cost = cost;
@@ -83,44 +102,64 @@ public class ShipType
 		return false;
 	}
 	
+	/** The base delay of this ship type to launch anything. */
 	public int getStdLaunchDelay()
 	{
 		return stdLaunchDelay;
 	}
 	
-	
+	/** The extra delay a ship faces after launching a ship of <i>this</i> type.*/
 	public int getExtraLaunchCost()
 	{
 		return extraLaunchCost;
 	}
 	
 	
-	//maxTickCount of 0 means no expiry
+	/**The maximum number of ticks before this ship type expires.
+	 * <p> A maxTickCount of 0 means no expiry.
+	 */
 	public int getMaxTickCount()
 	{
 		return maxTickCount;
 	}
 	
+	/** Returns true if the ship is capable of stopping. */
 	public boolean getCanStop()
 	{
 		return canStop;
 	}
 	
+	/** Returns true if the ship type gets to run an AI. */
 	public boolean getAI()
 	{
 		return hasAI;
 	}
 	
+	/** Returns the maximum speed of the ship type. */
 	public double getMaxSpeed()
 	{
 		return maxSpeed;
 	}
 	
+	/** Returns true iff this is a ship (as opposed to projectile ammo). */
 	public boolean getIsShip()
 	{
 		return isShip;
 	}
 	
+	/** Returns true iff this is a ship (as opposed to projectile ammo). */
+	public final boolean isShip()
+	{
+		return getIsShip();
+	}
+	
+	/** Returns true iff this is projectile ammo (as opposed to a ship).*/
+	public final boolean isAmmo()
+	{
+		return !isShip();
+	}
+	
+	/** Returns the name of this type of ship.*/
 	public String getName()
 	{
 		return name;
@@ -139,6 +178,7 @@ public class ShipType
 		return typeID;
 	}
 	
+	/** The typeID of this ship type. */
 	public final int getID()
 	{
 		return getTypeID();

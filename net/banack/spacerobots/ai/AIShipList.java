@@ -1,3 +1,21 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots.ai;
 
 import java.util.HashMap;
@@ -8,6 +26,11 @@ import java.util.Set;
 import net.banack.spacerobots.util.Ship;
 import net.banack.spacerobots.util.ShipAction;
 
+/** A list of AIShips.
+ * 
+ * @author Michael Banack <bob5972@banack.net>
+ *
+ */
 public class AIShipList
 {
 	private HashMap<Integer,AIShip> myShips;
@@ -21,6 +44,10 @@ public class AIShipList
 		myDeadShips = new HashSet<Integer>();
 	}
 	
+	/**
+	 * Clears the new and dead ship lists.
+	 * <p> This does <i>NOT</i> wipe the entire list. 
+	 */
 	//DOES NOT CLEAR THE LIST
 	//Instead it wipes the new and dead ship lists
 	//I could probably name this something better... --bob5972
@@ -69,17 +96,21 @@ public class AIShipList
 		makeEmpty();
 	}
 	
-	//includes dead ships
+	/**
+	 * The current size (including dead ships).
+	 */
 	public int size()
 	{
 		return myShips.size();
 	}
 	
+	/** The number of alive ships. */
 	public int getAliveSize()
 	{
 		return (size()-myDeadShips.size());		
 	}
 	
+	/** The number of new ships. */
 	public int getNewSize()
 	{
 		return myNewShips.size();
@@ -152,30 +183,26 @@ public class AIShipList
 		}
 	}
 	
+	/** Runs the given AIGovernor on every live ship in the list. */
 	public void apply(AIGovernor g)
 	{
-		Iterator<AIShip> i = iterator();
-		while(i.hasNext())
-		{
-			AIShip s = i.next();
-			
-			g.run(s);
-		}
+		apply(null,g);
 	}
 	
+	/** Runs the given AIGovernor on every live ship in the list that passes filter. */
 	public void apply(AIFilter f, AIGovernor g)
 	{
-		Iterator<AIShip> i = iterator();
+		Iterator<AIShip> i = getAliveIterator();
 		while(i.hasNext())
 		{
 			AIShip s = i.next();
 			
-			if(f.test(s))
+			if(f == null || f.test(s))
 				g.run(s);
 		}
 	}
 	
-	//iterates over all ships (including dead ones)
+	/** Iterates over all ships (including dead ones). */
 	public java.util.Iterator<AIShip> iterator()
 	{
 		return myShips.values().iterator();

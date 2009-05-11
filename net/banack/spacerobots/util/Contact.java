@@ -1,3 +1,21 @@
+/*
+ * This file is part of SpaceRobots.
+ * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * 
+ * SpaceRobots is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SpaceRobots is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.banack.spacerobots.util;
 
 import net.banack.geometry.DDimension;
@@ -5,6 +23,7 @@ import net.banack.geometry.DPoint;
 import net.banack.geometry.DQuad;
 import net.banack.spacerobots.ServerShip;
 
+/** All scanned information about an enemy ship. */
 public class Contact implements ShipStatus
 {
 	private int enemyID;
@@ -198,5 +217,10 @@ public class Contact implements ShipStatus
 	public int getCost()
 	{
 		return enemyType.getCost();
+	}
+	
+	public boolean isAmmo()
+	{
+		return enemyType.isAmmo();
 	}
 }
