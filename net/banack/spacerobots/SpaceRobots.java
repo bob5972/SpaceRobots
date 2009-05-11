@@ -67,6 +67,8 @@ public class SpaceRobots
 		Debug.setShowComLog(false);//only works for TextProtocol
 		Debug.setSlowGraphics(false);
 		
+		Debug.info("SpaceRobots version 0.9");
+		
 		Random r;
 		OutputStream recordFile = null;
 		
