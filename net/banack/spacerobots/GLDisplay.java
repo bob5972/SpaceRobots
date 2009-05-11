@@ -64,7 +64,7 @@ public class GLDisplay implements GLEventListener, Display
     private boolean drawSensorArcs = true;
     private boolean showColorWarning = Debug.showWarnings();
 
-    private AbstractQueue<DisplayFrame> frameQueue;
+    private ArrayBlockingQueue<DisplayFrame> frameQueue;
 	
     private class DisplayFrame
     {
@@ -140,7 +140,9 @@ public class GLDisplay implements GLEventListener, Display
 	
     public GLDisplay()
     {
-	frameQueue = new ConcurrentLinkedQueue<DisplayFrame>();
+	frameQueue =
+	    new ArrayBlockingQueue<DisplayFrame>(Debug.isSlowGraphics() ?
+						 1 : MAX_QUEUED_TICKS);
     }
 	
     private void createFrame(int width, int height)
@@ -294,15 +296,11 @@ public class GLDisplay implements GLEventListener, Display
 	    fleets[i].ships.trimToSize();
 	}
 
-	while (frameQueue.size() > MAX_QUEUED_TICKS || (Debug.isSlowGraphics() && frameQueue.size()>0)) {
-	    try {
-		Thread.sleep(1000/FRAMES_PER_SECOND+1);
-	    }
-	    catch (InterruptedException e) { 
-	    }    
-	}
+	try {
+	    frameQueue.put(new DisplayFrame(teams, fleets, b.getTick()));
+	} catch (InterruptedException e) { 
+	}    
 		
-	frameQueue.add(new DisplayFrame(teams, fleets, b.getTick()));
     }
 	
     public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
