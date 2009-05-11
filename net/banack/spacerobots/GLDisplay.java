@@ -299,6 +299,9 @@ public class GLDisplay implements GLEventListener, Display
 	try {
 	    frameQueue.put(new DisplayFrame(teams, fleets, b.getTick()));
 	} catch (InterruptedException e) { 
+		Debug.warn("GLDisplay caught InterruptedException!");
+		if(Debug.showWarnings())
+			Debug.printStackTrace(e);
 	}    
 		
     }
@@ -342,7 +345,9 @@ public class GLDisplay implements GLEventListener, Display
  	    }
  	    catch (InterruptedException e)
  		{
-				
+ 	    	Debug.warn("GLDisplay caught InterruptedException while exiting!");
+ 			if(Debug.showWarnings())
+ 				Debug.printStackTrace(e);
  		}
  	    closeAndExit();
  	}
