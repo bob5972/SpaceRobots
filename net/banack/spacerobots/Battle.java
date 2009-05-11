@@ -222,7 +222,8 @@ public class Battle
 				//add credits to fleets
 				int credit = f.getCreditIncrement();
 				f.incrementCredits(credit);
-				f.incrementCredits(f.getNextBonus());//automatically clears it too
+				f.incrementCredits(f.getBonus());
+				f.resetBonus();
 				
 				//Write ships to AI sockets
 				Map<Integer, HashSet<Integer> > fleetContacts = contacts.getFleetList(f);

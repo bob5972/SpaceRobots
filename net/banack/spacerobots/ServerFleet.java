@@ -156,10 +156,13 @@ public class ServerFleet extends Fleet
 		myNextCreditBonus += d;		
 	}
 	
-	public int getNextBonus()
+	public int getBonus()
 	{
-		int oup = myNextCreditBonus;
+		return myNextCreditBonus;
+	}
+	
+	public void resetBonus()
+	{
 		myNextCreditBonus = 0;
-		return oup;
 	}
 }
