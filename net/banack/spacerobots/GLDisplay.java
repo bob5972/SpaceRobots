@@ -134,7 +134,6 @@ public class GLDisplay implements GLEventListener, Display
 	{
 	    myAnimator.stop();
 	    Debug.info("Exiting from GLDisplay");
-	    System.exit(0);
 	} 	
     }
 	
@@ -143,6 +142,10 @@ public class GLDisplay implements GLEventListener, Display
 	frameQueue =
 	    new ArrayBlockingQueue<DisplayFrame>(Debug.isSlowGraphics() ?
 						 1 : MAX_QUEUED_TICKS);
+    }
+
+    public boolean isVisible() {
+	return frame.isVisible();
     }
 	
     private void createFrame(int width, int height)
@@ -179,7 +182,7 @@ public class GLDisplay implements GLEventListener, Display
 		
 	frame.addWindowListener(new WindowAdapter() {
 		public void windowClosing(WindowEvent e) {
-		    closeAndExit();
+		    frame.setVisible(false);
 		}
 	    });
 	
@@ -190,7 +193,9 @@ public class GLDisplay implements GLEventListener, Display
     
 	public void initDisplay(Battle b)
 	{
-		return;
+	    battleWidth = b.getWidth();
+	    battleHeight = b.getHeight();
+	    createFrame(700, 700);
 	}
 	
 	public void closeDisplay(Battle b)
@@ -208,13 +213,6 @@ public class GLDisplay implements GLEventListener, Display
 	
     public void updateDisplay(Battle b)
     {
-	if (frame == null) {
-	    battleWidth = b.getWidth();
-	    battleHeight = b.getHeight();
-	    //createFrame((int) b.getWidth(), (int) b.getHeight());
-	    createFrame(700, 700);
-	}
-		
 	if (b.isOver()) {
 	    simulationFinished = true;
 	}
@@ -299,9 +297,9 @@ public class GLDisplay implements GLEventListener, Display
 	try {
 	    frameQueue.put(new DisplayFrame(teams, fleets, b.getTick()));
 	} catch (InterruptedException e) { 
-		Debug.warn("GLDisplay caught InterruptedException!");
-		if(Debug.showWarnings())
-			Debug.printStackTrace(e);
+	    if(Debug.showWarnings()) {
+		Debug.printStackTrace(e);
+	    }
 	}    
 		
     }
@@ -337,20 +335,6 @@ public class GLDisplay implements GLEventListener, Display
     {
  	DisplayFrame displayFrame;
  	GL gl = drawable.getGL();
-		
- 	if (simulationFinished && frameQueue.isEmpty()) {
- 	    try {
- 		Debug.info("Pausing for 3 seconds...");
- 		Thread.sleep(3000);
- 	    }
- 	    catch (InterruptedException e)
- 		{
- 	    	Debug.warn("GLDisplay caught InterruptedException while exiting!");
- 			if(Debug.showWarnings())
- 				Debug.printStackTrace(e);
- 		}
- 	    closeAndExit();
- 	}
 		
  	gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 

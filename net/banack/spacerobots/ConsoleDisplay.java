@@ -41,6 +41,11 @@ public class ConsoleDisplay implements Display
 	{
 		return;
 	}
+
+    public boolean isVisible()
+    {
+	return false;
+    }
 	
 	public void updateDisplay(Battle b)
 	{

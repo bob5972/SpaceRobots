@@ -96,6 +96,11 @@ public class RecordingDisplay implements Display
 		myZip = null;
 		sOut=null;
 	}
+
+    public boolean isVisible()
+    {
+	return false;
+    }
 	
 	public void updateDisplay(Battle b) throws IOException
 	{

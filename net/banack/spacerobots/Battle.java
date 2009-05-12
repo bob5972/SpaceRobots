@@ -163,7 +163,6 @@ public class Battle
 			myShips.add(oup);
 			toBirth.add(oup);
 			f.setNumShips(f.getNumShips()+1);
-			f.setCredits(0);
 			
 			ServerShip[] s = new ServerShip[1];
 			s[0] = oup;

@@ -49,5 +49,10 @@ public class JoinDisplay implements Display
 		one.updateDisplay(b);
 		two.updateDisplay(b);		
 	}
-	
+
+
+    public boolean isVisible()
+    {
+	return false;
+    }	
 }

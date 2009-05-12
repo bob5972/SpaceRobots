@@ -9,3 +9,4 @@ killSpaceRobots.sh
 *.class
 *.patch
 battle.srb
+*~

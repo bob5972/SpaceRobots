@@ -28,4 +28,6 @@ public interface Display
 	
 	//Updates the display with the current status of b
 	void updateDisplay(Battle b) throws IOException;
+
+	boolean isVisible();
 }
