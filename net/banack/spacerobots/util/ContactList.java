@@ -19,6 +19,7 @@
 package net.banack.spacerobots.util;
 
 import net.banack.geometry.DPoint;
+import net.banack.util.JoinIterator;
 import net.banack.util.MethodNotImplementedException;
 import net.banack.util.SkipList;
 
@@ -38,7 +39,8 @@ import java.util.Iterator;
 public class ContactList
 {
 	//HashMap of active enemyID's to Contacts
-	private HashMap<Integer,Contact> myContacts;
+	private HashMap<Integer,Contact> myShipContacts;
+	private HashMap<Integer,Contact> myAmmoContacts;
 	//HashMap of enemyID's to HashSets of spotterID's
 	private HashMap<Integer, Set<Integer> > mySpotters;
 	//number of enemyID's in this list
@@ -49,14 +51,16 @@ public class ContactList
 	public ContactList()
 	{
 		myMasterContacts = new HashMap<Integer,Contact>();
-		myContacts = new HashMap<Integer,Contact>();
+		myShipContacts = new HashMap<Integer,Contact>();
+		myAmmoContacts = new HashMap<Integer,Contact>();
 		mySpotters = new HashMap<Integer, Set<Integer> >();
 		mySize=0;
 	}
 	
 	public void makeEmpty()
 	{
-		myContacts.clear();
+		myShipContacts.clear();
+		myAmmoContacts.clear();
 		mySpotters.clear();
 		mySize=0;
 	}
@@ -66,6 +70,18 @@ public class ContactList
 	{
 		makeEmpty();
 	}
+	
+	private HashMap<Integer,Contact> getContactMap(Contact e)
+	{
+		if(e.isAmmo())
+		{
+			return myAmmoContacts;
+		}
+		else
+		{
+			return myShipContacts;
+		}
+	}
 		
 	
 	public void addContact(Contact e, int spotterID)
@@ -73,6 +89,8 @@ public class ContactList
 		Integer eID = new Integer(e.getID());
 		Integer sID = new Integer(spotterID);
 		Contact old;
+		HashMap<Integer,Contact> contactMap = getContactMap(e);
+		
 		
 		Set<Integer> sSet;
 
@@ -86,11 +104,11 @@ public class ContactList
 			myMasterContacts.put(old.getID(),old);
 		}
 		
-		if(!myContacts.containsKey(eID))
+		if(!contactMap.containsKey(eID))
 			mySize++;
 		
 		old.update(e);
-		myContacts.put(eID,old);
+		contactMap.put(eID,old);
 		
 		if(mySpotters.containsKey(eID))
 		{
@@ -109,6 +127,7 @@ public class ContactList
 	public void addContact(Contact e, HashSet<Integer> spotters)
 	{
 		Integer eID = new Integer(e.getID());
+		HashMap<Integer,Contact> contactMap = getContactMap(e);
 		
 		Set<Integer> sSet;
 		Contact old;
@@ -123,11 +142,11 @@ public class ContactList
 			myMasterContacts.put(old.getID(),old);
 		}
 		
-		if(!myContacts.containsKey(eID))
+		if(!contactMap.containsKey(eID))
 			mySize++;
 		
 		old.update(e);
-		myContacts.put(eID,old);
+		contactMap.put(eID,old);
 		
 		if(mySpotters.containsKey(eID))
 		{
@@ -147,9 +166,19 @@ public class ContactList
 	 * <p>Please don't modify it.
 	 */
 	//You probably really shouldn't be modifying this...I miss constant reference
-	public Collection<Contact> getContacts()
+	public Collection<Contact> getShipContacts()
 	{
-		return myContacts.values();
+		return myShipContacts.values();
+	}
+	
+	/**
+	 * Returns the collection of contacts (currently) in this list.
+	 * <p>Please don't modify it.
+	 */
+	//You probably really shouldn't be modifying this...I miss constant reference
+	public Collection<Contact> getAmmoContacts()
+	{
+		return myAmmoContacts.values();
 	}
 	
 	/**
@@ -162,11 +191,22 @@ public class ContactList
 	}
 	
 	
-	
 	/** Returns an iterator over Integers of enemyID's. */
 	public Iterator<Integer> enemyIterator()
 	{
-		return myContacts.keySet().iterator();
+		return new JoinIterator<Integer>(enemyShipIterator(),enemyAmmoIterator());
+	}
+	
+	/** Returns an iterator over Integers of enemyID's. */
+	public Iterator<Integer> enemyShipIterator()
+	{
+		return myShipContacts.keySet().iterator();
+	}
+	
+	/** Returns an iterator over Integers of enemyID's. */
+	public Iterator<Integer> enemyAmmoIterator()
+	{
+		return myAmmoContacts.keySet().iterator();
 	}
 	
 	/** Gets a (current) contact for a given enemy id.*/
@@ -202,7 +242,12 @@ public class ContactList
 	/** Gets a (current) contact for a given enemy id.*/
 	public Contact getContact(Integer enemyID)
 	{
-		return myContacts.get(enemyID);
+		Contact oup;
+		
+		oup = myShipContacts.get(enemyID);
+		if(oup == null)
+			oup = myAmmoContacts.get(enemyID);
+		return oup;
 	}
 	
 	/** Gets a (possibly old) contact for a given enemy id.*/
@@ -223,16 +268,28 @@ public class ContactList
 		return mySize;
 	}
 	
+	/** Number of enemies (currently) listed. */
+	public int shipSize()
+	{
+		return myShipContacts.size();
+	}
+	
+	/** Number of enemies (currently) listed. */
+	public int ammoSize()
+	{
+		return myAmmoContacts.size();
+	}
+	
 	/** Returns true if we contain the specified enemy id (currently).*/
 	public boolean containsEnemy(int eID)
 	{
-		return myContacts.containsKey(new Integer(eID));
+		return myShipContacts.containsKey(new Integer(eID)) || myAmmoContacts.containsKey(new Integer(eID));
 	}
 	
 	/** Returns true if we contain the specified enemy id (currently).*/
 	public boolean containsEnemy(Integer eID)
 	{
-		return myContacts.containsKey(eID);
+		return myShipContacts.containsKey(eID) || myAmmoContacts.containsKey(eID);
 	}
 	
 	/** Returns a set of all spotters for a given enemy id.
@@ -251,9 +308,16 @@ public class ContactList
 	
 	/** Returns a set of enemy ids (currently) in the list.
 	 * <p>Please don't modify it. */
-	public Set<Integer> getIDSet()
+	public Set<Integer> getShipIDSet()
 	{
-		return myContacts.keySet();
+		return myShipContacts.keySet();
+	}
+	
+	/** Returns a set of enemy id's (currently) in the list.
+	 * <p>Please don't modify it. */
+	public Set<Integer> getAmmoIDSet()
+	{
+		return myAmmoContacts.keySet();
 	}
 	
 	/** Returns true iff the enemy is currently being scanned by the given spotter. */

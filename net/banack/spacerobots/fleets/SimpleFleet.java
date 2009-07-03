@@ -94,7 +94,7 @@ public class SimpleFleet extends AIFleet
 			}
 		}
 		
-		Iterator<Integer> ci = myContacts.enemyIterator();
+		Iterator<Integer> ci = myContacts.enemyShipIterator();
 		
 		while(ci.hasNext())
 		{

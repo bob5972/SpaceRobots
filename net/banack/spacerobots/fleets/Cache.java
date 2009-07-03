@@ -73,15 +73,11 @@ public class Cache extends AIFleet
 		
 		Iterator<Integer> ci;
 		
-		ci = myContacts.enemyIterator();
+		ci = myContacts.enemyShipIterator();
 		while(ci.hasNext())
 		{
 			Contact enemy = myContacts.get(ci.next());
-			if(!isAmmo(enemy))
-			{
-				myTarget = enemy;
-				break;
-			}
+			myTarget = enemy;
 		}
 		
 		
@@ -128,7 +124,7 @@ public class Cache extends AIFleet
 			}
 		}
 		
-		ci = myContacts.enemyIterator();
+		ci = myContacts.enemyShipIterator();
 		while(ci.hasNext())
 		{
 			Integer eid = ci.next();

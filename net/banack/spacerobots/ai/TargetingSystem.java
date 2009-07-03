@@ -112,10 +112,18 @@ public class TargetingSystem
 		myContactList = myFleet.myContacts;
 		byPos = null;
 		
-		myActiveContacts.addAll(myContactList.getIDSet());
+		myActiveContacts.addAll(myContactList.getShipIDSet());
+		myActiveContacts.addAll(myContactList.getAmmoIDSet());
 		
 		Set<Integer> toDie =  new HashSet<Integer>();
-		Iterator<Integer> i = myContactList.enemyIterator();
+		Iterator<Integer> i = myContactList.enemyShipIterator();
+		while(i.hasNext())
+		{
+			Integer eid = i.next();
+			toDie.add(eid);
+		}
+		
+		i = myContactList.enemyAmmoIterator();
 		while(i.hasNext())
 		{
 			Integer eid = i.next();

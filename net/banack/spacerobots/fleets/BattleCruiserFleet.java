@@ -140,14 +140,12 @@ public class BattleCruiserFleet extends AIFleet
 		if(myContacts.size() == 0 && stateTimer <= 0)
 			myState = STATE_IDLE;
 		
-		Iterator<Integer> ci = myContacts.enemyIterator();
+		Iterator<Integer> ci = myContacts.enemyShipIterator();
 		shootCounter = 0;
 		while(ci.hasNext())
 		{
 			int eID = ci.next();
 			Contact enemy = myContacts.get(eID);
-			if(enemy.isAmmo())
-				continue;
 			int alloc = myTargets.getAllocationCount(eID);
 			int life = enemy.getLife();
 			if(alloc < life)

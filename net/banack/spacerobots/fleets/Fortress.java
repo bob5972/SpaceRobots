@@ -81,8 +81,8 @@ public class Fortress extends AIFleet
     public Iterator<ShipAction> runTick() {
 	Iterator<AIShip> i;
 
- 	if (myContacts.size() > 0) {
- 	    Iterator<Integer> ei = myContacts.enemyIterator();
+ 	if (myContacts.shipSize() > 0) {
+ 	    Iterator<Integer> ei = myContacts.enemyShipIterator();
 	    Contact enemy = myContacts.get(ei.next());
 
 	    if (!isAmmo(enemy)) {
