@@ -246,28 +246,33 @@ public class GLDisplay implements GLEventListener, Display
 	    disFleet.green = 0f;
 	    disFleet.blue = 0f;
 	    switch (disFleet.index) {
-	    case 0:
-		disFleet.red = 1f;
-		break;
-	    case 1:
-		disFleet.blue = 1f;
-		break;
-	    case 2:
-		disFleet.green = .8f;
-		break;
-	    case 3:
-		disFleet.green = .8f;
-		disFleet.blue = .8f;
-		break;
-	    default:
-		if(showColorWarning)
-		{
-			Debug.warn("GLDisplay: To many fleets, using default" + " fleet color");
-			showColorWarning=false;
-		}
-		disFleet.red = 1f;
-		disFleet.green = 1f;
-		disFleet.blue = 1f;
+		    case 0:
+		    	disFleet.red = 1f;
+			break;
+		    case 1:
+		    	disFleet.blue = 1f;
+			break;
+		    case 2:
+		    	disFleet.green = .8f;
+			break;
+		    case 3:
+		    	disFleet.green = .8f;
+				disFleet.blue = .8f;
+			break;
+		    case 4:
+		    	disFleet.red = 1f;
+		    	disFleet.green = 1f;
+		    	disFleet.blue = 1f;
+		    break;
+		    default:
+				if(showColorWarning)
+				{
+					Debug.warn("GLDisplay: Too many fleets, using default" + " fleet color");
+					showColorWarning=false;
+				}
+				disFleet.red = 1f;
+				disFleet.green = 1f;
+				disFleet.blue = 1f;
 	    }
 	    disFleet.team = teams[fleet.getTeam().getTeamIndex()];
 	    disFleet.indexInTeam = disFleet.team.numFleets;

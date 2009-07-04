@@ -84,6 +84,18 @@ public class AIShipList
 		return old ==null;
 	}
 	
+	public boolean addAll(AIShipList list)
+	{
+		boolean oup = false;
+		Iterator<AIShip> it  = list.iterator();
+		while(it.hasNext())
+		{
+			oup |= add(it.next());
+		}
+		
+		return oup;
+	}
+	
 	public void makeEmpty()
 	{
 		myShips.clear();
@@ -257,26 +269,38 @@ public class AIShipList
 	private class AliveIterator implements Iterator<AIShip>
 	{
 		private Iterator<AIShip> myIt;
-		private int myCount;
+		private AIShip myNext;
 		
 		public AliveIterator(Iterator<AIShip> i)
 		{
 			myIt = i;
-			myCount=1;
+			findNext();
 		}
 		
 		public boolean hasNext()
 		{
-			return myCount <= getAliveSize();
+			return myNext != null;
 		}
 		
 		public AIShip next()
 		{
-			AIShip s = myIt.next();
-			while(s.isDead())
-				s = myIt.next();
-			myCount++;
-			return s;
+			AIShip oup = myNext;
+			findNext();
+			return oup;
+		}
+		
+		private void findNext()
+		{
+			while(myIt.hasNext())
+			{
+				AIShip s = myIt.next();
+				if(s.isAlive())
+				{
+					myNext = s;
+					return;
+				}
+			}
+			myNext = null;
 		}
 		
 		public void remove()

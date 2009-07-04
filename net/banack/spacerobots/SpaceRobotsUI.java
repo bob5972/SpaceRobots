@@ -49,7 +49,7 @@ public class SpaceRobotsUI {
     private static JTextField creditsPerTurnField;
     
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 	//Debug INIT
 	Debug.enableDebug();
 	Debug.setMessages(true);
@@ -73,10 +73,13 @@ public class SpaceRobotsUI {
 		    r = new Random();
 
 		    final AIFleet ai[] = {
-			new BattleCruiserFleet(r.nextLong()),
-			new Cache(r.nextLong()),
-			new Mob(r.nextLong()),
-			new Fortress(r.nextLong()),
+		    	//new BattleCruiserFleet(r.nextLong()),
+		    	//new Cache(r.nextLong()),
+		    	new TaskFleet(r.nextLong()),
+			    new TaskFleet(r.nextLong()),
+		    	new Mob(r.nextLong()),
+		    	new Mob(r.nextLong()),
+		    	//new Fortress(r.nextLong()),
 		    };
 
 		    final int width;
@@ -103,61 +106,61 @@ public class SpaceRobotsUI {
 			    }
 			}).start();
 		}
-	    });
-
+		    });
 	
-
-	mainWindowSouth = new JPanel();
-	mainWindowEast = new JPanel();
-	mainWindowEastRow1 = new JPanel();
-	mainWindowEastRow2 = new JPanel();
-	mainWindowEastRow3 = new JPanel();
-	mainWindowFrame.add(mainWindowSouth, BorderLayout.SOUTH);
-	mainWindowFrame.add(mainWindowEast, BorderLayout.EAST);
-	mainWindowSouth.setLayout(new FlowLayout());
-	mainWindowEast.setLayout(new GridLayout(3,1));
-	mainWindowEast.add(mainWindowEastRow1);
-	mainWindowEast.add(mainWindowEastRow2);
-	mainWindowEast.add(mainWindowEastRow3);
-	mainWindowEastRow1.setLayout(new FlowLayout());
-	mainWindowEastRow2.setLayout(new FlowLayout());
-	mainWindowEastRow3.setLayout(new FlowLayout());
-
-	mainWindowSouth.add(runBattleButton);
-	mainWindowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-	widthTextField = new JTextField("500");
-	widthTextField.setColumns(4);
-	widthLabel = new JLabel("Width");
-
-	heightTextField = new JTextField("500");
-	heightTextField.setColumns(4);
-	heightLabel = new JLabel("Height");
-
-	startingCreditsField = new JTextField("0");
-	startingCreditsField.setColumns(4);
-	startingCreditsLabel = new JLabel("Starting Credits");
-
-	creditsPerTurnField = new JTextField("1");
-	creditsPerTurnField.setColumns(4);
-	creditsPerTurnLabel = new JLabel("Credits Per Turn");
-
-	mainWindowEastRow1.add(widthLabel);
-	mainWindowEastRow1.add(widthTextField);
-
-	mainWindowEastRow1.add(heightLabel);
-	mainWindowEastRow1.add(heightTextField);
-
-	mainWindowEastRow2.add(startingCreditsLabel);
-	mainWindowEastRow2.add(startingCreditsField);
-
-	mainWindowEastRow3.add(creditsPerTurnLabel);
-	mainWindowEastRow3.add(creditsPerTurnField);
-
-	mainWindowFrame.pack();
-	mainWindowFrame.setVisible(true);
-
+		
 	
+		mainWindowSouth = new JPanel();
+		mainWindowEast = new JPanel();
+		mainWindowEastRow1 = new JPanel();
+		mainWindowEastRow2 = new JPanel();
+		mainWindowEastRow3 = new JPanel();
+		mainWindowFrame.add(mainWindowSouth, BorderLayout.SOUTH);
+		mainWindowFrame.add(mainWindowEast, BorderLayout.EAST);
+		mainWindowSouth.setLayout(new FlowLayout());
+		mainWindowEast.setLayout(new GridLayout(3,1));
+		mainWindowEast.add(mainWindowEastRow1);
+		mainWindowEast.add(mainWindowEastRow2);
+		mainWindowEast.add(mainWindowEastRow3);
+		mainWindowEastRow1.setLayout(new FlowLayout());
+		mainWindowEastRow2.setLayout(new FlowLayout());
+		mainWindowEastRow3.setLayout(new FlowLayout());
+	
+		mainWindowSouth.add(runBattleButton);
+		mainWindowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	
+		widthTextField = new JTextField("500");
+		widthTextField.setColumns(4);
+		widthLabel = new JLabel("Width");
+	
+		heightTextField = new JTextField("500");
+		heightTextField.setColumns(4);
+		heightLabel = new JLabel("Height");
+	
+		startingCreditsField = new JTextField("0");
+		startingCreditsField.setColumns(4);
+		startingCreditsLabel = new JLabel("Starting Credits");
+	
+		creditsPerTurnField = new JTextField("1");
+		creditsPerTurnField.setColumns(4);
+		creditsPerTurnLabel = new JLabel("Credits Per Turn");
+	
+		mainWindowEastRow1.add(widthLabel);
+		mainWindowEastRow1.add(widthTextField);
+	
+		mainWindowEastRow1.add(heightLabel);
+		mainWindowEastRow1.add(heightTextField);
+	
+		mainWindowEastRow2.add(startingCreditsLabel);
+		mainWindowEastRow2.add(startingCreditsField);
+	
+		mainWindowEastRow3.add(creditsPerTurnLabel);
+		mainWindowEastRow3.add(creditsPerTurnField);
+	
+		mainWindowFrame.pack();
+		mainWindowFrame.setVisible(true);
+	
+		
     }
 
     public static void runBattle(int width,

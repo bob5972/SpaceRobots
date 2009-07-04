@@ -78,6 +78,7 @@ public class Cache extends AIFleet
 		{
 			Contact enemy = myContacts.get(ci.next());
 			myTarget = enemy;
+			break;
 		}
 		
 		

@@ -80,6 +80,19 @@ public class AIShip extends BasicAIShip
 		return isAlive() && isReadyToLaunch() && getTypeID() != ROCKET_ID && getTypeID() != MISSILE_ID;
 	}
 	
+	/** Returns true iff a ship can launch a missile right now. */
+	public boolean canLaunchMissile()
+	{
+		return canLaunch(TYPE.MISSILE);
+	}
+	
+	/** Returns true iff a ship can launch a missile right now. */
+	public boolean canLaunchRocket()
+	{
+		return canLaunch(TYPE.ROCKET);
+	}
+	
+	
 	/** Returns true iff the ship is capable of launching the specified type right now, and the fleet has enough credits.*/
 	public boolean canLaunch(int type)
 	{
@@ -92,18 +105,18 @@ public class AIShip extends BasicAIShip
 		return canLaunch() && myFleet.credits >= t.getCost();
 	}
 	
-	/** Gets the raw (Euclidean) distance from this ship to p.*/
-	public double getDistanceFrom(DPoint p)
-	{
-		DPoint loc = getPosition();
-		return SpaceMath.getRawDistance(loc,wrap(p));
-	}
-	
 	/** Plots an intercept course to target, and returns the new heading. */
 	public double intercept(ShipStatus target)
 	{
-		double oup = SpaceMath.interceptHeading(this,target,myFleet.battleWidth,myFleet.battleHeight);
+		double oup = getInterceptHeading(target);
 		setHeading(oup);
+		return oup;
+	}
+	
+	/** Plots an intercept course to target, and returns the new heading. */
+	public double getInterceptHeading(ShipStatus target)
+	{
+		double oup = SpaceMath.interceptHeading(this,target,myFleet.battleWidth,myFleet.battleHeight);
 		return oup;
 	}
 	
@@ -164,7 +177,67 @@ public class AIShip extends BasicAIShip
 		myFleet.credits-=t.getCost();
 	}
 	
-	/** Sets this ship to launch a basic missle tracking the target, and adjusts the fleets credits accordingly.
+	/** Fires at the specified target if possible.  Ships that can launch missiles do so, if not, they fire a rocket.*/
+	public void fire(ShipStatus target)
+	{
+		if(canLaunchMissile())
+			launchMissile(target);
+		else if (canLaunchRocket())
+			launch(TYPE.ROCKET);
+	}
+	
+	/** Returns the (wrapped) distance to p. */
+	public double getDistance(DPoint p)
+	{
+		return SpaceMath.getDistance(getPosition(), p, myFleet.battleWidth, myFleet.battleHeight);
+	}
+	
+	/** Returns the (wrapped) distance to p. */
+	public double getDistance(ShipStatus s)
+	{
+		return SpaceMath.getDistance(getPosition(), s.getPosition(), myFleet.battleWidth, myFleet.battleHeight);
+	}
+	
+	/**
+	 * Returns true if the target is within the theoretical missile range.
+	 * This is a fairly rough calculation...no heading information is taken into account.
+	 */
+	public boolean isInMissileRange(ShipStatus target)
+	{
+		return getDistance(target) < TYPE.MISSILE.getMaxSpeed()*TYPE.MISSILE.getMaxTickCount()+10;
+	}
+	
+	/**
+	 * Returns true if the target is within the theoretical rocket range.
+	 * This is a fairly rough calculation...no heading information is taken into account.
+	 */
+	public boolean isInRocketRange(ShipStatus target)
+	{
+		return getDistance(target) < TYPE.ROCKET.getMaxSpeed()*TYPE.ROCKET.getMaxTickCount()+10;
+	}
+	
+	/** Fires if possible.  Ships that can launch missiles do so, if not, they fire a rocket.*/
+	public void fire()
+	{
+		if(canLaunchMissile())
+			launchMissile();
+		else if (canLaunchRocket())
+			launch(TYPE.ROCKET);
+	}
+	
+	/** Return true iff the ship can fire right now. */
+	public boolean canFire()
+	{
+		return canLaunchMissile() || canLaunchRocket();
+	}
+	
+	/** Launches a missile.  No AI queueing is done. */
+	public void launchMissile()
+	{
+		launch(MISSILE);
+	}
+	
+	/** Sets this ship to launch a basic missile tracking the target, and adjusts the fleets credits accordingly.
 	 * <p> No check is made if the ship actually can or not. */
 	public void launchMissile(ShipStatus target)
 	{
