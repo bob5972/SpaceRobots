@@ -14,11 +14,11 @@ You should have received a copy of the GNU General Public License
 along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
 ---------------------------------------------------------------------
 The latest (official) version of SpaceRobots can be obtained from Michael Banack
-directly (I'm a nice guy!) or via git at <git://serenity.banack.net/SpaceRobots>.
+directly (I'm a nice guy!) or online at <http://www.banack.net/projects/SpaceRobots/>.
 
 This program requires BanackLib and jogl to run.
 
-BanackLib can be obtained from Michael Banack directly or via git at <git://serenity.banack.net/BanackLib>.
+BanackLib can be obtained from Michael Banack directly or online at <http://www.banack.net/BanackLib/>.
 You'll need to stick this in your classpath when you run SpaceRobots.
 
 Jogl can be obtained from 
