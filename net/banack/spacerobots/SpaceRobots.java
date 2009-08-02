@@ -51,7 +51,7 @@ public class SpaceRobots
 	
 	public static final String RECORD_FILE = "battle.srb";
 	public static boolean RECORD_BATTLE = false;
-	public static boolean USE_CONSOLE_DISPLAY = false;
+	public static boolean USE_CONSOLE_DISPLAY = true;
 	
 	public static void main(String[] args)
 	{

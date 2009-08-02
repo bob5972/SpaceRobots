@@ -314,6 +314,29 @@ public class SpaceMath
 		oup = oup.add(center);
 		
 		return oup;	
+		
+//		return rotate(p.getX(),p.getY(),center.getX(),center.getY(),r);
+	}
+	
+	/** Rotates a point about a center by a specified number of radians.*/
+	public static DPoint rotate(double px, double py, double cx, double cy, double r)
+	{
+		if(r == 0 || ((px == cx) && (py == cy)))
+			return new DPoint(px,py);
+		
+		double dx, dy;
+		double cosr, sinr;
+		
+		dx = px - cx;
+		dy = py - cy;
+		
+		cosr = Math.cos(r);
+		sinr = Math.sin(r);
+		
+		px = dx*cosr-dy*sinr + cx;
+		py = +dx*sinr+dy*cosr + cy;		
+		
+		return new DPoint(px,py);	
 	}
 	
 	/** Calculates the center (average) of the specified points. */
@@ -571,8 +594,15 @@ public class SpaceMath
 				break;
 			}
 		}
+		
 		if(!doRealTest)
+		{
+			// either they do not intersect, or s is completely inside r
+			if(containsPoint(s.getVertex(1), r))
+				return true;
+			
 			return false;
+		}
 		
 		for(int x=1;x<=4;x++)
 		{

@@ -404,7 +404,7 @@ public class Battle
 						contacts.addContact(shi,sho);
 					
 					//we want to notify clients of death if they scan him while dying
-					// but we dont' want to collision check against ammo again
+					// but we don't want to collision check against ammo again
 					if(toDie.contains(shi))
 						continue;
 					
