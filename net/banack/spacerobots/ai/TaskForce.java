@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class TaskForce
 {
-	protected AIShipList myShips;	
+	protected AIShipList myShips;
 	
 	public TaskForce()
 	{
@@ -27,13 +27,13 @@ public class TaskForce
 		return myShips.addAll(s);
 	}
 	
-	//adds the ships into this TaskForce (but leaves them in t
+	// adds the ships into this TaskForce (but leaves them in t
 	public boolean addAll(TaskForce t)
 	{
 		return myShips.addAll(t.myShips);
 	}
 	
-	//adds the ships into this TaskForce, and removes them from t
+	// adds the ships into this TaskForce, and removes them from t
 	public boolean transferAll(TaskForce t)
 	{
 		boolean oup = addAll(t);
@@ -41,12 +41,11 @@ public class TaskForce
 		return oup;
 	}
 	
-	//removes one ship from t and adds it to this
-	//returns true iff successful
+	// removes one ship from t and adds it to this
+	// returns true iff successful
 	public boolean transferOne(TaskForce t)
 	{
-		if(t.size() > 0)
-		{
+		if (t.size() > 0) {
 			return false;
 		}
 		
@@ -54,11 +53,11 @@ public class TaskForce
 		return true;
 	}
 	
-	//removes a single ship from the task force
-	//returns the removed ship, or null if not possible
+	// removes a single ship from the task force
+	// returns the removed ship, or null if not possible
 	public AIShip removeOneShip()
 	{
-		if(size() <= 0)
+		if (size() <= 0)
 			return null;
 		
 		Iterator<AIShip> it = myShips.iterator();
@@ -80,5 +79,5 @@ public class TaskForce
 	public void run()
 	{
 		
-	}	
+	}
 }

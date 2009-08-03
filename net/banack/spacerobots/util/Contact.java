@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.util;
@@ -33,7 +29,7 @@ public class Contact implements ShipStatus
 	private DPoint enemyPosition;
 	private double enemyHeading;
 	private ShipType enemyType;
-	private int scanTick;//the tick the scan was last made at
+	private int scanTick;// the tick the scan was last made at
 	
 	public static final int INVALID_FLEET_ID = net.banack.spacerobots.Battle.INVALID_ID;
 	
@@ -50,29 +46,29 @@ public class Contact implements ShipStatus
 	
 	public Contact(int enemyID, int fleetID, int type, double x, double y, double heading, int life)
 	{
-		this(enemyID,fleetID,type,new DPoint(x,y),heading,life);
+		this(enemyID, fleetID, type, new DPoint(x, y), heading, life);
 	}
 	
 	public Contact(int enemyID, int fleetID, int type, double x, double y, double heading, int life, int tick)
 	{
-		this(enemyID,fleetID,type,new DPoint(x,y),heading,life,tick);
+		this(enemyID, fleetID, type, new DPoint(x, y), heading, life, tick);
 	}
 	
-	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading,int life)
+	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading, int life)
 	{
-		this(enemyID,fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position,heading,life,-1);
+		this(enemyID, fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position, heading, life, -1);
 	}
 	
-	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading,int life, int tick)
+	public Contact(int enemyID, int fleetID, int typeID, DPoint position, double heading, int life, int tick)
 	{
-		this(enemyID,fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position,heading,life,tick);
+		this(enemyID, fleetID, DefaultShipTypeDefinitions.getShipType(typeID), position, heading, life, tick);
 	}
 	
-	public Contact(int enemyID, int fleetID, ShipType type, DPoint position, double heading,int life,int tick)
+	public Contact(int enemyID, int fleetID, ShipType type, DPoint position, double heading, int life, int tick)
 	{
 		this.enemyID = enemyID;
 		this.enemyFleetID = fleetID;
-		this.enemyTypeID = type == null? ShipTypeDefinitions.TYPE_INVALID: type.getID();
+		this.enemyTypeID = type == null ? ShipTypeDefinitions.TYPE_INVALID : type.getID();
 		this.enemyPosition = position;
 		this.enemyHeading = heading;
 		this.enemyType = type;
@@ -94,7 +90,7 @@ public class Contact implements ShipStatus
 	
 	public void update(Contact c)
 	{
-		if(this.enemyID != c.enemyID)
+		if (this.enemyID != c.enemyID)
 			throw new IllegalArgumentException("Updating with a bad ID!");
 		
 		this.enemyID = c.enemyID;
@@ -139,9 +135,9 @@ public class Contact implements ShipStatus
 	
 	public boolean equals(Object rhs)
 	{
-		if(!(rhs instanceof Contact))
+		if (!(rhs instanceof Contact))
 			return false;
-		return enemyID == ((Contact)rhs).enemyID;
+		return enemyID == ((Contact) rhs).enemyID;
 	}
 	
 	public ShipType getType()
@@ -153,7 +149,7 @@ public class Contact implements ShipStatus
 	{
 		return scanTick;
 	}
-		
+	
 	public double getX()
 	{
 		return enemyPosition.getX();
@@ -166,11 +162,12 @@ public class Contact implements ShipStatus
 	
 	public DDimension getDimension()
 	{
-		return new DDimension(enemyType.getWidth(),enemyType.getHeight());
+		return new DDimension(enemyType.getWidth(), enemyType.getHeight());
 	}
+	
 	public DQuad getLocation()
 	{
-		return SpaceMath.getDQuad(enemyPosition,enemyType.getWidth(),enemyType.getHeight(),enemyHeading);
+		return SpaceMath.getDQuad(enemyPosition, enemyType.getWidth(), enemyType.getHeight(), enemyHeading);
 	}
 	
 	public double getMaxSpeed()

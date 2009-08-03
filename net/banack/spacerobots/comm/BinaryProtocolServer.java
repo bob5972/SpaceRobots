@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.comm;
@@ -68,14 +64,13 @@ public class BinaryProtocolServer implements ServerAIProtocol
 	private String readString(int length) throws IOException
 	{
 		StringBuffer oup = new StringBuffer(length);
-		for(int x=0;x<length;x++)
-		{
+		for (int x = 0; x < length; x++) {
 			oup.append(sIn.readChar());
 		}
 		return oup.toString();
 	}
 	
-	//Returns {name, author,version}
+	// Returns {name, author,version}
 	public String[] loadInfo() throws IOException
 	{
 		String[] oup = new String[3];
@@ -89,10 +84,10 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		
 		Debug.verbose("Server reading BEGIN_INFO");
 		int cmd = sIn.readInt();
-		if(cmd != BEGIN_INFO)
-			Debug.crash("Bad Client Response: Expected BEGIN_INFO ("+BEGIN_INFO+"), received "+cmd);
+		if (cmd != BEGIN_INFO)
+			Debug.crash("Bad Client Response: Expected BEGIN_INFO (" + BEGIN_INFO + "), received " + cmd);
 		Debug.verbose("Server got valid BEGIN_INFO");
-	
+		
 		int len;
 		
 		len = sIn.readInt();
@@ -102,9 +97,8 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		len = sIn.readInt();
 		version = readString(len);
 		
-		if(Debug.isDebug())
-		{
-			if(name == null || author == null || version == null)
+		if (Debug.isDebug()) {
+			if (name == null || author == null || version == null)
 				Debug.warn("We've got null pointers in loadInfo()!");
 		}
 		
@@ -115,8 +109,9 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		return oup;
 	}
 	
-	public void initBattle(int fleetID,int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t, ServerFleet[] f, double width, double height) throws IOException
-	{		
+	public void initBattle(int fleetID, int teamID, int startingCredits, ServerShip[] s, ServerTeam[] t,
+	        ServerFleet[] f, double width, double height) throws IOException
+	{
 		Debug.verbose("Server entering BEGIN_BATTLE");
 		sOut.writeInt(BEGIN_BATTLE);
 		sOut.writeDouble(width);
@@ -126,29 +121,27 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		sOut.writeInt(startingCredits);
 		sOut.writeInt(s.length);
 		
-		for(int x=0;x<s.length;x++)
-		{
+		for (int x = 0; x < s.length; x++) {
 			writeShip(s[x]);
 		}
 		sOut.flush();
 		
 		sOut.writeInt(t.length);
-		for(int x=0;x<t.length;x++)
-		{
+		for (int x = 0; x < t.length; x++) {
 			writeTeam(t[x]);
 		}
 		sOut.flush();
 		
 		sOut.writeInt(f.length);
-		for(int x=0;x<f.length;x++)
-		{
+		for (int x = 0; x < f.length; x++) {
 			writeFleet(f[x]);
 		}
 		sOut.flush();
 		
 		int cmd = sIn.readInt();
-		if(cmd != BATTLE_READY_BEGIN)
-			Debug.crash("Bad Client Response: Expected BATTLE_READY_BEGIN ("+BATTLE_READY_BEGIN+"), received "+cmd);
+		if (cmd != BATTLE_READY_BEGIN)
+			Debug.crash("Bad Client Response: Expected BATTLE_READY_BEGIN (" + BATTLE_READY_BEGIN + "), received "
+			        + cmd);
 		Debug.verbose("Leaving Server::BinaryProtocol.initBattle");
 	}
 	
@@ -166,15 +159,14 @@ public class BinaryProtocolServer implements ServerAIProtocol
 	{
 		Debug.verbose("Server entering BEGIN_FLEET_STATUS");
 		sOut.writeInt(BEGIN_FLEET_STATUS);
-
+		
 		sOut.writeInt(tick);
 		sOut.writeInt(credits);
 		sOut.writeInt(c.size());
 		
-		//write contacts
+		// write contacts
 		Iterator<Integer> i = c.enemyIterator();
-		while(i.hasNext())
-		{
+		while (i.hasNext()) {
 			Contact sc = c.getContact(i.next());
 			
 
@@ -192,10 +184,9 @@ public class BinaryProtocolServer implements ServerAIProtocol
 			Set<Integer> spot = c.getSpotters(sc.getID());
 			sOut.writeInt(spot.size());
 			Iterator<Integer> si = spot.iterator();
-			while(si.hasNext())
-			{
+			while (si.hasNext()) {
 				sOut.writeInt(si.next());
-			}		
+			}
 		}
 		sOut.flush();
 		
@@ -238,40 +229,28 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		sOut.writeInt(f.getID());
 		sOut.writeInt(f.getTeamID());
 		
-		if(f.getName()==null)
-		{
+		if (f.getName() == null) {
 			sOut.writeInt(0);
-		}
-		else
-		{
-			Debug.verbose("Server fleet length = "+f.getName().length()+" name = "+f.getName());
+		} else {
+			Debug.verbose("Server fleet length = " + f.getName().length() + " name = " + f.getName());
 			sOut.writeInt(f.getName().length());
 			sOut.writeChars(f.getName());
 		}
-		if(f.getAIName() == null)
-		{
+		if (f.getAIName() == null) {
 			sOut.writeInt(0);
-		}
-		else
-		{
+		} else {
 			sOut.writeInt(f.getAIName().length());
 			sOut.writeChars(f.getAIName());
 		}
-		if(f.getAIAuthor() == null)
-		{
+		if (f.getAIAuthor() == null) {
 			sOut.writeInt(0);
-		}
-		else
-		{
+		} else {
 			sOut.writeInt(f.getAIAuthor().length());
 			sOut.writeChars(f.getAIAuthor());
 		}
-		if(f.getAIVersion() == null)
-		{
+		if (f.getAIVersion() == null) {
 			sOut.writeInt(0);
-		}
-		else
-		{
+		} else {
 			sOut.writeInt(f.getAIVersion().length());
 			sOut.writeChars(f.getAIVersion());
 		}
@@ -283,39 +262,39 @@ public class BinaryProtocolServer implements ServerAIProtocol
 	{
 		Debug.verbose("Server entering BEGIN_FLEET_ACTIONS");
 		ActionList oup = new ActionList();
-		int tick,numA;
+		int tick, numA;
 		
 		int cmd = sIn.readInt();
-		if(cmd != BEGIN_FLEET_ACTIONS)
-			Debug.crash("Bad Client Response: Expected BEGIN_FLEET_ACTIONS ("+BEGIN_FLEET_ACTIONS+"), received "+cmd);
+		if (cmd != BEGIN_FLEET_ACTIONS)
+			Debug.crash("Bad Client Response: Expected BEGIN_FLEET_ACTIONS (" + BEGIN_FLEET_ACTIONS + "), received "
+			        + cmd);
 		
 		tick = sIn.readInt();
 		oup.setTick(tick);
 		
 		numA = sIn.readInt();
 		
-		for(int x=0;x<numA;x++)
-		{
+		for (int x = 0; x < numA; x++) {
 			oup.add(readAction());
 		}
 		
 		return oup;
 	}
 	
-	public void endBattle(ServerFleet me, ServerTeam[]t, ServerFleet[] f)  throws IOException
+	public void endBattle(ServerFleet me, ServerTeam[] t, ServerFleet[] f) throws IOException
 	{
 		Debug.verbose("Server entering BEGIN_BATTLE_OUTCOME");
 		sOut.writeInt(BEGIN_BATTLE_OUTCOME);
 		
-		
+
 		writeFleet(me);
 		
 		sOut.writeInt(t.length);
-		for(int x=0;x<t.length;x++)
+		for (int x = 0; x < t.length; x++)
 			writeTeam(t[x]);
 		sOut.flush();
 		sOut.writeInt(f.length);
-		for(int x=0;x<f.length;x++)
+		for (int x = 0; x < f.length; x++)
 			writeFleet(f[x]);
 		
 		sOut.writeInt(END_BATTLE);
@@ -324,15 +303,15 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		
 		Debug.verbose("Waiting for Client Response to endBattle...");
 		int cmd = sIn.readInt();
-		if(cmd != BATTLE_READY_END)
-			Debug.crash("Bad Client Response: Expected BATTLE_READY_END ("+BATTLE_READY_END+"), received "+cmd);
+		if (cmd != BATTLE_READY_END)
+			Debug.crash("Bad Client Response: Expected BATTLE_READY_END (" + BATTLE_READY_END + "), received " + cmd);
 	}
 	
 	public ShipAction readAction() throws IOException
 	{
 		int cmd = sIn.readInt();
-		if(cmd != SHIPACTION_ID)
-			Debug.crash("Bad Client Response: Expected SHIPACTION_ID ("+SHIPACTION_ID+"), received "+cmd);
+		if (cmd != SHIPACTION_ID)
+			Debug.crash("Bad Client Response: Expected SHIPACTION_ID (" + SHIPACTION_ID + "), received " + cmd);
 		
 		int shipID = sIn.readInt();
 		boolean willMove = sIn.readBoolean();
@@ -340,6 +319,6 @@ public class BinaryProtocolServer implements ServerAIProtocol
 		double scannerHeading = sIn.readDouble();
 		int launchWhat = sIn.readInt();
 		
-		return new ShipAction(shipID,willMove,heading,scannerHeading,launchWhat);
+		return new ShipAction(shipID, willMove, heading, scannerHeading, launchWhat);
 	}
 }

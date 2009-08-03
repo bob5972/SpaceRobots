@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.comm;
@@ -54,57 +50,55 @@ public class TextProtocolClient implements ClientAIProtocol
 		myAI = ai;
 		this.sIn = new SpaceText(sIn);
 		this.sOut = sOut;
-		curLevel=0;
-		myShips=new AIShipList();
+		curLevel = 0;
+		myShips = new AIShipList();
 		myContacts = new ContactList();
 	}
 	
 	public void send(String message)
 	{
-		send(message,curLevel);
+		send(message, curLevel);
 	}
 	
-	//	send the message at the given indentation level
+	// send the message at the given indentation level
 	// (really just for debugging purposes, could set a flag to disable)
 	private void send(String message, int indentation)
 	{
-		if(Debug.isDebug())
-		{
-			String msg ="";
-			for(int x=0;x<indentation;x++)
-				msg+="\t";
-			Debug.comLog(">"+msg+message);
+		if (Debug.isDebug()) {
+			String msg = "";
+			for (int x = 0; x < indentation; x++)
+				msg += "\t";
+			Debug.comLog(">" + msg + message);
 		}
 		
-		while(indentation-->0)
+		while (indentation-- > 0)
 			sOut.print("\t");
 		sOut.println(message);
 		sOut.flush();
 	}
 	
 	
-	
 	private String[] read(String cmd) throws IOException
 	{
 		String[] cur = sIn.readWords();
-		if(cur.length <= 0)
-			Debug.crash("Received bad number of tokens: Received "+cur.length);
-		if(!cur[0].equals(cmd))
-			Debug.crash("Bad Server Response: expected "+cmd+", received "+cur[0]);
+		if (cur.length <= 0)
+			Debug.crash("Received bad number of tokens: Received " + cur.length);
+		if (!cur[0].equals(cmd))
+			Debug.crash("Bad Server Response: expected " + cmd + ", received " + cur[0]);
 		return cur;
 	}
-		
 	
-	//	check if it has args tokens (including the command)
+	
+	// check if it has args tokens (including the command)
 	private String[] read(String cmd, int args) throws IOException
 	{
 		String[] cur = read(cmd);
-		if(cur.length != args)
-		{
+		if (cur.length != args) {
 			String msg = "";
-			for(int x=0;x<cur.length;x++)
-				msg += cur[x]+" ";
-			Debug.error("Unable to retrieve requested number of tokens: Got "+(cur.length-1)+", requested "+args+"\nLine="+msg);
+			for (int x = 0; x < cur.length; x++)
+				msg += cur[x] + " ";
+			Debug.error("Unable to retrieve requested number of tokens: Got " + (cur.length - 1) + ", requested "
+			        + args + "\nLine=" + msg);
 		}
 		return cur;
 	}
@@ -112,17 +106,17 @@ public class TextProtocolClient implements ClientAIProtocol
 	
 	private void writeAction(ShipAction a)
 	{
-		send("SHIP_ACTION "+SpaceText.toString(a));
+		send("SHIP_ACTION " + SpaceText.toString(a));
 	}
 	
 	private void readContact(ContactList c) throws IOException
 	{
-		//>CONTACT eID fleetID typeID x y heading numSpotters (sId sID sID)
+		// >CONTACT eID fleetID typeID x y heading numSpotters (sId sID sID)
 		
 		String cmd = sIn.readWord();
-		if(!cmd.equals("CONTACT"))
-			Debug.crash("Bad Server Response: Expected CONTACT, received "+cmd);
-				
+		if (!cmd.equals("CONTACT"))
+			Debug.crash("Bad Server Response: Expected CONTACT, received " + cmd);
+		
 		int eID = sIn.readInt();
 		int fleetID = sIn.readInt();
 		int typeID = sIn.readInt();
@@ -132,44 +126,40 @@ public class TextProtocolClient implements ClientAIProtocol
 		int life = sIn.readInt();
 		int numSpotters = sIn.readInt();
 		
-		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading,life);
+		Contact ghost = new Contact(eID, fleetID, typeID, x, y, heading, life);
 		
 		HashSet<Integer> spotters = new HashSet<Integer>();
 		
 		char dummy = sIn.readNonWhitespaceChar();
-		if(dummy != '(')
-		{
+		if (dummy != '(') {
 			String msg = "";
-			msg+="eid="+eID+" fleetID="+fleetID+" typeID="+typeID+" x="+x+" y="+y+" heading="+heading+" life="+life+" numSpotters="+numSpotters;
-			Debug.crash("Bad Server Response: Expected (, received "+dummy+"\nline="+msg);
+			msg += "eid=" + eID + " fleetID=" + fleetID + " typeID=" + typeID + " x=" + x + " y=" + y + " heading="
+			        + heading + " life=" + life + " numSpotters=" + numSpotters;
+			Debug.crash("Bad Server Response: Expected (, received " + dummy + "\nline=" + msg);
 		}
 		
-		for(int i=0;i<numSpotters;i++)
-		{
+		for (int i = 0; i < numSpotters; i++) {
 			int sID = sIn.readInt();
 			spotters.add(new Integer(sID));
 		}
 		
 		dummy = sIn.readNonWhitespaceChar();
-		if(dummy != ')')
-		{
-			Debug.crash("Bad Server Response: Expected ), received "+dummy);
+		if (dummy != ')') {
+			Debug.crash("Bad Server Response: Expected ), received " + dummy);
 		}
 		
-		//clean up junk endl
+		// clean up junk endl
 		sIn.readLine();
 		
-		c.addContact(ghost,spotters);
+		c.addContact(ghost, spotters);
 	}
 	
 	public void start()
 	{
 		try {
 			processChannel();
-		}
-		catch(IOException e)
-		{
-		    Debug.crash(e,"Error with TextProtocol");
+		} catch (IOException e) {
+			Debug.crash(e, "Error with TextProtocol");
 		}
 	}
 	
@@ -177,48 +167,43 @@ public class TextProtocolClient implements ClientAIProtocol
 	{
 		String[] words;
 		
-		while(true)
-		{
-			curLevel=0;
+		while (true) {
+			curLevel = 0;
 			words = sIn.readWords();
 			String cmd = words[0];
 			
-			if(cmd.equals("REQUEST_INFO"))
-			{
+			if (cmd.equals("REQUEST_INFO")) {
 				send("BEGIN_INFO");
-				send("NAME "+myAI.getName());
-				send("AUTHOR "+myAI.getAuthor());
-				send("VERSION "+myAI.getVersion());
+				send("NAME " + myAI.getName());
+				send("AUTHOR " + myAI.getAuthor());
+				send("VERSION " + myAI.getVersion());
 				send("END_INFO");
 				
-				//>REQUEST_INFO
-				//<BEGIN_INFO
-				//<NAME Der Uber Fleet
-				//<AUTHOR Michael Banack
-				//<VERSION 1.0
-				//<END_INFO
-			}
-			else if(cmd.equals("BEGIN_BATTLE"))
-			{
-				double width,height;
+				// >REQUEST_INFO
+				// <BEGIN_INFO
+				// <NAME Der Uber Fleet
+				// <AUTHOR Michael Banack
+				// <VERSION 1.0
+				// <END_INFO
+			} else if (cmd.equals("BEGIN_BATTLE")) {
+				double width, height;
 				curLevel++;
 				words = read("BEGIN_INIT_BATTLE");
 				width = SpaceText.parseInt(words[1]);
 				height = SpaceText.parseInt(words[2]);
 				curLevel++;
-				words = read("FLEET_ID",2);
+				words = read("FLEET_ID", 2);
 				int fleetID = SpaceText.parseInt(words[1]);
-				words = read("TEAM_ID",2);
+				words = read("TEAM_ID", 2);
 				int teamID = SpaceText.parseInt(words[1]);
-				words = read("STARTING_CREDITS",2);
+				words = read("STARTING_CREDITS", 2);
 				int startingCredits = SpaceText.parseInt(words[1]);;
 				
-				words = read("BEGIN_STARTING_SHIPS",2);
+				words = read("BEGIN_STARTING_SHIPS", 2);
 				int numShips = SpaceText.parseInt(words[1]);
 				curLevel++;
 				Ship[] s = new Ship[numShips];
-				for(int x=0;x<numShips;x++)
-				{
+				for (int x = 0; x < numShips; x++) {
 					s[x] = sIn.readShip();
 				}
 				
@@ -229,20 +214,18 @@ public class TextProtocolClient implements ClientAIProtocol
 				int numTeams = SpaceText.parseInt(words[1]);
 				curLevel++;
 				Team[] t = new Team[numTeams];
-				for(int x=0;x<numTeams;x++)
-				{
+				for (int x = 0; x < numTeams; x++) {
 					t[x] = sIn.readTeam();
 				}
 				curLevel--;
 				words = read("END_TEAMS");
 				
-				
+
 				words = read("BEGIN_FLEETS");
-				int numFleets = SpaceText.parseInt(words[1]);				
+				int numFleets = SpaceText.parseInt(words[1]);
 				curLevel++;
 				Fleet[] f = new Fleet[numFleets];
-				for(int x=0;x<f.length;x++)
-				{
+				for (int x = 0; x < f.length; x++) {
 					f[x] = sIn.readFleet();
 				}
 				curLevel--;
@@ -253,81 +236,75 @@ public class TextProtocolClient implements ClientAIProtocol
 				
 				Debug.info("Calling initBattle on client AI");
 				myShips.makeEmpty();
-				myShips.update(s,myAI);
-				myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f,width,height);
+				myShips.update(s, myAI);
+				myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f, width, height);
 				
 				send("BATTLE_READY_BEGIN");
 				
-				//setup teams, starting positions, etc
-				//>BEGIN_BATTLE
-				//>	BEGIN_INIT_BATTLE width height
-				//>		FLEET_ID 27
-				//>		TEAM_ID 2
-				//>		STARTING_CREDITS 1000
-				//>		BEGIN_STARTING_SHIPS
-				//>			SHIP iD type xPos yPos heading scannerHeading life deltaLife
-				//>		END_STARTING_SHIPS
+				// setup teams, starting positions, etc
+				// >BEGIN_BATTLE
+				// > BEGIN_INIT_BATTLE width height
+				// > FLEET_ID 27
+				// > TEAM_ID 2
+				// > STARTING_CREDITS 1000
+				// > BEGIN_STARTING_SHIPS
+				// > SHIP iD type xPos yPos heading scannerHeading life deltaLife
+				// > END_STARTING_SHIPS
 				//
-				//>		BEGIN_TEAMS
-				//>			TEAM teamID "Name"
-				//>		END_TEAMS
+				// > BEGIN_TEAMS
+				// > TEAM teamID "Name"
+				// > END_TEAMS
 				//
-				//>		BEGIN_FLEETS
-				//>			FLEET fleetID teamID "Name" "AIName" "AIVersion" deadOrAlive winOrLose
-				//>		END_FLEETS
-				//>	END_INIT_BATTLE
+				// > BEGIN_FLEETS
+				// > FLEET fleetID teamID "Name" "AIName" "AIVersion" deadOrAlive winOrLose
+				// > END_FLEETS
+				// > END_INIT_BATTLE
 				
-				//let everyone initialize before starting, so require and acknowledgement
-				//<BATTLE_READY_BEGIN
+				// let everyone initialize before starting, so require and acknowledgement
+				// <BATTLE_READY_BEGIN
 				
-				//it would make more sense to use something like "ACK_INIT_BATTLE"
-				//	but its way cooler to go "BATTLE_READY"
+				// it would make more sense to use something like "ACK_INIT_BATTLE"
+				// but its way cooler to go "BATTLE_READY"
 				
-				
-				//the END_BATTLE would be after it's all over...
-				//this way we can re-use sockets between matches
-			}
-			else if(cmd.equals("BATTLE_STATUS_UPDATE"))
-			{
+
+				// the END_BATTLE would be after it's all over...
+				// this way we can re-use sockets between matches
+			} else if (cmd.equals("BATTLE_STATUS_UPDATE")) {
 				int teamID = SpaceText.parseInt(words[1]);
 				int fleetID = SpaceText.parseInt(words[2]);
-				boolean doa = SpaceText.parseInt(words[3])!= 0;
-				//we could send these intermittently to tell fleets when people die...
-				//>BATTLE_STATUS_UPDATE teamID deadOrAlive
-				myAI.battleStatusUpdate(teamID,fleetID,doa);
-			}
-			else if(cmd.equals("BEGIN_FLEET_STATUS"))
-			{
+				boolean doa = SpaceText.parseInt(words[3]) != 0;
+				// we could send these intermittently to tell fleets when people die...
+				// >BATTLE_STATUS_UPDATE teamID deadOrAlive
+				myAI.battleStatusUpdate(teamID, fleetID, doa);
+			} else if (cmd.equals("BEGIN_FLEET_STATUS")) {
 				curLevel++;
-		
-				words = read("TICK",2);
+				
+				words = read("TICK", 2);
 				int tick = SpaceText.parseInt(words[1]);
 				
-				words = read("CREDITS",2);
+				words = read("CREDITS", 2);
 				int credits = SpaceText.parseInt(words[1]);
 				
-				words = read("BEGIN_CONTACT_LIST",2);
+				words = read("BEGIN_CONTACT_LIST", 2);
 				int numContacts = SpaceText.parseInt(words[1]);
 				curLevel++;
 				
-				//read contacts
+				// read contacts
 				myContacts.resetForTick();
-				for(int x=0;x<numContacts;x++)
-				{
+				for (int x = 0; x < numContacts; x++) {
 					readContact(myContacts);
-				}		
+				}
 				
 				curLevel--;
 				read("END_CONTACT_LIST");
 				
-				words = read("BEGIN_SHIPS",2);;
+				words = read("BEGIN_SHIPS", 2);;
 				int numShips = SpaceText.parseInt(words[1]);
 				curLevel++;
 				
-				for(int x=0;x<numShips;x++)
-				{
+				for (int x = 0; x < numShips; x++) {
 					Ship s = sIn.readShip();
-					myShips.update(s,myAI);
+					myShips.update(s, myAI);
 				}
 				
 				read("END_SHIPS");
@@ -338,14 +315,13 @@ public class TextProtocolClient implements ClientAIProtocol
 				Iterator<ShipAction> i = myAI.runTick(tick, credits, myContacts, myShips);
 				
 				send("BEGIN_FLEET_ACTIONS");
-				send("TICK "+tick);
+				send("TICK " + tick);
 				curLevel++;
-				//the -1 signaling unknown size
-				send("BEGIN_SHIP_ACTIONS "+-1);
+				// the -1 signaling unknown size
+				send("BEGIN_SHIP_ACTIONS " + -1);
 				curLevel++;
 				
-				while(i.hasNext())					
-				{
+				while (i.hasNext()) {
 					ShipAction cur = i.next();
 					writeAction(cur);
 				}
@@ -357,32 +333,29 @@ public class TextProtocolClient implements ClientAIProtocol
 				send("END_FLEET_ACTIONS");
 				curLevel--;
 				
-				
-				
-				//<BEGIN_FLEET_ACTIONS
-				//<	TICK 803
-				//<	BEGIN_SHIP_ACTIONS
-				//<		SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
-				//< END_SHIP_ACTIONS
-				//<END_FLEET_ACTIONS
-			}
-			else if(cmd.equals("BEGIN_BATTLE_OUTCOME"))
-			{
+
+				// <BEGIN_FLEET_ACTIONS
+				// < TICK 803
+				// < BEGIN_SHIP_ACTIONS
+				// < SHIP_ACTION id willMove newHeading newScannerHeading launchWhat
+				// < END_SHIP_ACTIONS
+				// <END_FLEET_ACTIONS
+			} else if (cmd.equals("BEGIN_BATTLE_OUTCOME")) {
 				curLevel++;
 				Fleet me = sIn.readFleet();
 				
-				words = read("BEGIN_TEAMS",2);
+				words = read("BEGIN_TEAMS", 2);
 				int numTeams = SpaceText.parseInt(words[1]);
 				curLevel++;
 				Team[] t = new Team[numTeams];
-				for(int x=0;x<t.length;x++)
+				for (int x = 0; x < t.length; x++)
 					t[x] = sIn.readTeam();
 				curLevel--;
-				words = read("BEGIN_FLEETS",2);
+				words = read("BEGIN_FLEETS", 2);
 				int numFleets = SpaceText.parseInt(words[1]);
 				Fleet[] f = new Fleet[numFleets];
 				curLevel++;
-				for(int x=0;x<f.length;x++)
+				for (int x = 0; x < f.length; x++)
 					f[x] = sIn.readFleet();
 				curLevel--;
 				read("END_FLEETS");
@@ -395,22 +368,22 @@ public class TextProtocolClient implements ClientAIProtocol
 				
 				send("BATTLE_READY_END");
 				
-				return;//its all over..
+				return;// its all over..
 				
-				//>BEGIN_BATTLE_OUTCOME
-				//>YOU fleetID teamID deadOrAlive winOrLose
-				//>	BEGIN_TEAMS
-				//>		TEAM teamID deadOrAlive winOrLose "Name"
-				//>	END_TEAMS
-				//>	BEGIN_FLEETS
-				//>		FLEET fleetID teamID deadOrAlive winOrLose "Name" "Version"
-				//>	END_FLEETS
-				//>END_BATTLE_OUTCOME
+				// >BEGIN_BATTLE_OUTCOME
+				// >YOU fleetID teamID deadOrAlive winOrLose
+				// > BEGIN_TEAMS
+				// > TEAM teamID deadOrAlive winOrLose "Name"
+				// > END_TEAMS
+				// > BEGIN_FLEETS
+				// > FLEET fleetID teamID deadOrAlive winOrLose "Name" "Version"
+				// > END_FLEETS
+				// >END_BATTLE_OUTCOME
 				
-				//>END_BATTLE
+				// >END_BATTLE
 				
-				//<BATTLE_READY_END
-				//now we know the ai is finished fighting (in it's head?)
+				// <BATTLE_READY_END
+				// now we know the ai is finished fighting (in it's head?)
 			}
 		}
 	}

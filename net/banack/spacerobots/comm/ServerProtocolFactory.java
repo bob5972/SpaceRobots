@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.comm;
@@ -49,112 +45,100 @@ public class ServerProtocolFactory
 		Matcher m;
 		
 		// Greetings
-		try{
-			//>SERVER_HELLO from PROGRAM_NAME
+		try {
+			// >SERVER_HELLO from PROGRAM_NAME
 			Debug.info("Sending SERVER_HELLO");
-			sOut.writeChars("SERVER_HELLO from "+PROGRAM_NAME+"\n");
+			sOut.writeChars("SERVER_HELLO from " + PROGRAM_NAME + "\n");
 			sOut.flush();
 			
 			b.setLength(0);
 			c = sIn.readChar();
-			while(c!= '\n')
-			{
+			while (c != '\n') {
 				b.append(c);
-				c=sIn.readChar();
+				c = sIn.readChar();
 			}
 			temp = b.toString();
 			
-			//<CLIENT_HELLO from AI_NAME
-			if(!Pattern.matches("CLIENT_HELLO\\s+.*",temp))
-			{
-				Debug.crash("Invalid AI Response: Expected CLIENT_HELLO, Received "+temp);
+			// <CLIENT_HELLO from AI_NAME
+			if (!Pattern.matches("CLIENT_HELLO\\s+.*", temp)) {
+				Debug.crash("Invalid AI Response: Expected CLIENT_HELLO, Received " + temp);
 			}
 			Debug.info("Received CLIENT_HELLO");
 			
 			b.setLength(0);
 			c = sIn.readChar();
-			while(c!= '\n')
-			{
+			while (c != '\n') {
 				b.append(c);
-				c=sIn.readChar();
+				c = sIn.readChar();
 			}
 			temp = b.toString();
 			
-			//<USING_PROTOCOL TEXT_1
+			// <USING_PROTOCOL TEXT_1
 			p = Pattern.compile("USING_PROTOCOL\\s+(\\w*)");
 			m = p.matcher(temp);
-			if(!m.matches())
-			{
+			if (!m.matches()) {
 				Debug.crash("Invalid AI Response: Expected USING_PROTOCOL");
 			}
 			
 			temp = m.group(1);
-			ServerAIProtocol ai = matchProtocol(temp,sIn,sOut);
+			ServerAIProtocol ai = matchProtocol(temp, sIn, sOut);
 			
-			if(ai != null)
+			if (ai != null)
 				return ai;
 			
-			//>LIST_PROTOCOLS
+			// >LIST_PROTOCOLS
 			sOut.writeChars("LIST_PROTOCOLS\n");
 			sOut.flush();
 			b.setLength(0);
 			c = sIn.readChar();
-			while(c!= '\n')
-			{
+			while (c != '\n') {
 				b.append(c);
-				c=sIn.readChar();
+				c = sIn.readChar();
 			}
 			temp = b.toString();
 			p = Pattern.compile("HAVE_PROTOCOLS\\s+(.*)");
 			m = p.matcher(temp);
-			if(!m.matches())
-			{
+			if (!m.matches()) {
 				Debug.crash("Invalid AI Response: Expected HAVE_PROTOCOLS");
 			}
 			temp = m.group(1);
 			p = Pattern.compile("\\s*(\\w+)\\s*(.*)");
-			m=p.matcher(temp);
+			m = p.matcher(temp);
 			Stack<String> protList = new Stack<String>();
-			while(m.matches())
-			{
+			while (m.matches()) {
 				protList.push(m.group(1));
 				temp = m.group(2);
-				m=p.matcher(temp);
+				m = p.matcher(temp);
 			}
-			while(!protList.isEmpty())
-			{
-				ai = matchProtocol((String)protList.pop(),sIn,sOut);
-				if(ai != null)
+			while (!protList.isEmpty()) {
+				ai = matchProtocol((String) protList.pop(), sIn, sOut);
+				if (ai != null)
 					return ai;
 			}
 			
 			Debug.crash("Unable to handshake with AI");
-			return null;//to keep compiler happy
-		}
-		catch(IOException e)
-		{
-			Debug.crash(new Exception("Unable to handshake with AI",e));
-			return null;//to keep compiler happy
+			return null;// to keep compiler happy
+		} catch (IOException e) {
+			Debug.crash(new Exception("Unable to handshake with AI", e));
+			return null;// to keep compiler happy
 		}
 	}
-		
-	private static ServerAIProtocol matchProtocol(String p,DataInputStream sIn, DataOutputStream sOut) throws IOException
+	
+	private static ServerAIProtocol matchProtocol(String p, DataInputStream sIn, DataOutputStream sOut)
+	        throws IOException
 	{
-		Debug.verbose("Server Matching protocol "+p);
-		if(p.equals("TEXT_1"))
-		{
-			//>ACK_PROTOCOL TEXT_1
+		Debug.verbose("Server Matching protocol " + p);
+		if (p.equals("TEXT_1")) {
+			// >ACK_PROTOCOL TEXT_1
 			sOut.writeChars("ACK_PROTOCOL TEXT_1\n");
 			sOut.flush();
 			Debug.info("Using Protocol TEXT_1");
-			return new TextProtocolServer(new BufferedReader(new InputStreamReader(sIn)),new PrintWriter(sOut));
-		}
-		else if(p.equals("BINARY_1"))
-		{
+			return new TextProtocolServer(new BufferedReader(new InputStreamReader(sIn)), new PrintWriter(sOut));
+		} else if (p.equals("BINARY_1")) {
 			sOut.writeChars("ACK_PROTOCOL BINARY_1\n");
 			sOut.flush();
 			Debug.info("Using Protocol BINARY_1");
-			return new BinaryProtocolServer(sIn,sOut);
+			return new BinaryProtocolServer(sIn, sOut);
 		}
 		
 		return null;

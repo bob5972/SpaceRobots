@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.ai;
@@ -39,8 +35,11 @@ import net.banack.util.SkipList;
 import net.banack.util.Filter;
 import net.banack.spacerobots.util.SpaceMath;
 
-/** A primitive, slow targeting system.
- * <p>Ideas for improvement are welcome.
+/**
+ * A primitive, slow targeting system.
+ * <p>
+ * Ideas for improvement are welcome.
+ * 
  * @author Michael Banack <bob5972@banack.net>
  */
 public class TargetingSystem
@@ -79,9 +78,8 @@ public class TargetingSystem
 		allocations = new IntMap();
 		allocations.setUseElementDefaults(true);
 		
-		HashSet<Integer> empty = new HashSet<Integer>();		
-		for(int x=0;x<discardTime+1;x++)
-		{
+		HashSet<Integer> empty = new HashSet<Integer>();
+		for (int x = 0; x < discardTime + 1; x++) {
 			expiryCache.add(empty);
 		}
 	}
@@ -104,7 +102,7 @@ public class TargetingSystem
 	public void setDiscardTime(int t)
 	{
 		discardTime = t;
-		throw new MethodNotImplementedException("You totally gotta redo the expiryCache if you wanna do that man!");		
+		throw new MethodNotImplementedException("You totally gotta redo the expiryCache if you wanna do that man!");
 	}
 	
 	public void update()
@@ -115,17 +113,15 @@ public class TargetingSystem
 		myActiveContacts.addAll(myContactList.getShipIDSet());
 		myActiveContacts.addAll(myContactList.getAmmoIDSet());
 		
-		Set<Integer> toDie =  new HashSet<Integer>();
+		Set<Integer> toDie = new HashSet<Integer>();
 		Iterator<Integer> i = myContactList.enemyShipIterator();
-		while(i.hasNext())
-		{
+		while (i.hasNext()) {
 			Integer eid = i.next();
 			toDie.add(eid);
 		}
 		
 		i = myContactList.enemyAmmoIterator();
-		while(i.hasNext())
-		{
+		while (i.hasNext()) {
 			Integer eid = i.next();
 			toDie.add(eid);
 		}
@@ -135,47 +131,43 @@ public class TargetingSystem
 		toDie = expiryCache.dequeue();
 		i = toDie.iterator();
 		
-		while(i.hasNext())
-		{
+		while (i.hasNext()) {
 			Integer eid = i.next();
-			if(get(eid).getScanTick() < myFleet.tick - discardTime)
-			{
+			if (get(eid).getScanTick() < myFleet.tick - discardTime) {
 				myActiveContacts.remove(eid);
 			}
 		}
 	}
 	
-	//Don't use byPos w/o it!
+	// Don't use byPos w/o it!
 	private void initialize()
 	{
-		if(byPos == null)
-		{
+		if (byPos == null) {
 			byPos = new SkipList<Contact>(new Comparator<Contact>() {
 				public int compare(Contact left, Contact right)
 				{
-					if(left.getX() < right.getX())
+					if (left.getX() < right.getX())
 						return -1;
-					if(left.getX() > right.getX())
+					if (left.getX() > right.getX())
 						return 1;
-					if(left.getID() < right.getID())
+					if (left.getID() < right.getID())
 						return -1;
-					if(left.getID() > right.getID())
+					if (left.getID() > right.getID())
 						return 1;
 					
 					return 0;
 				}
 				
 			});
-		
+			
 			Iterator<Integer> i = myActiveContacts.iterator();
-			while(i.hasNext())
-			{
+			while (i.hasNext()) {
 				byPos.add(get(i.next()));
 			}
 		}
 	}
 	
-	//Iterator over Integers of active enemyID's
+	// Iterator over Integers of active enemyID's
 	public Iterator<Integer> iterator()
 	{
 		return myActiveContacts.iterator();
@@ -201,7 +193,7 @@ public class TargetingSystem
 		return myContactList.getOld(enemyID);
 	}
 	
-	//number of enemies listed
+	// number of enemies listed
 	public int size()
 	{
 		return myActiveContacts.size();
@@ -224,7 +216,7 @@ public class TargetingSystem
 	
 	public int allocate(ShipStatus c)
 	{
-		if(c == null)
+		if (c == null)
 			return 0;
 		return allocate(c.getID());
 	}
@@ -236,8 +228,8 @@ public class TargetingSystem
 	
 	public int deallocate(ShipStatus c)
 	{
-		if(c == null)
-			return  0;
+		if (c == null)
+			return 0;
 		return deallocate(c.getID());
 	}
 	
@@ -251,38 +243,37 @@ public class TargetingSystem
 		return allocations.get(s.getID());
 	}
 	
-	//Please don't modify this!  (Actually, I'm not sure if you can...)
+	// Please don't modify this! (Actually, I'm not sure if you can...)
 	private Collection<Contact> getContactsInRange(double left, double right)
 	{
 		initialize();
-		DPoint bl = new DPoint(left,0);
-		DPoint tr = new DPoint(right,0);
+		DPoint bl = new DPoint(left, 0);
+		DPoint tr = new DPoint(right, 0);
 		
-		Contact leftC = new Contact(-1,-1,-1,bl,-1,-1);
-		Contact rightC = new Contact(-1,-1,-1,tr,-1,-1);
+		Contact leftC = new Contact(-1, -1, -1, bl, -1, -1);
+		Contact rightC = new Contact(-1, -1, -1, tr, -1, -1);
 		
-		if(leftC.getX() > rightC.getX())
-		{
+		if (leftC.getX() > rightC.getX()) {
 			Contact temp = leftC;
 			leftC = rightC;
 			rightC = temp;
 		}
 		
-		return byPos.subCollection(leftC,rightC);
+		return byPos.subCollection(leftC, rightC);
 	}
 	
 	private Iterator<Contact> getContactRangeIterator(DPoint bl, DPoint tr)
 	{
-		Collection<Contact> list = getContactsInRange(bl.getX(),tr.getX());
+		Collection<Contact> list = getContactsInRange(bl.getX(), tr.getX());
 		Iterator<Contact> i = list.iterator();
-		return new FilteredIterator<Contact>(i,new RangeFilter(bl,tr));
+		return new FilteredIterator<Contact>(i, new RangeFilter(bl, tr));
 	}
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr)
 	{
-		Iterator<Contact> i = getContactRangeIterator(bl,tr);
+		Iterator<Contact> i = getContactRangeIterator(bl, tr);
 		
-		if(!i.hasNext())
+		if (!i.hasNext())
 			return null;
 		
 		return i.next();
@@ -290,30 +281,29 @@ public class TargetingSystem
 	
 	public Contact getTargetInRange(DPoint bl, DPoint tr)
 	{
-		return getContactInRange(bl,tr,targetFilter);
+		return getContactInRange(bl, tr, targetFilter);
 	}
 	
 	public Contact getTargetInRange(DPoint bl, DPoint tr, Filter<Contact> f)
 	{
-		return getContactInRange(bl,tr,ContactFilter.joinAnd(targetFilter,f));
+		return getContactInRange(bl, tr, ContactFilter.joinAnd(targetFilter, f));
 	}
 	
 	public Contact getTargetInRange(DPoint bl, DPoint tr, Filter<Contact> f, Comparator<Contact> p)
 	{
-		return getContactInRange(bl,tr,ContactFilter.joinAnd(targetFilter,f),p);
+		return getContactInRange(bl, tr, ContactFilter.joinAnd(targetFilter, f), p);
 	}
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr, Filter<Contact> f, Comparator<Contact> p)
 	{
-		Iterator<Contact> i = new FilteredIterator<Contact>(getContactRangeIterator(bl,tr),f);
-		if(!i.hasNext())
+		Iterator<Contact> i = new FilteredIterator<Contact>(getContactRangeIterator(bl, tr), f);
+		if (!i.hasNext())
 			return null;
 		
 		Contact max = i.next();
-		while(i.hasNext())
-		{
+		while (i.hasNext()) {
 			Contact next = i.next();
-			if(p.compare(max,next) < 0)
+			if (p.compare(max, next) < 0)
 				max = next;
 		}
 		
@@ -322,94 +312,96 @@ public class TargetingSystem
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr, Filter<Contact> f)
 	{
-		Iterator<Contact> i = new FilteredIterator<Contact>(getContactRangeIterator(bl,tr),f);
-		if(!i.hasNext())
+		Iterator<Contact> i = new FilteredIterator<Contact>(getContactRangeIterator(bl, tr), f);
+		if (!i.hasNext())
 			return null;
 		return i.next();
 	}
 	
-	//the range makes this WAY faster
+	// the range makes this WAY faster
 	// if you really wanted the closest period, you could write one that iterates ranges
 	// but I'm too lazy right now.
-	//Actually: better idea, locate the given xCoor in the list, and then iterate out (alternating)
-	//  but you'd have to keep going until the x_distance exceeded the current distance
+	// Actually: better idea, locate the given xCoor in the list, and then iterate out (alternating)
+	// but you'd have to keep going until the x_distance exceeded the current distance
 	public Contact getClosestTarget(DPoint bl, DPoint tr, DPoint center)
 	{
-		return getContactInRange(bl,tr,targetFilter, new DistancePriority(center,myFleet.battleWidth,myFleet.battleHeight));
+		return getContactInRange(bl, tr, targetFilter, new DistancePriority(center, myFleet.battleWidth,
+		        myFleet.battleHeight));
 	}
 	
 	public Contact getClosestTarget(AIShip s, double radius)
-	{		
+	{
 		DPoint bl = s.getPosition().subtract(radius);
 		DPoint tr = s.getPosition().add(radius);
 		
-		return getContactInRange(bl,tr,targetFilter, new DistancePriority(s.getPosition(),myFleet.battleWidth,myFleet.battleHeight));
+		return getContactInRange(bl, tr, targetFilter, new DistancePriority(s.getPosition(), myFleet.battleWidth,
+		        myFleet.battleHeight));
 	}
 	
 	public Contact getContactInRange(DPoint bl, DPoint tr, Comparator<Contact> p)
-	{	
-		Iterator<Contact> i = getContactRangeIterator(bl,tr);
+	{
+		Iterator<Contact> i = getContactRangeIterator(bl, tr);
 		
-		if(!i.hasNext())
+		if (!i.hasNext())
 			return null;
 		
 		Contact max = i.next();
-		while(i.hasNext())
-		{
+		while (i.hasNext()) {
 			Contact next = i.next();
-			if(p.compare(max,next) < 0)
+			if (p.compare(max, next) < 0)
 				max = next;
 		}
 		
 		return max;
 	}
 	
-	//gets a target within missile range (accounting for number of ticks remaining if this is a missile)
-	//not entirely accurate (doens't account for turning radius), but its not so bad
-	//IDEALLY:
-	//	this should account for turning radii
-	//  not use a bounding square
-	//  account for firing delay on the part of the firing ship
-	//  account for time to intercept of the said missile
-	//BUT: I iz lazy.
+	// gets a target within missile range (accounting for number of ticks remaining if this is a missile)
+	// not entirely accurate (doens't account for turning radius), but its not so bad
+	// IDEALLY:
+	// this should account for turning radii
+	// not use a bounding square
+	// account for firing delay on the part of the firing ship
+	// account for time to intercept of the said missile
+	// BUT: I iz lazy.
 	public Contact getMissileTarget(AIShip s)
-	{		
-		return getMissileTarget(s,ContactFilter.ALL,defaultMissilePriority);
+	{
+		return getMissileTarget(s, ContactFilter.ALL, defaultMissilePriority);
 	}
 	
-	//see restrictions above
+	// see restrictions above
 	public Contact getClosestMissileTarget(AIShip s)
-	{		
-		return getMissileTarget(s,ContactFilter.ALL,new DistancePriority(s.getPosition(),myFleet.battleWidth,myFleet.battleHeight));
+	{
+		return getMissileTarget(s, ContactFilter.ALL, new DistancePriority(s.getPosition(), myFleet.battleWidth,
+		        myFleet.battleHeight));
 	}
 	
-	//see restrictions above
+	// see restrictions above
 	public Contact getMissileTarget(AIShip s, Filter<Contact> f)
-	{		
-		int missileTicks= MISSILE.getMaxTickCount();
-		if(s.getTypeID()==MISSILE_ID)
+	{
+		int missileTicks = MISSILE.getMaxTickCount();
+		if (s.getTypeID() == MISSILE_ID)
 			missileTicks -= (myFleet.tick - s.getCreationTick());
 		
-		double radius = MISSILE.getMaxSpeed()*missileTicks;
+		double radius = MISSILE.getMaxSpeed() * missileTicks;
 		
 		DPoint bl = s.getPosition().subtract(radius);
 		DPoint tr = s.getPosition().add(radius);
 		
-		return getTargetInRange(bl,tr,f,defaultMissilePriority);		
+		return getTargetInRange(bl, tr, f, defaultMissilePriority);
 	}
 	
-	//see restrictions above
-	public Contact getMissileTarget(AIShip s, Filter<Contact> f,Comparator<Contact> p)
-	{		
-		int missileTicks= MISSILE.getMaxTickCount();
-		if(s.getTypeID()==MISSILE_ID)
+	// see restrictions above
+	public Contact getMissileTarget(AIShip s, Filter<Contact> f, Comparator<Contact> p)
+	{
+		int missileTicks = MISSILE.getMaxTickCount();
+		if (s.getTypeID() == MISSILE_ID)
 			missileTicks -= (myFleet.tick - s.getCreationTick());
 		
-		double radius = MISSILE.getMaxSpeed()*missileTicks;
+		double radius = MISSILE.getMaxSpeed() * missileTicks;
 		
 		DPoint bl = s.getPosition().subtract(radius);
 		DPoint tr = s.getPosition().add(radius);
 		
-		return getTargetInRange(bl,tr,f,p);		
+		return getTargetInRange(bl, tr, f, p);
 	}
 }

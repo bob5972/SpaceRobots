@@ -34,8 +34,8 @@ public class TaskFleet extends AIFleet
 			myShips.apply(new AIGovernor() {
 				public void run(AIShip s)
 				{
-					if(random.nextDouble() < 0.05)
-						s.intercept(myCruiser);					
+					if (random.nextDouble() < 0.05)
+						s.intercept(myCruiser);
 				}
 			});
 		}
@@ -68,27 +68,24 @@ public class TaskFleet extends AIFleet
 		
 		public void run()
 		{
-			if(isIdle())
+			if (isIdle())
 				return;
 			
 			myShips.apply(new AIGovernor() {
 				public void run(AIShip s)
 				{
 					double head = s.intercept(myTarget);
-					if(s.isInMissileRange(myTarget) && s.canLaunchMissile())
-					{
+					if (s.isInMissileRange(myTarget) && s.canLaunchMissile()) {
 						s.fire(myTarget);
-					}
-					else if (s.isInRocketRange(myTarget) && s.canLaunchRocket())
-					{
-						double low = head-SpaceMath.degToRad(45.0/2);
-						double high = head+SpaceMath.degToRad(45.0/2);
+					} else if (s.isInRocketRange(myTarget) && s.canLaunchRocket()) {
+						double low = head - SpaceMath.degToRad(45.0 / 2);
+						double high = head + SpaceMath.degToRad(45.0 / 2);
 						low = SpaceMath.wrapHeading(low);
 						high = SpaceMath.wrapHeading(high);
-						if(low <= s.projHeading() && s.projHeading() <= high)
+						if (low <= s.projHeading() && s.projHeading() <= high)
 							s.fire();
 					}
-						
+					
 				}
 			});
 		}
@@ -99,7 +96,7 @@ public class TaskFleet extends AIFleet
 		}
 		
 	}
-
+	
 	public TaskFleet()
 	{
 		super();
@@ -124,51 +121,43 @@ public class TaskFleet extends AIFleet
 		return "1.0";
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f,
+	        double width, double height)
 	{
 		super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
 		
 		taskList = new ArrayList<AttackForce>();
 		idleTask = new IdleForce();
 		
-		for(int x=0;x<4;x++)
-		{
+		for (int x = 0; x < 4; x++) {
 			taskList.add(new AttackForce());
 		}
 	}
-
+	
 	@Override
 	public Iterator<ShipAction> runTick()
 	{
-		//Reorganize Task Forces
+		// Reorganize Task Forces
 		Iterator<AIShip> si = myShips.getNewIterator();
-		while(si.hasNext())
-		{
+		while (si.hasNext()) {
 			AIShip s = si.next();
 			idleTask.add(s);
 		}
 		
 		Iterator<AttackForce> tfi = taskList.iterator();
 		Iterator<Integer> ci = myContacts.enemyShipIterator();
-		while(tfi.hasNext())
-		{
+		while (tfi.hasNext()) {
 			AttackForce t = tfi.next();
-			if(t.getTarget() != null && t.getTargetScanTick() < tick - 10)
-			{
+			if (t.getTarget() != null && t.getTargetScanTick() < tick - 10) {
 				t.setTarget(null);
 			}
 			
-			if(t.isIdle())
-			{
-				if(ci.hasNext())
-				{
+			if (t.isIdle()) {
+				if (ci.hasNext()) {
 					t.setTarget(myContacts.get(ci.next()));
 				}
-			}
-			else
-			{
-				if(myCruiser.isInMissileRange(t.getTarget()))
-				{
+			} else {
+				if (myCruiser.isInMissileRange(t.getTarget())) {
 					myCruiser.fire(t.getTarget());
 				}
 			}
@@ -176,34 +165,27 @@ public class TaskFleet extends AIFleet
 		
 		rebalanceTaskForces();
 		
-		//Run Cruiser
-		if(myCruiser.isAlive())
-		{
+		// Run Cruiser
+		if (myCruiser.isAlive()) {
 			ShipType toLaunch = FIGHTER;
-			if(myCruiser.canLaunch(toLaunch) && credits >= toLaunch.getCost()+MISSILE.getCost()*10)
-			{
+			if (myCruiser.canLaunch(toLaunch) && credits >= toLaunch.getCost() + MISSILE.getCost() * 10) {
 				myCruiser.launch(toLaunch);
-			}	
+			}
 			
-			if(tick % 100 == 0)
-			{
+			if (tick % 100 == 0) {
 				double h = random.nextDouble();
 				myCruiser.setHeading(h);
 			}
 			myCruiser.advanceScannerHeading();
 		}
 		
-		//Run Task Forces
+		// Run Task Forces
 		tfi = taskList.iterator();
-		while(tfi.hasNext())
-		{
+		while (tfi.hasNext()) {
 			AttackForce t = tfi.next();
-			if(t.isIdle())
-			{
+			if (t.isIdle()) {
 				idleTask.transferAll(t);
-			}
-			else
-			{
+			} else {
 				tfi.next().run();
 			}
 		}
@@ -218,29 +200,25 @@ public class TaskFleet extends AIFleet
 		int working = 0;
 		Iterator<AttackForce> it = taskList.iterator();
 		
-		while(it.hasNext())
-		{
+		while (it.hasNext()) {
 			AttackForce t = it.next();
-			if(!t.isIdle())
+			if (!t.isIdle())
 				working++;
 		}
 		
-		int num = (idleTask.size())/(working+1);
+		int num = (idleTask.size()) / (working + 1);
 		
-it = taskList.iterator();
+		it = taskList.iterator();
 		
-		while(it.hasNext())
-		{
+		while (it.hasNext()) {
 			AttackForce t = it.next();
-			if(!t.isIdle())
-			{
-				for(int x=0;x<num;x++)
-				{
+			if (!t.isIdle()) {
+				for (int x = 0; x < num; x++) {
 					t.transferOne(idleTask);
 				}
 			}
 		}
 	}
-		
 	
+
 }

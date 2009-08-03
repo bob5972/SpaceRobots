@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.comm;
@@ -73,7 +69,7 @@ public class BinaryProtocolClient implements ClientAIProtocol
 		myAI = ai;
 		this.sIn = sIn;
 		this.sOut = sOut;
-		myShips=new AIShipList();
+		myShips = new AIShipList();
 		myContacts = new ContactList();
 	}
 	
@@ -81,24 +77,19 @@ public class BinaryProtocolClient implements ClientAIProtocol
 	{
 		try {
 			processChannel();
-		}
-		catch(IOException e)
-		{
-		    Debug.crash(e,"Error with TextProtocol");
+		} catch (IOException e) {
+			Debug.crash(e, "Error with TextProtocol");
 		}
 	}
 	
 	private void processChannel() throws IOException
 	{
-		int cmd=0;
-		while(true)
-		{
+		int cmd = 0;
+		while (true) {
 			cmd = sIn.readInt();
 			
-			switch(cmd)
-			{
-				case REQUEST_INFO:
-				{
+			switch (cmd) {
+				case REQUEST_INFO: {
 					Debug.info("Client Received REQUEST_INFO");
 					sOut.writeInt(BEGIN_INFO);
 					
@@ -113,11 +104,10 @@ public class BinaryProtocolClient implements ClientAIProtocol
 					sOut.flush();
 					Debug.verbose("Finished REQUEST_INFO");
 				}
-				break;
-				case BEGIN_BATTLE:
-				{
-					double width,height;
-					int fleetID,teamID,startingCredits,numShips;
+					break;
+				case BEGIN_BATTLE: {
+					double width, height;
+					int fleetID, teamID, startingCredits, numShips;
 					Debug.verbose("Client entering BEGIN_BATTLE");
 					
 					width = sIn.readDouble();
@@ -129,8 +119,7 @@ public class BinaryProtocolClient implements ClientAIProtocol
 					numShips = sIn.readInt();
 					Ship[] s = new Ship[numShips];
 					
-					for(int x=0;x<numShips;x++)
-					{
+					for (int x = 0; x < numShips; x++) {
 						s[x] = readShip();
 					}
 					Debug.verbose("Client read ships...");
@@ -138,59 +127,53 @@ public class BinaryProtocolClient implements ClientAIProtocol
 					int numTeams = sIn.readInt();
 					Team[] t = new Team[numTeams];
 					
-					for(int x=0;x<numTeams;x++)
-					{
+					for (int x = 0; x < numTeams; x++) {
 						t[x] = readTeam();
 					}
 					Debug.verbose("Client read teams...");
-									
+					
 					int numFleets = sIn.readInt();
 					Fleet[] f = new Fleet[numFleets];
-					for(int x=0;x<f.length;x++)
-					{
+					for (int x = 0; x < f.length; x++) {
 						f[x] = readFleet();
 					}
 					Debug.verbose("Client read fleets...");
 					
-										
+
 					Debug.info("Calling initBattle on client AI");
 					myShips.makeEmpty();
-					myShips.update(s,myAI);
-					myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f,width,height);
+					myShips.update(s, myAI);
+					myAI.initBattle(fleetID, teamID, startingCredits, myShips, t, f, width, height);
 					
 					sOut.writeInt(BATTLE_READY_BEGIN);
 					sOut.flush();
 					Debug.verbose("Client leaving BEGIN_BATTLE");
 				}
-				break;
-				case BATTLE_STATUS_UPDATE:
-				{
+					break;
+				case BATTLE_STATUS_UPDATE: {
 					int teamID = sIn.readInt();
 					int fleetID = sIn.readInt();
 					boolean doa = sIn.readBoolean();
-					myAI.battleStatusUpdate(teamID,fleetID,doa);
+					myAI.battleStatusUpdate(teamID, fleetID, doa);
 				}
-				break;
-				case BEGIN_FLEET_STATUS:
-				{
+					break;
+				case BEGIN_FLEET_STATUS: {
 					currentTick = sIn.readInt();
 					
 					int credits = sIn.readInt();
 					
 					int numContacts = sIn.readInt();
 					
-					//read contacts
+					// read contacts
 					myContacts.resetForTick();
-					for(int x=0;x<numContacts;x++)
-					{
+					for (int x = 0; x < numContacts; x++) {
 						readContact(myContacts);
 					}
 					
 					int numShips = sIn.readInt();
-					for(int x=0;x<numShips;x++)
-					{
+					for (int x = 0; x < numShips; x++) {
 						Ship s = readShip();
-						myShips.update(s,myAI);
+						myShips.update(s, myAI);
 					}
 					
 					Iterator<ShipAction> i = myAI.runTick(currentTick, credits, myContacts, myShips);
@@ -198,40 +181,38 @@ public class BinaryProtocolClient implements ClientAIProtocol
 					sOut.writeInt(BEGIN_FLEET_ACTIONS);
 					sOut.writeInt(currentTick);
 					
-					net.banack.util.Queue<ShipAction> qa = new net.banack.util.Queue<ShipAction>(); 
-					while(i.hasNext())
+					net.banack.util.Queue<ShipAction> qa = new net.banack.util.Queue<ShipAction>();
+					while (i.hasNext())
 						qa.enqueue(i.next());
 					
 					sOut.writeInt(qa.size());
 					
-					while(!qa.isEmpty())					
-					{
+					while (!qa.isEmpty()) {
 						ShipAction cur = qa.dequeue();
 						writeAction(cur);
 					}
 					sOut.flush();
 					myShips.reset();
 				}
-				break;
-				case BEGIN_BATTLE_OUTCOME:
-				{
+					break;
+				case BEGIN_BATTLE_OUTCOME: {
 					Debug.verbose("Client received BEGIN_BATTLE_OUTCOME");
 					
 					Fleet me = readFleet();
 					
 					int numTeams = sIn.readInt();
 					Team[] t = new Team[numTeams];
-					for(int x=0;x<t.length;x++)
+					for (int x = 0; x < t.length; x++)
 						t[x] = readTeam();
-
+					
 					int numFleets = sIn.readInt();
 					Fleet[] f = new Fleet[numFleets];
-					for(int x=0;x<f.length;x++)
+					for (int x = 0; x < f.length; x++)
 						f[x] = readFleet();
 					
 					int tmp = sIn.readInt();
-					if(tmp != END_BATTLE)
-						Debug.crash("Expected END_BATTLE ("+END_BATTLE+") but received "+tmp);
+					if (tmp != END_BATTLE)
+						Debug.crash("Expected END_BATTLE (" + END_BATTLE + ") but received " + tmp);
 					
 					myAI.endBattle(me, t, f);
 					
@@ -239,12 +220,12 @@ public class BinaryProtocolClient implements ClientAIProtocol
 					sOut.flush();
 					
 					Debug.verbose("Client AI exiting...");
-					return;//its all over..
-				}				
-				//implied break here is unreachable due to return
-				//break;
+					return;// its all over..
+				}
+					// implied break here is unreachable due to return
+					// break;
 				default:
-					Debug.crash("Client Received Unknown Token: "+cmd);
+					Debug.crash("Client Received Unknown Token: " + cmd);
 			}
 		}
 	}
@@ -256,15 +237,15 @@ public class BinaryProtocolClient implements ClientAIProtocol
 		sOut.writeBoolean(a.willMove());
 		sOut.writeDouble(a.getHeading());
 		sOut.writeDouble(a.getScannerHeading());
-		sOut.writeInt(a.getLaunchWhat());	
+		sOut.writeInt(a.getLaunchWhat());
 	}
 	
 	private void readContact(ContactList c) throws IOException
-	{		
+	{
 		int cmd = sIn.readInt();
-		if(cmd != CONTACT_ID)
-			Debug.crash("Bad Server Response: Expected CONTACT_ID ("+CONTACT_ID+"), received "+cmd);
-				
+		if (cmd != CONTACT_ID)
+			Debug.crash("Bad Server Response: Expected CONTACT_ID (" + CONTACT_ID + "), received " + cmd);
+		
 		int eID = sIn.readInt();
 		int fleetID = sIn.readInt();
 		int typeID = sIn.readInt();
@@ -274,24 +255,23 @@ public class BinaryProtocolClient implements ClientAIProtocol
 		int life = sIn.readInt();
 		int numSpotters = sIn.readInt();
 		
-		Contact ghost = new Contact(eID,fleetID,typeID,x,y,heading,life,currentTick);
+		Contact ghost = new Contact(eID, fleetID, typeID, x, y, heading, life, currentTick);
 		
 		HashSet<Integer> spotters = new HashSet<Integer>();
 		
-		for(int i=0;i<numSpotters;i++)
-		{
+		for (int i = 0; i < numSpotters; i++) {
 			int sID = sIn.readInt();
 			spotters.add(new Integer(sID));
 		}
 		
-		c.addContact(ghost,spotters);
+		c.addContact(ghost, spotters);
 	}
 	
 	private Ship readShip() throws IOException
 	{
 		int cmd = sIn.readInt();
-		if(cmd != SHIP_ID)
-			Debug.crash("Bad Server Response: Expected SHIP_ID ("+SHIP_ID+"), received "+cmd);
+		if (cmd != SHIP_ID)
+			Debug.crash("Bad Server Response: Expected SHIP_ID (" + SHIP_ID + "), received " + cmd);
 		int id = sIn.readInt();
 		int parentID = sIn.readInt();
 		int type = sIn.readInt();
@@ -303,69 +283,66 @@ public class BinaryProtocolClient implements ClientAIProtocol
 		int life = sIn.readInt();
 		int deltaLife = sIn.readInt();
 		int firingDelay = sIn.readInt();
-
-		Ship s = new Ship(id,parentID, type,DefaultShipTypeDefinitions.getShipType(type),x,y,heading,scannerHeading,creationTick,life,deltaLife,firingDelay);
+		
+		Ship s = new Ship(id, parentID, type, DefaultShipTypeDefinitions.getShipType(type), x, y, heading,
+		        scannerHeading, creationTick, life, deltaLife, firingDelay);
 		return s;
 	}
 	
 	private Team readTeam() throws IOException
 	{
-		int cmd= sIn.readInt();
-		if(cmd != TEAM_ID)
-			Debug.crash("Bad Server Response: Expected TEAM_ID ("+TEAM_ID+"), received "+cmd);
+		int cmd = sIn.readInt();
+		if (cmd != TEAM_ID)
+			Debug.crash("Bad Server Response: Expected TEAM_ID (" + TEAM_ID + "), received " + cmd);
 		
 		int teamID = sIn.readInt();
 		int nameLength = sIn.readInt();
 		StringBuffer name = new StringBuffer(nameLength);
-		for(int x=0;x<nameLength;x++)
-		{
+		for (int x = 0; x < nameLength; x++) {
 			name.append(sIn.readChar());
 		}
 		
-		return new Team(teamID,name.toString());		
+		return new Team(teamID, name.toString());
 	}
 	
 	private Fleet readFleet() throws IOException
 	{
 		int cmd = sIn.readInt();
-		if(cmd != FLEET_ID)
-			Debug.crash("Bad Server Response: Expected FLEET_ID ("+FLEET_ID+"), received "+cmd);
+		if (cmd != FLEET_ID)
+			Debug.crash("Bad Server Response: Expected FLEET_ID (" + FLEET_ID + "), received " + cmd);
 		
 		int fleetID = sIn.readInt();
 		int teamID = sIn.readInt();
 		
 		int fNameL = sIn.readInt();
-		Debug.verbose("Client fleetNameLength = "+fNameL);
+		Debug.verbose("Client fleetNameLength = " + fNameL);
 		StringBuffer fName = new StringBuffer(fNameL);
-		for(int x=0;x<fNameL;x++)
-		{
+		for (int x = 0; x < fNameL; x++) {
 			fName.append(sIn.readChar());
 		}
 		
-		
+
 		int aiNameL = sIn.readInt();
 		StringBuffer aiName = new StringBuffer(aiNameL);
-		for(int x=0;x<aiNameL;x++)
-		{
+		for (int x = 0; x < aiNameL; x++) {
 			aiName.append(sIn.readChar());
 		}
 		
 		int aiAuthorL = sIn.readInt();
 		StringBuffer aiAuthor = new StringBuffer(aiAuthorL);
-		for(int x=0;x<aiAuthorL;x++)
-		{
+		for (int x = 0; x < aiAuthorL; x++) {
 			aiAuthor.append(sIn.readChar());
 		}
 		
 		int aiVersionL = sIn.readInt();
 		StringBuffer aiVersion = new StringBuffer(aiVersionL);
-		for(int x=0;x<aiVersionL;x++)
-		{
+		for (int x = 0; x < aiVersionL; x++) {
 			aiVersion.append(sIn.readChar());
 		}
 		
 		boolean isAlive = sIn.readBoolean();
 		
-		return new Fleet(fleetID,teamID, fName.toString(),aiName.toString(),aiAuthor.toString(),aiVersion.toString(),isAlive);
+		return new Fleet(fleetID, teamID, fName.toString(), aiName.toString(), aiAuthor.toString(), aiVersion
+		        .toString(), isAlive);
 	}
 }

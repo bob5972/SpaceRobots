@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.fleets;
@@ -49,7 +45,7 @@ public class BattleCruiserFleet extends AIFleet
 {
 	private final int STATE_IDLE = 1;
 	private final int STATE_ATTACK = 2;
-	private final int STATE_RETREAT =3;
+	private final int STATE_RETREAT = 3;
 	
 	private int myState;
 	private int stateTimer;
@@ -78,7 +74,8 @@ public class BattleCruiserFleet extends AIFleet
 		return "2.0";
 	}
 	
-	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f, double width, double height)
+	public void initBattle(int fleetID, int teamID, int startingCredits, AIShipList s, Team[] teams, Fleet[] f,
+	        double width, double height)
 	{
 		super.initBattle(fleetID, teamID, startingCredits, s, teams, f, width, height);
 		myTargets = new TargetingSystem(this);
@@ -91,40 +88,40 @@ public class BattleCruiserFleet extends AIFleet
 				int left = myTargets.getAllocationCount(lhs);
 				int right = myTargets.getAllocationCount(rhs);
 				
-				if(ltype == CRUISER_ID && rtype != CRUISER_ID)
+				if (ltype == CRUISER_ID && rtype != CRUISER_ID)
 					return -1;
-				if(rtype == CRUISER_ID && ltype != CRUISER_ID)
+				if (rtype == CRUISER_ID && ltype != CRUISER_ID)
 					return 1;
-				if(left < right)
+				if (left < right)
 					return -1;
-				if(left > right)
+				if (left > right)
 					return 1;
 				return 0;
 			}
 		});
 		
-		myShipCount= 1;
+		myShipCount = 1;
 		myState = 1;
 	}
 	
 	public AIShip createShip(Ship s)
 	{
-		if(s.getTypeID() == MISSILE_ID)
-		{
+		if (s.getTypeID() == MISSILE_ID) {
 			BasicMissile oup;
 			oup = new BasicMissile(this);
 			oup.update(s);
 			Contact target = myTargets.getMissileTarget(oup);
 			oup.setTarget(target);
 			myTargets.allocate(target);
-			if(target == null)
-				oup.setHeading(myCruiser.getScannerHeading()+(MISSILE.getMaxTickCount()-5)*myCruiser.getScannerAngleSpan());
+			if (target == null)
+				oup.setHeading(myCruiser.getScannerHeading() + (MISSILE.getMaxTickCount() - 5)
+				        * myCruiser.getScannerAngleSpan());
 			return oup;
 		}
-		if(s.getTypeID() == CRUISER_ID)
+		if (s.getTypeID() == CRUISER_ID)
 			myShipCount++;
 		
-		return new AIShip(s,this);
+		return new AIShip(s, this);
 	}
 	
 	public void initTick()
@@ -133,52 +130,47 @@ public class BattleCruiserFleet extends AIFleet
 	}
 	
 	public Iterator<ShipAction> runTick()
-	{		
-		if(stateTimer > 0)
+	{
+		if (stateTimer > 0)
 			stateTimer--;
 		
-		if(myContacts.size() == 0 && stateTimer <= 0)
+		if (myContacts.size() == 0 && stateTimer <= 0)
 			myState = STATE_IDLE;
 		
 		Iterator<Integer> ci = myContacts.enemyShipIterator();
 		shootCounter = 0;
-		while(ci.hasNext())
-		{
+		while (ci.hasNext()) {
 			int eID = ci.next();
 			Contact enemy = myContacts.get(eID);
 			int alloc = myTargets.getAllocationCount(eID);
 			int life = enemy.getLife();
-			if(alloc < life)
-			{
-				shootCounter+=life - alloc;
+			if (alloc < life) {
+				shootCounter += life - alloc;
 			}
 		}
-		if(shootCounter > 0)
-			shootCounter++;//one more for good luck
-				
-		if(myContacts.size() > 3*myShipCount)
-		{
-			myState=STATE_RETREAT;
-			stateTimer=100;
+		if (shootCounter > 0)
+			shootCounter++;// one more for good luck
+			
+		if (myContacts.size() > 3 * myShipCount) {
+			myState = STATE_RETREAT;
+			stateTimer = 100;
 		}
 		
 		myCruiser.advanceScannerHeading();
 		scannerStart = myCruiser.curScannerHeading();
-		myShipCount=0;
+		myShipCount = 0;
 		myShips.apply(AIFilter.CRUISERS, new AIGovernor() {
 			public void run(AIShip s)
 			{
-				if(!myCruiser.isAlive())
-					myCruiser=s;
-				myShipCount++;//I'm too lazy to update this on deaths
+				if (!myCruiser.isAlive())
+					myCruiser = s;
+				myShipCount++;// I'm too lazy to update this on deaths
 				
-				if(s != myCruiser)
-				{
+				if (s != myCruiser) {
 					s.intercept(myCruiser);
-					scannerStart += (Math.PI*2)/myShipCount;
+					scannerStart += (Math.PI * 2) / myShipCount;
 					s.setScannerHeading(scannerStart);
-					if(shootCounter > 0 && s.canLaunch(MISSILE))
-					{
+					if (shootCounter > 0 && s.canLaunch(MISSILE)) {
 						shootCounter--;
 						s.launch(MISSILE);
 					}
@@ -186,26 +178,23 @@ public class BattleCruiserFleet extends AIFleet
 			}
 		});
 		
-		switch(myState)
-		{
+		switch (myState) {
 			case STATE_IDLE:
-				if(tick % 400 == 0)
-					myCruiser.setHeading(random.nextGaussian()-0.5+myCruiser.getHeading());
-				if(myCruiser.canLaunch(CRUISER) && credits > CRUISER.getCost()+50*myShipCount)
+				if (tick % 400 == 0)
+					myCruiser.setHeading(random.nextGaussian() - 0.5 + myCruiser.getHeading());
+				if (myCruiser.canLaunch(CRUISER) && credits > CRUISER.getCost() + 50 * myShipCount)
 					myCruiser.launch(CRUISER);
-			break;				
+				break;
 			case STATE_RETREAT:
-				Contact target = myTargets.getClosestTarget(myCruiser,myCruiser.getScannerRadius());
-				if(target != null)
-				{
+				Contact target = myTargets.getClosestTarget(myCruiser, myCruiser.getScannerRadius());
+				if (target != null) {
 					myCruiser.setHeading(target.getPosition());
-					myCruiser.setHeading(myCruiser.getHeading()+Math.PI);
+					myCruiser.setHeading(myCruiser.getHeading() + Math.PI);
 				}
-			break;
+				break;
 		}
 		
-		if((shootCounter > 0)&& myCruiser.canLaunch(MISSILE))
-		{
+		if ((shootCounter > 0) && myCruiser.canLaunch(MISSILE)) {
 			myCruiser.launch(MISSILE);
 			shootCounter--;
 		}
@@ -213,18 +202,13 @@ public class BattleCruiserFleet extends AIFleet
 		myShips.apply(AIFilter.MISSILES, new AIGovernor() {
 			public void run(AIShip s)
 			{
-				if(s instanceof BasicMissile)
-				{
+				if (s instanceof BasicMissile) {
 					BasicMissile t = (BasicMissile) s;
-					if(t.isDead())
-					{
-						//this should only run once, the tick after the missile dies
+					if (t.isDead()) {
+						// this should only run once, the tick after the missile dies
 						myTargets.deallocate(t.getTarget());
-					}
-					else
-					{
-						if(!t.hasTarget())
-						{
+					} else {
+						if (!t.hasTarget()) {
 							t.setTarget(myTargets.getMissileTarget(t));
 						}
 					}
@@ -233,7 +217,7 @@ public class BattleCruiserFleet extends AIFleet
 			}
 		});
 		
-		
+
 		return myShips.getActionIterator();
 	}
 	

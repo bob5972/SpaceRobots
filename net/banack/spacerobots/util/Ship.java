@@ -1,19 +1,15 @@
 /*
- * This file is part of SpaceRobots.
- * Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
  * 
- * SpaceRobots is free software: you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  * 
- * SpaceRobots is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * SpaceRobots is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with SpaceRobots.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with SpaceRobots. If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 
 package net.banack.spacerobots.util;
@@ -25,7 +21,7 @@ import net.banack.geometry.DQuad;
 
 /** Stores all pertinent information about a ship. */
 public class Ship implements ShipStatus
-{	
+{
 	private int myID;
 	private DPoint myPosition;
 	private int myLife;
@@ -36,18 +32,19 @@ public class Ship implements ShipStatus
 	private int myTypeID;
 	private ShipType myType;
 	private boolean willMove;
-	private int myLaunchDelay;//number of ticks until the ship can fire again
-	private int myParentID;//ID of the ship that spawned it
-
-	public Ship(int id, int parentID, int type,ShipType t, DPoint pos, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
+	private int myLaunchDelay;// number of ticks until the ship can fire again
+	private int myParentID;// ID of the ship that spawned it
+	
+	public Ship(int id, int parentID, int type, ShipType t, DPoint pos, double heading, double scannerH, int tick,
+	        int life, int deltalife, int firingDelay)
 	{
-		myID=id;
+		myID = id;
 		myParentID = parentID;
 		myTypeID = type;
 		myPosition = pos;
 		myLife = life;
-		willMove=true;
-		myScannerHeading=scannerH;
+		willMove = true;
+		myScannerHeading = scannerH;
 		myHeading = heading;
 		myType = t;
 		myCreationTick = tick;
@@ -57,30 +54,32 @@ public class Ship implements ShipStatus
 	
 	public Ship(Ship s)
 	{
-		this(s.myID,s.myParentID, s.myTypeID,s.myType,s.myPosition,s.myHeading,s.myScannerHeading,s.myCreationTick,s.myLife,s.myDeltaLife,s.myLaunchDelay);
-		this.willMove=s.willMove;
+		this(s.myID, s.myParentID, s.myTypeID, s.myType, s.myPosition, s.myHeading, s.myScannerHeading,
+		        s.myCreationTick, s.myLife, s.myDeltaLife, s.myLaunchDelay);
+		this.willMove = s.willMove;
 	}
 	
-	public Ship(int id, int parentID, int type,ShipType t, double x, double y, double heading, double scannerH, int tick, int life,int deltalife,int firingDelay)
+	public Ship(int id, int parentID, int type, ShipType t, double x, double y, double heading, double scannerH,
+	        int tick, int life, int deltalife, int firingDelay)
 	{
-		this(id,parentID, type,t,new DPoint(x,y),heading,scannerH,tick,life,deltalife,firingDelay);
+		this(id, parentID, type, t, new DPoint(x, y), heading, scannerH, tick, life, deltalife, firingDelay);
 	}
 	
-	public Ship(int id, int parentID, int type,ShipType t, double x, double y, int tick, int life)
+	public Ship(int id, int parentID, int type, ShipType t, double x, double y, int tick, int life)
 	{
-		this(id,parentID,type,t,x,y,0,0,tick,life,0,0);
+		this(id, parentID, type, t, x, y, 0, 0, tick, life, 0, 0);
 	}
 	
 	/** Clobbers this ship with the contents of s. */
 	public void update(Ship s)
 	{
-		myID=s.myID;
+		myID = s.myID;
 		myParentID = s.myParentID;
 		myTypeID = s.myTypeID;
 		myPosition = s.myPosition;
 		myLife = s.myLife;
-		willMove=s.willMove;
-		myScannerHeading=s.myScannerHeading;
+		willMove = s.willMove;
+		myScannerHeading = s.myScannerHeading;
 		myHeading = s.myHeading;
 		myType = s.myType;
 		myCreationTick = s.myCreationTick;
@@ -128,8 +127,8 @@ public class Ship implements ShipStatus
 	
 	public void setLife(int L)
 	{
-		myDeltaLife += myLife-L;
-		myLife=L;
+		myDeltaLife += myLife - L;
+		myLife = L;
 	}
 	
 	public int getCost()
@@ -139,9 +138,9 @@ public class Ship implements ShipStatus
 	
 	public void reset()
 	{
-		if(myLaunchDelay>0)
+		if (myLaunchDelay > 0)
 			myLaunchDelay--;
-		myDeltaLife=0;
+		myDeltaLife = 0;
 	}
 	
 	public int getCreationTick()
@@ -153,7 +152,7 @@ public class Ship implements ShipStatus
 	{
 		return willMove;
 	}
-
+	
 	public void setWillMove(boolean willMove)
 	{
 		this.willMove = willMove;
@@ -166,24 +165,27 @@ public class Ship implements ShipStatus
 	}
 	
 	
-	
-	//Status Functions
+	// Status Functions
 	public double getX()
 	{
 		return myPosition.getX();
 	}
+	
 	public final double getXPos()
 	{
 		return getX();
 	}
+	
 	public double getY()
 	{
 		return myPosition.getY();
 	}
+	
 	public final double getYPos()
 	{
 		return getY();
 	}
+	
 	public double getScannerHeading()
 	{
 		return myScannerHeading;
@@ -208,10 +210,10 @@ public class Ship implements ShipStatus
 	{
 		return myLife;
 	}
-		
+	
 	public boolean isAlive()
 	{
-		return getLife()>0;
+		return getLife() > 0;
 	}
 	
 	public final boolean isDead()
@@ -256,11 +258,12 @@ public class Ship implements ShipStatus
 	
 	public void setX(double x)
 	{
-		myPosition = new DPoint(x,myPosition.getY());
+		myPosition = new DPoint(x, myPosition.getY());
 	}
+	
 	public void setY(double y)
 	{
-		myPosition = new DPoint(myPosition.getX(),y);
+		myPosition = new DPoint(myPosition.getX(), y);
 	}
 	
 	public void setPosition(DPoint p)
@@ -278,7 +281,6 @@ public class Ship implements ShipStatus
 		return myPosition;
 	}
 	
-
 	
 	public final int getID()
 	{
@@ -292,13 +294,13 @@ public class Ship implements ShipStatus
 	
 	public DDimension getDimension()
 	{
-		return new DDimension(myType.getWidth(),myType.getHeight());
+		return new DDimension(myType.getWidth(), myType.getHeight());
 	}
 	
 	/** The perhaps poorly named way to get the rectangle of the ships location. */
 	public DQuad getLocation()
 	{
-		return SpaceMath.getDQuad(myPosition,myType.getWidth(),myType.getHeight(),myHeading);
+		return SpaceMath.getDQuad(myPosition, myType.getWidth(), myType.getHeight(), myHeading);
 	}
 	
 	public boolean canMoveScanner()
@@ -308,8 +310,8 @@ public class Ship implements ShipStatus
 	
 	public DArc getScannerArc()
 	{
-		DArc oup = new DArc(myPosition, myType.getScannerRadius(),myScannerHeading,myType.getScannerAngleSpan());
-		oup = oup.rotate(-myType.getScannerAngleSpan()/2);
+		DArc oup = new DArc(myPosition, myType.getScannerRadius(), myScannerHeading, myType.getScannerAngleSpan());
+		oup = oup.rotate(-myType.getScannerAngleSpan() / 2);
 		return oup;
 	}
 	
