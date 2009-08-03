@@ -150,6 +150,12 @@ public class TestSpaceMath
 		point = new DPoint(1,0);		
 		angle = 0;
 		
+		for(x=0; x<10; x++)
+		{
+			Assert.assertEquals(0,SpaceMath.rotate(origin, origin, x).getY(),TOLERANCE);
+			Assert.assertEquals(0,SpaceMath.rotate(origin, origin, x).getX(),TOLERANCE);
+		}
+		
 		Assert.assertEquals(1,SpaceMath.rotate(point,center,0).getX(),TOLERANCE);
 		Assert.assertEquals(0,SpaceMath.rotate(point,center,0).getY(),TOLERANCE);
 		Assert.assertEquals(0,SpaceMath.rotate(point,center,Math.PI/2).getX(),TOLERANCE);
@@ -218,6 +224,17 @@ public class TestSpaceMath
 		
 			angle += Math.PI/64;
 		}
+		
+		center = origin;
+		point = new DPoint(1,1);
+		angle = -point.getTheta();
+		Assert.assertEquals(0, SpaceMath.rotate(point, center, angle).getY(), TOLERANCE);
+		Assert.assertEquals(Math.sqrt(2), SpaceMath.rotate(point, center, angle).getX(), TOLERANCE);
+		
+		center = origin;
+		point = new DPoint(0,1);
+		angle = -Math.PI/4;
+		Assert.assertEquals(Math.PI/4, SpaceMath.rotate(point, center, angle).getTheta(), TOLERANCE);
 		
 	}
 	

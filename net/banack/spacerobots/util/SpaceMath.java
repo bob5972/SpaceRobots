@@ -301,21 +301,22 @@ public class SpaceMath
 	
 	/** Rotates a point about a center by a specified number of radians.*/
 	public static DPoint rotate(DPoint p, DPoint center, double r)
-	{
-		if(r == 0 || p.equals(center))
-			return p;
+	{		
+		return rotate(p.getX(),p.getY(),center.getX(),center.getY(),r);
 		
-		DPoint diff = p.subtract(center);
-		double length = diff.getRadius();
-		double angle = diff.getTheta();
-		angle+=r;
-		
-		DPoint oup = DPoint.newPolar(length,angle);
-		oup = oup.add(center);
-		
-		return oup;	
-		
-//		return rotate(p.getX(),p.getY(),center.getX(),center.getY(),r);
+//		// Works but slow (the atan call in getTheta is a killer)		
+//		if(r == 0 || p.equals(center))
+//			return p;
+//		
+//		DPoint diff = p.subtract(center);
+//		double length = diff.getRadius();
+//		double angle = diff.getTheta();
+//		angle+=r;
+//		
+//		DPoint oup = DPoint.newPolar(length,angle);
+//		oup = oup.add(center);
+//		
+//		return oup;
 	}
 	
 	/** Rotates a point about a center by a specified number of radians.*/
@@ -457,11 +458,17 @@ public class SpaceMath
 	/** Test if the line segments Seg[a1,a2] intersects Seg[b1,b2]. */
 	public static boolean isIntersection(DPoint a1, DPoint a2, DPoint b1, DPoint b2)
 	{
+		// Behold the Magic Number!
+		final double PRECISION = 1E-15;
+		
 		DPoint offset = a2.subtract(a1);
 		double t = -offset.getTheta();
+		
 		a2 = rotate(a2,a1,t);
 		b1 = rotate(b1,a1,t);
 		b2 = rotate(b2,a1,t);
+		
+		//A is flat now, ie the line y = yAvg (below)
 		
 		double bYMin,bYMax;
 				
@@ -482,6 +489,7 @@ public class SpaceMath
 		double yAvg = (a1.getY()+a2.getY())/2;
 		if(containsPoint(yAvg,bYMin,bYMax))
 		{
+			//B crosses the y value of A
 			double aXMin,aXMax;
 			aXMin = a1.getX();
 			aXMax = a2.getX();
@@ -495,32 +503,45 @@ public class SpaceMath
 			
 			double xVal;
 			
-			double bSlope = (b2.getY()-b1.getY())/(b2.getX()-b1.getX());
+			double dy = (b2.getY()-b1.getY());
+			double dx = (b2.getX()-b1.getX());
+			double bSlope;
+			
+			if(dx < PRECISION && dx > -PRECISION) {
+				bSlope = Double.POSITIVE_INFINITY;
+			} else if(dy < PRECISION && dy > -PRECISION) {
+				bSlope = 0;
+			} else { 
+				bSlope = dy/dx;
+			}
 			
 			if(bSlope == Double.POSITIVE_INFINITY || bSlope==Double.NEGATIVE_INFINITY)
 			{
 				xVal = (b1.getX()+b2.getX())/2;
 			}
-			else
+			else if (bSlope == 0)
 			{
-				if(bSlope == 0)
-				{
-					double bXMin = min(b1.getX(),b2.getX());
-					double bXMax = max(b1.getX(),b2.getX());
-					return isIntersection(bXMin,bXMax,aXMin,aXMax);
-				}
-				
-				double bIntercept = (b1.getY())/(bSlope*b1.getX());				
-				
-				xVal = (yAvg-bIntercept)/bSlope;
+				double bXMin = min(b1.getX(),b2.getX());
+				double bXMax = max(b1.getX(),b2.getX());
+				return isIntersection(bXMin,bXMax,aXMin,aXMax);
 			}
+			else
+			{				
+				double bIntercept = (b1.getY())/(bSlope*b1.getX());
+				
+				xVal = (yAvg-bIntercept)/bSlope;				
+			}
+			
+			//by now, the point (xVal,yAvg) should be where B crosses y= yAvg
+			// so if xVal is in the x-range A crosses, we have an intersection
 			
 			if(containsPoint(xVal,aXMin,aXMax))
 				return true;
+			
 			return false;
 		}
 		
-		//B does not cross the y value of A (give or take rounding)		
+		//B does not cross the y value of A (give or take rounding)
 		return false;
 	}
 	
