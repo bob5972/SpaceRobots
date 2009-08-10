@@ -202,7 +202,13 @@ public class SpaceMath
 	 */
 	public static double wrap(double value, double range)
 	{
-		value -= Math.floor(value / range) * range;
+		if (value >= 0 && value < range) {
+			return value;
+		}
+		
+		// Casting to an int is roughly 10 times faster than calling floor
+		// stupid java people
+		value -= ((int)(value / range)) * range;
 		
 		// these will probably only run once each, but just to make sure
 		while (value < 0)
