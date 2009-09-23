@@ -72,11 +72,12 @@ public class SpaceRobotsUI
 				r = new Random();
 				
 				final AIFleet ai[] = {
-				        // new BattleCruiserFleet(r.nextLong()),
-				        // new Cache(r.nextLong()),
-				        new TaskFleet(r.nextLong()), new TaskFleet(r.nextLong()), new Mob(r.nextLong()),
+				        new BattleCruiserFleet(r.nextLong()),
+				        new Cache(r.nextLong()),
+				        //new TaskFleet(r.nextLong()), new TaskFleet(r.nextLong()), new Mob(r.nextLong()),
 				        new Mob(r.nextLong()),
-				// new Fortress(r.nextLong()),
+				        // new Fortress(r.nextLong()),
+				        new Beeline(r.nextLong()),
 				};
 				
 				final int width;
