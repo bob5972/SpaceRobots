@@ -32,9 +32,3 @@ but basically you want to extend AIFleet, and go from there.
 
 The AI interface is all done over a socket, so if you're really motivated you
 can write your AI in whatever language you want.
-
-Let me know if you get a good protocol written and I'll add it in.
-
-Questions, Comments, !Complaints can be addressed to:
-
-Michael Banack <github@banack.net>
