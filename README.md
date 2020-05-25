@@ -4,7 +4,7 @@ SpaceRobots is an AI programming space combat game written in Java.
 
 ----------------------------------------------------------------------
 
-The latest (official) version of SpaceRobots can be obtained online at
+The latest version of SpaceRobots can be obtained online at
 https://github.com/bob5972/SpaceRobots.
 
 This program requires BanackLib and jogl to run.
