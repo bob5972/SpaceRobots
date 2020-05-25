@@ -1,5 +1,5 @@
 /*
- * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <bob5972@banack.net>
+ * This file is part of SpaceRobots. Copyright (c)2009 Michael Banack <github@banack.net>
  * 
  * SpaceRobots is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -24,7 +24,7 @@ import net.banack.spacerobots.util.SpaceMath;
 /**
  * Prioritizes contacts based on distance from a center point.
  * 
- * @author Michael Banack <bob5972@banack.net>
+ * @author Michael Banack <github@banack.net>
  * 
  */
 public class DistancePriority implements Comparator<Contact>
