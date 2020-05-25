@@ -1,6 +1,6 @@
-SpaceRobots -- Copyright (c)2009 Michael Banack <bob5972@banack.net>
+SpaceRobots -- Copyright (c)2009 Michael Banack <github@banack.net>
 
-SpaceRobots is free software: you can redistribute it and/or modify 
+SpaceRobots is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
@@ -21,7 +21,7 @@ This program requires BanackLib and jogl to run.
 BanackLib can be obtained from Michael Banack directly or online at <http://www.banack.net/BanackLib/>.
 You'll need to stick this in your classpath when you run SpaceRobots.
 
-Jogl can be obtained from 
+Jogl can be obtained from
 https://jogl.dev.java.net/servlets/ProjectDocumentList?folderID=9260&expandFolder=9260&folderID=0
 
 There are some vague installation directions buried in here
@@ -41,4 +41,4 @@ write your AI in whatever language you want.
 Let me know if you get a good protocol written and I'll add it in.
 
 Questions, Comments, !Complaints can be addressed to:
-Michael Banack <bob5972@banack.net>
+Michael Banack <github@banack.net>
